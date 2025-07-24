@@ -1,0 +1,6 @@
+# Production dependencies
+# Currently no external dependencies - uses only Python standard library
+
+# Future dependencies (when Docker/Podman support is added):
+# docker>=6.0.0
+# podman-py>=4.0.0

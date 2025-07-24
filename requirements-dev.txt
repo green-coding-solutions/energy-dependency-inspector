@@ -1,0 +1,14 @@
+# Development dependencies
+
+# Testing framework (as specified in CLAUDE.md)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Code quality (as specified in CLAUDE.md)
+pylint>=2.15.0
+
+# Type checking
+mypy>=1.0.0
+
+# Code formatting (optional but helpful)
+black>=22.0.0
