@@ -6,26 +6,6 @@ The output is a structured JSON that includes information about all the installe
 
 ## Installation
 
-### Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/green-coding-solutions/dependency-resolver
-cd dependency-resolver
-
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Or using pyproject.toml (recommended)
-pip install -e ".[dev]"
-```
-
-### Production Installation
-
 ```bash
 # Create and activate virtual environment
 python3 -m venv venv
@@ -99,54 +79,6 @@ The tool outputs JSON with the following structure:
 }
 ```
 
-## Development
+## Contributing
 
-### Running Tests
-
-```bash
-# Activate virtual environment first
-source venv/bin/activate
-
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=dependency_resolver
-
-# Run specific test file
-pytest tests/test_pip_detector.py
-```
-
-### Code Quality
-
-```bash
-# Activate virtual environment first
-source venv/bin/activate
-
-# Run pylint (as specified in project guidelines)
-pylint core/ detectors/ utils/ dependency_resolver.py
-
-# Run type checking
-mypy core/ detectors/ utils/ dependency_resolver.py
-
-# Format code
-black core/ detectors/ utils/ dependency_resolver.py
-```
-
-### Project Structure
-
-```plain
-dependency_resolver/
-├── dependency_resolver.py    # CLI entry point
-├── core/
-│   ├── interfaces.py         # Abstract base classes
-│   ├── executor.py           # Environment executors
-│   └── resolver.py           # Main orchestrator
-├── detectors/
-│   ├── pip_detector.py       # Python packages
-│   └── apt_detector.py       # System packages
-├── utils/                    # Utility modules (future)
-├── requirements.txt          # Production dependencies
-├── requirements-dev.txt      # Development dependencies
-└── pyproject.toml           # Project configuration
-```
+For development setup, contribution guidelines, and information about running tests and code quality checks, please see [CONTRIBUTING.md](./CONTRIBUTING.md).

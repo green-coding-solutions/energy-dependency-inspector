@@ -11,7 +11,7 @@ from core.executor import HostExecutor
 from core.resolver import DependencyResolver
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Resolve dependencies from various package managers",
@@ -49,7 +49,7 @@ Examples:
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     args = parse_arguments()
 
