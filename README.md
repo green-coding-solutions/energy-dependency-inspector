@@ -39,16 +39,16 @@ pip install -e ".[podman]"
 
 ```bash
 # Analyze host system (default behavior)
-python3 main.py
+python3 dependency_resolver.py
 
 # Explicitly specify host environment
-python3 main.py host
+python3 dependency_resolver.py host
 
 # Enable debug output
-python3 main.py --debug
+python3 dependency_resolver.py --debug
 
 # Set working directory
-python3 main.py --working-dir /path/to/project
+python3 dependency_resolver.py --working-dir /path/to/project
 ```
 
 ### Supported Package Managers
@@ -110,28 +110,28 @@ pytest tests/test_pip_detector.py
 
 ```bash
 # Run pylint (as specified in project guidelines)
-pylint dependency_resolver/
+pylint core/ detectors/ utils/ dependency_resolver.py
 
 # Run type checking
-mypy dependency_resolver/
+mypy core/ detectors/ utils/ dependency_resolver.py
 
 # Format code
-black dependency_resolver/
+black core/ detectors/ utils/ dependency_resolver.py
 ```
 
 ### Project Structure
 
 ```plain
 dependency_resolver/
-├── main.py                   # CLI entry point
-├── dependency_resolver/
-│   ├── core/
-│   │   ├── interfaces.py     # Abstract base classes
-│   │   ├── executor.py       # Environment executors
-│   │   └── resolver.py       # Main orchestrator
-│   └── detectors/
-│       ├── pip_detector.py   # Python packages
-│       └── apt_detector.py   # System packages
+├── dependency_resolver.py    # CLI entry point
+├── core/
+│   ├── interfaces.py         # Abstract base classes
+│   ├── executor.py           # Environment executors
+│   └── resolver.py           # Main orchestrator
+├── detectors/
+│   ├── pip_detector.py       # Python packages
+│   └── apt_detector.py       # System packages
+├── utils/                    # Utility modules (future)
 ├── requirements.txt          # Production dependencies
 ├── requirements-dev.txt      # Development dependencies
 └── pyproject.toml           # Project configuration

@@ -43,14 +43,14 @@ podman = [
 ]
 
 [project.scripts]
-dependency-resolver = "main:main"
+dependency-resolver = "dependency_resolver:main"
 
 [project.urls]
 Repository = "https://github.com/green-coding-solutions/dependency-resolver"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["dependency_resolver*"]
+include = ["core*", "detectors*", "utils*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

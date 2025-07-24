@@ -7,8 +7,8 @@ Usage: dependency_resolver.py [environment_type] [environment_identifier] [optio
 
 import sys
 import argparse
-from dependency_resolver.core.executor import HostExecutor
-from dependency_resolver.core.resolver import DependencyResolver
+from core.executor import HostExecutor
+from core.resolver import DependencyResolver
 
 
 def parse_arguments():

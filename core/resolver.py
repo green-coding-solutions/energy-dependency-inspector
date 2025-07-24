@@ -2,8 +2,8 @@ import json
 from typing import Dict, Any, List
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
-from ..detectors.pip_detector import PipDetector
-from ..detectors.apt_detector import AptDetector
+from detectors.pip_detector import PipDetector
+from detectors.apt_detector import AptDetector
 
 
 class DependencyResolver:

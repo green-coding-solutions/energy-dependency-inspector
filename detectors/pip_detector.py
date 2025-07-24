@@ -2,7 +2,7 @@ import hashlib
 import os
 from typing import Dict, Any
 
-from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
 class PipDetector(PackageManagerDetector):
