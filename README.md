@@ -11,14 +11,8 @@ The output is a structured JSON that includes information about all the installe
 python3 -m venv venv
 source venv/bin/activate
 
-# Basic installation (host environment only)
-pip install -e .
-
-# With Docker support (future)
-pip install -e ".[docker]"
-
-# With Podman support (future)
-pip install -e ".[podman]"
+# Install dependencies
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -32,12 +26,23 @@ python3 dependency_resolver.py
 # Explicitly specify host environment
 python3 dependency_resolver.py host
 
+# Analyze Docker container by name
+python3 dependency_resolver.py docker nginx
+
+# Analyze Docker container by ID
+python3 dependency_resolver.py docker a1b2c3d4e5f6
+
 # Enable debug output
 python3 dependency_resolver.py --debug
 
 # Set working directory
 python3 dependency_resolver.py --working-dir /path/to/project
 ```
+
+### Supported Environments
+
+- **host** - Host system analysis (default)
+- **docker** - Docker container analysis (requires container ID or name)
 
 ### Supported Package Managers
 
@@ -49,7 +54,6 @@ Currently supported:
 Future support planned:
 
 - **npm** - Node.js packages
-- **docker** - Container images
 - **docker-compose** - Container orchestration
 
 ### Output Format

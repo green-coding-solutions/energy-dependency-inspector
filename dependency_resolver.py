@@ -7,7 +7,7 @@ Usage: dependency_resolver.py [environment_type] [environment_identifier] [optio
 
 import sys
 import argparse
-from core.executor import HostExecutor
+from core.executor import HostExecutor, DockerExecutor, EnvironmentExecutor
 from core.resolver import DependencyResolver
 
 
@@ -20,6 +20,8 @@ def parse_arguments() -> argparse.Namespace:
 Examples:
   %(prog)s                              # Analyze host system
   %(prog)s host                         # Analyze host system explicitly
+  %(prog)s docker a1b2c3d4e5f6          # Analyze Docker container by ID
+  %(prog)s docker nginx                 # Analyze Docker container by name
   %(prog)s --working-dir /tmp/repo      # Set working directory on host
   %(prog)s --debug                      # Enable debug output
         """,
@@ -29,15 +31,15 @@ Examples:
         "environment_type",
         nargs="?",
         default="host",
-        choices=["host"],
-        help='Type of environment to analyze (currently only "host" is supported)',
+        choices=["host", "docker"],
+        help="Type of environment to analyze",
     )
 
     parser.add_argument(
         "environment_identifier",
         nargs="?",
         default=None,
-        help="Environment identifier (not used for host environment)",
+        help="Environment identifier (container ID/name for docker)",
     )
 
     parser.add_argument(
@@ -54,11 +56,8 @@ def main() -> None:
     args = parse_arguments()
 
     # Validate arguments
-    if args.environment_type != "host":
-        print(
-            f'Error: Environment type "{args.environment_type}" is not yet supported',
-            file=sys.stderr,
-        )
+    if args.environment_type == "docker" and not args.environment_identifier:
+        print("Error: Docker environment requires a container identifier", file=sys.stderr)
         sys.exit(1)
 
     if args.environment_type == "host" and args.environment_identifier:
@@ -66,8 +65,11 @@ def main() -> None:
 
     try:
         # Create executor based on environment type
+        executor: EnvironmentExecutor
         if args.environment_type == "host":
             executor = HostExecutor()
+        elif args.environment_type == "docker":
+            executor = DockerExecutor(args.environment_identifier)
         else:
             print(f"Error: Unsupported environment type: {args.environment_type}", file=sys.stderr)
             sys.exit(1)
