@@ -20,7 +20,13 @@ class HostExecutor(EnvironmentExecutor):
         """
         try:
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, cwd=working_dir, timeout=30, check=False
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                cwd=working_dir,
+                timeout=30,
+                check=False,
             )
             return result.stdout, result.stderr, result.returncode
         except subprocess.TimeoutExpired:

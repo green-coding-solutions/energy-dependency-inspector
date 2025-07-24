@@ -24,9 +24,7 @@ class PipDetector(PackageManagerDetector):
         Uses 'pip list --format=freeze' to get installed packages.
         Since PyPI doesn't reuse filenames for same versions, version numbers are sufficient as unique identifiers.
         """
-        stdout, _, exit_code = executor.execute_command(
-            "pip list --format=freeze", working_dir
-        )
+        stdout, _, exit_code = executor.execute_command("pip list --format=freeze", working_dir)
 
         if exit_code != 0:
             return {"location": self._get_pip_location(executor, working_dir), "dependencies": {}}

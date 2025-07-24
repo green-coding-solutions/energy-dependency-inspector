@@ -12,3 +12,6 @@ mypy>=1.0.0
 
 # Code formatting (optional but helpful)
 black>=22.0.0
+
+# Pre-commit hooks
+pre-commit>=3.0.0

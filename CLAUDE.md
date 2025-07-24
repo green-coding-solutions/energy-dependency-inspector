@@ -24,7 +24,7 @@
   - use `'` for fixed constant strings
   - use `"` for modifiable and format strings
   - break this rule if needed to avoid escaping
-  
+
 ## Workflow
 
 - commit often
