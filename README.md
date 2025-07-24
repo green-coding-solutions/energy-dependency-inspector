@@ -13,6 +13,10 @@ The output is a structured JSON that includes information about all the installe
 git clone https://github.com/green-coding-solutions/dependency-resolver
 cd dependency-resolver
 
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
 # Install development dependencies
 pip install -r requirements-dev.txt
 
@@ -23,6 +27,10 @@ pip install -e ".[dev]"
 ### Production Installation
 
 ```bash
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
 # Basic installation (host environment only)
 pip install -e .
 
@@ -96,6 +104,9 @@ The tool outputs JSON with the following structure:
 ### Running Tests
 
 ```bash
+# Activate virtual environment first
+source venv/bin/activate
+
 # Run all tests
 pytest
 
@@ -109,6 +120,9 @@ pytest tests/test_pip_detector.py
 ### Code Quality
 
 ```bash
+# Activate virtual environment first
+source venv/bin/activate
+
 # Run pylint (as specified in project guidelines)
 pylint core/ detectors/ utils/ dependency_resolver.py
 
