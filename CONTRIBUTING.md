@@ -35,6 +35,9 @@ source venv/bin/activate
 # Install pre-commit hooks (this is done automatically if you installed dev dependencies)
 pre-commit install
 
+# Test the hooks on the changed files (optional)
+pre-commit run --files $(git diff --name-only --diff-filter=ACMR)
+
 # Test the hooks on all files (optional)
 pre-commit run --all-files
 ```

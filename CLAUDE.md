@@ -2,8 +2,8 @@
 
 ## Bash Commands
 
-- `python3 dependency_resolver.py` to start the tool (it analyzes the host system by default)
-- `source venv/bin/activate && pre-commit run --all-files` to check for linting errors
+- `python3 dependency_resolver.py --debug` to start the tool in debug mode (analyzes the host system, prints out debug statements and an excerpt of the resulting JSON)
+- `source venv/bin/activate && pre-commit run --files $(git diff --name-only --diff-filter=ACMR)` to check for linting errors
 
 ## Tech Stack
 
