@@ -1,5 +1,10 @@
 # Dependency Resolver Development Guide
 
+## Bash Commands
+
+- `python3 dependency_resolver.py` to start the tool (it analyzes the host system by default)
+- `source venv/bin/activate && pre-commit run --all-files` to check for linting errors
+
 ## Tech Stack
 
 - Python
@@ -20,18 +25,13 @@
 ## Code style
 
 - adhere to the standard PEP8 python conventions
-- rules for quotes:
-  - use `'` for fixed constant strings
-  - use `"` for modifiable and format strings
-  - break this rule if needed to avoid escaping
 
 ## Workflow
 
 - commit often
-- use pylint to check for clean code before commit code
 - prefer running single tests, not the whole test suite, for performance
 
 ## Instructions for Claude
 
 - see the file [SPECIFICATION](./SPECIFICATION.md) for important project requirements, design approaches and implementation constraints
-- use the file [TASKS](./TASKS.md) to track your done work and the progress of ongoing tasks
+- don't forget to update [README.md](./README.md) after new features were added
