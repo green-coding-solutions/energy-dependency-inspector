@@ -150,29 +150,31 @@ Schema with example values (incomplete):
         "version": "3.0-13ubuntu0.2 amd64",
         "hash": "das7892234890sad890fa0s98903284092"
        },
+       "curl": {
+        "version": "7.81.0-1ubuntu1.18 amd64"
+       },
        // ...
     }
   },
   "pip": {
       "location": "/home/user/venv",
+      "hash": "a1b2c3d4e5f6789012345678901234ab",
       "dependencies": {
       "numpy": {
-          "version": "1.3.3",
-          "hash": "d7d87d66d767s5d67as8789a7s89d7as98d"
+          "version": "1.3.3"
       }
     },
     // ...
   },
   "npm": {
     "location": "/app/frontend",
+    "hash": "b2c3d4e5f67890123456789012345bcd",
     "dependencies": {
       "react": {
-        "version": "18.2.0",
-        "hash": "e7a2e5c8f4b0a1c9d3e2f1b8a7c6d9e2"
+        "version": "18.2.0"
       },
       "lodash": {
-        "version": "4.17.21",
-        "hash": "f1c8b9a2d4e7c5b3e9f2a1b8c7d6e4f3"
+        "version": "4.17.21"
       }
     },
     // ...
@@ -192,10 +194,33 @@ Schema with example values (incomplete):
 
 ### Hash Handling Strategy
 
-- The goal is to get unique identifiers for each package
-- Check first if hashes can be retrieved locally from the package manager
-- If that's not possible and the package manager reuses filenames for same versions a fallback mechanism is required: directory-based hashing
-  - example Python: PyPI doesn't reuse filenames for same versions -> version numbers are sufficient
+The dependency resolver implements a multi-tiered hash generation strategy:
+
+#### Individual Package Hashes
+
+- **Only include hashes if they can be retrieved directly from the package manager**
+- **Do not generate synthetic hashes for individual packages**
+
+**Package Manager Specific Approaches:**
+
+- **APT/dpkg**: Extract MD5 hashes from `/var/lib/dpkg/info/{package_name}.md5sums` files when available
+  - Combines all file MD5 hashes from the package into a single SHA256 hash
+  - Only includes hash field if the md5sums file exists and is readable
+- **pip**: No individual package hashes (PyPI doesn't provide them locally)
+- **npm**: No individual package hashes implemented yet
+
+#### Package Manager Location Hashes
+
+- **Generate one hash per package manager based on the installation location**
+- **Skip location hash for "global" locations** (system-wide installations)
+- **For actual directory paths**: Generate hash from directory contents
+  - pip: Hash based on `find {location} -type f -name '*.py' -o -name '*.dist-info' | sort`
+  - Fallback to location string hash if directory listing fails
+
+#### Hash Format
+
+- All hashes are SHA256 truncated to 32 characters
+- Used for creating unique identifiers and detecting changes
 
 ### Logging Strategy
 

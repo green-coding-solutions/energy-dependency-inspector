@@ -27,7 +27,11 @@ class PipDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 
         if exit_code != 0:
-            return {"location": self._get_pip_location(executor, working_dir), "dependencies": {}}
+            location = self._get_pip_location(executor, working_dir)
+            result = {"location": location, "dependencies": {}}
+            if location != "global":
+                result["hash"] = self._generate_location_hash(executor, location)
+            return result
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -38,13 +42,13 @@ class PipDetector(PackageManagerDetector):
 
                 dependencies[package_name] = {
                     "version": version,
-                    "hash": self._generate_hash(package_name, version),
                 }
 
-        return {
-            "location": self._get_pip_location(executor, working_dir),
-            "dependencies": dependencies,
-        }
+        location = self._get_pip_location(executor, working_dir)
+        result = {"location": location, "dependencies": dependencies}
+        if location != "global":
+            result["hash"] = self._generate_location_hash(executor, location)
+        return result
 
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
         """Get the location of the pip environment."""
@@ -92,10 +96,20 @@ class PipDetector(PackageManagerDetector):
 
         return None
 
-    def _generate_hash(self, package_name: str, version: str) -> str:
-        """Generate a hash for the package based on name and version.
+    def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
+        """Generate a hash based on the contents of the location directory."""
+        try:
+            # Get directory listing
+            stdout, _, exit_code = executor.execute_command(
+                f"find '{location}' -type f -name '*.py' -o -name '*.dist-info' | sort"
+            )
+            if exit_code == 0 and stdout.strip():
+                # Hash the sorted list of files
+                content = stdout.strip()
+                return hashlib.sha256(content.encode()).hexdigest()[:32]
+        except (OSError, IOError):
+            pass
 
-        Since PyPI doesn't reuse filenames for same versions, this provides a unique identifier.
-        """
-        content = f"{package_name}=={version}"
+        # Fallback to location-based hash if directory listing fails
+        content = f"pip:{location}"
         return hashlib.sha256(content.encode()).hexdigest()[:32]

@@ -38,14 +38,44 @@ class AptDetector(PackageManagerDetector):
 
                     full_version = f"{version} {architecture}" if architecture else version
 
-                    dependencies[package_name] = {
+                    package_data = {
                         "version": full_version,
-                        "hash": self._generate_hash(package_name, full_version),
                     }
+
+                    # Try to get package hash from dpkg md5sums
+                    package_hash = self._get_package_hash(executor, package_name)
+                    if package_hash:
+                        package_data["hash"] = package_hash
+
+                    dependencies[package_name] = package_data
 
         return {"location": "global", "dependencies": dependencies}
 
-    def _generate_hash(self, package_name: str, version: str) -> str:
-        """Generate a hash for the package based on name and version."""
-        content = f"{package_name}:{version}"
-        return hashlib.sha256(content.encode()).hexdigest()[:32]
+    def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str) -> str:
+        """Get package hash from dpkg md5sums file if available."""
+        md5sums_file = f"/var/lib/dpkg/info/{package_name}.md5sums"
+
+        # Check if the md5sums file exists
+        if not executor.file_exists(md5sums_file):
+            return None
+
+        try:
+            # Read the md5sums file and create a hash of all the md5 hashes
+            stdout, _, exit_code = executor.execute_command(f"cat '{md5sums_file}'")
+            if exit_code == 0 and stdout.strip():
+                # Extract just the MD5 hashes (first column) and sort them for consistency
+                md5_hashes = []
+                for line in stdout.strip().split("\n"):
+                    if line and " " in line:
+                        md5_hash = line.split(" ")[0].strip()
+                        if md5_hash:
+                            md5_hashes.append(md5_hash)
+
+                if md5_hashes:
+                    # Create a hash of all the individual file hashes
+                    content = "\n".join(sorted(md5_hashes))
+                    return hashlib.sha256(content.encode()).hexdigest()[:32]
+        except (OSError, IOError):
+            pass
+
+        return None
