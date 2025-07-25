@@ -77,7 +77,55 @@ class DependencyResolver:
         """
         dependencies = self.resolve_dependencies(executor, working_dir)
 
-        if pretty_print:
-            return json.dumps(dependencies, indent=2, sort_keys=True)
+        if self.debug:
+            # Show only an excerpt when debug mode is enabled
+            excerpt = self._create_excerpt(dependencies)
+            if pretty_print:
+                return json.dumps(excerpt, indent=2, sort_keys=True)
+            else:
+                return json.dumps(excerpt, sort_keys=True)
         else:
-            return json.dumps(dependencies, sort_keys=True)
+            if pretty_print:
+                return json.dumps(dependencies, indent=2, sort_keys=True)
+            else:
+                return json.dumps(dependencies, sort_keys=True)
+
+    def _create_excerpt(self, dependencies: Dict[str, Any], max_deps_per_manager: int = 3) -> Dict[str, Any]:
+        """Create an excerpt of dependencies showing only a few items per package manager.
+
+        Args:
+            dependencies: Full dependencies dictionary
+            max_deps_per_manager: Maximum number of dependencies to show per package manager
+
+        Returns:
+            Excerpt dictionary with limited dependencies
+        """
+        excerpt: Dict[str, Any] = {}
+
+        for manager_name, manager_data in dependencies.items():
+            excerpt[manager_name] = {}
+
+            # Copy non-dependencies fields as-is
+            for key, value in manager_data.items():
+                if key != "dependencies":
+                    excerpt[manager_name][key] = value
+
+            # Create excerpt of dependencies
+            if "dependencies" in manager_data:
+                deps = manager_data["dependencies"]
+                total_deps = len(deps)
+
+                if total_deps <= max_deps_per_manager:
+                    # Show all if we have few dependencies
+                    excerpt[manager_name]["dependencies"] = deps
+                else:
+                    # Show first few dependencies and add summary
+                    limited_deps = dict(list(deps.items())[:max_deps_per_manager])
+                    excerpt[manager_name]["dependencies"] = limited_deps
+                    excerpt[manager_name]["_excerpt_info"] = {
+                        "total_dependencies": total_deps,
+                        "shown": max_deps_per_manager,
+                        "note": f"Showing {max_deps_per_manager} of {total_deps} dependencies (debug mode excerpt)",
+                    }
+
+        return excerpt
