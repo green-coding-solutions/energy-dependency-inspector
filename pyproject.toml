@@ -25,23 +25,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = []
+dynamic = ["dependencies", "optional-dependencies"]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pylint>=2.15.0",
-    "mypy>=1.0.0",
-    "black>=22.0.0",
-    "pre-commit>=3.0.0",
-]
-docker = [
-    "docker>=6.0.0",
-]
-podman = [
-    "podman-py>=4.0.0",
-]
 
 [project.scripts]
 dependency-resolver = "dependency_resolver:main"
@@ -53,17 +38,22 @@ Repository = "https://github.com/green-coding-solutions/dependency-resolver"
 where = ["."]
 include = ["core*", "detectors*", "utils*"]
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies.dev = {file = ["requirements-dev.txt"]}
+optional-dependencies.docker = {file = ["requirements-docker.txt"]}
+optional-dependencies.podman = {file = ["requirements-podman.txt"]}
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-[tool.pylint.messages_control]
-disable = ["missing-docstring", "too-few-public-methods"]
+# Pylint configuration is in .pylintrc
 
 [tool.black]
-line-length = 100
+line-length = 120
 target-version = ['py38']
 
 [tool.mypy]

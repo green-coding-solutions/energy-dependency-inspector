@@ -16,9 +16,7 @@ class PipDetector(PackageManagerDetector):
         _, _, exit_code = executor.execute_command("pip --version")
         return exit_code == 0
 
-    def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: str = None
-    ) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract pip dependencies with versions.
 
         Uses 'pip list --format=freeze' to get installed packages.

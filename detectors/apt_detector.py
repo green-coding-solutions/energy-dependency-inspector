@@ -16,9 +16,7 @@ class AptDetector(PackageManagerDetector):
         _, _, exit_code = executor.execute_command("dpkg-query --version")
         return exit_code == 0
 
-    def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: str = None
-    ) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
 
         Uses 'dpkg-query -W -f' to get installed packages with their versions and architecture.

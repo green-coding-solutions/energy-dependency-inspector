@@ -42,9 +42,7 @@ Examples:
         help="Environment identifier (container ID/name for docker)",
     )
 
-    parser.add_argument(
-        "--working-dir", type=str, help="Working directory to use in the target environment"
-    )
+    parser.add_argument("--working-dir", type=str, help="Working directory to use in the target environment")
 
     parser.add_argument("--debug", action="store_true", help="Print debug statements")
 

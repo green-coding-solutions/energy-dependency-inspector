@@ -21,9 +21,7 @@ class DependencyResolver:
             PipDetector(),  # Language-specific packages
         ]
 
-    def resolve_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: str = None
-    ) -> Dict[str, Any]:
+    def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Resolve all dependencies from available package managers.
 
         Args:

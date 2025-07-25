@@ -47,9 +47,7 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: str = None
-    ) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract dependencies with versions and hashes.
 
         Args:
