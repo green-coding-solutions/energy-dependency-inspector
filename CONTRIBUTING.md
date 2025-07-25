@@ -46,7 +46,7 @@ Our pre-commit configuration includes:
 - **Black** - Code formatting with 100 character line length
 - **Pylint** - Code quality checks and linting
 - **MyPy** - Type checking
-- **General hooks** - Trailing whitespace removal, end-of-file fixes, YAML validation, etc.
+- **General hooks** - Trailing whitespace removal, end-of-file fixes, etc.
 
 The hooks will automatically run when you commit changes. If any hook fails, the commit will be blocked until you fix the issues.
 
