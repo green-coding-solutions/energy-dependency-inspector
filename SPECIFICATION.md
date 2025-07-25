@@ -88,6 +88,9 @@ Examples:
 
 3. **Package Manager Detectors**
    - `PipDetector`: Python packages via `pip list --format=freeze`
+     - Automatically detects and uses virtual environments by searching for `pyvenv.cfg` files
+     - Searches common venv directory names: `venv`, `.venv`, `env`, `.env`, `virtualenv`
+     - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
    - `AptDetector`: System packages via `dpkg-query`
    - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)

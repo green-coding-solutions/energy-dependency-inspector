@@ -31,6 +31,10 @@
 - commit often
 - prefer running single tests, not the whole test suite, for performance
 
+## Compatibility
+
+- support is only needed for Unix-based systems
+
 ## Instructions for Claude
 
 - see the file [SPECIFICATION](./SPECIFICATION.md) for important project requirements, design approaches and implementation constraints

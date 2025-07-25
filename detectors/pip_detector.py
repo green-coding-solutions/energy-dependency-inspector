@@ -1,4 +1,5 @@
 import hashlib
+import os
 from typing import Dict, Any
 
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
@@ -22,7 +23,8 @@ class PipDetector(PackageManagerDetector):
         Uses 'pip list --format=freeze' to get installed packages.
         Since PyPI doesn't reuse filenames for same versions, version numbers are sufficient as unique identifiers.
         """
-        stdout, _, exit_code = executor.execute_command("pip list --format=freeze", working_dir)
+        pip_command = self._get_pip_command(executor, working_dir)
+        stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 
         if exit_code != 0:
             return {"location": self._get_pip_location(executor, working_dir), "dependencies": {}}
@@ -46,7 +48,8 @@ class PipDetector(PackageManagerDetector):
 
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
         """Get the location of the pip environment."""
-        stdout, _, exit_code = executor.execute_command("pip show pip", working_dir)
+        pip_command = self._get_pip_command(executor, working_dir)
+        stdout, _, exit_code = executor.execute_command(f"{pip_command} show pip", working_dir)
 
         if exit_code == 0:
             for line in stdout.split("\n"):
@@ -54,6 +57,40 @@ class PipDetector(PackageManagerDetector):
                     return line.split(":", 1)[1].strip()
 
         return "global"
+
+    def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+        """Get the appropriate pip command, activating venv if available."""
+        venv_path = self._find_venv_path(executor, working_dir)
+        if venv_path:
+            # Use the venv's pip directly
+            venv_pip = os.path.join(venv_path, "bin", "pip")
+            if executor.file_exists(venv_pip):
+                return venv_pip
+        return "pip"
+
+    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+        """Find virtual environment by searching for pyvenv.cfg files.
+
+        Returns the path to the virtual environment directory, or None if not found.
+        """
+        search_dir = working_dir or "."
+
+        # First check if current directory has pyvenv.cfg (we might be inside a venv)
+        pyvenv_cfg = os.path.join(search_dir, "pyvenv.cfg")
+        if executor.file_exists(pyvenv_cfg):
+            return search_dir
+
+        # Search subdirectories for pyvenv.cfg
+        # Common venv directory names to check first
+        common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
+
+        for venv_name in common_venv_names:
+            venv_dir = os.path.join(search_dir, venv_name)
+            pyvenv_cfg = os.path.join(venv_dir, "pyvenv.cfg")
+            if executor.file_exists(pyvenv_cfg):
+                return venv_dir
+
+        return None
 
     def _generate_hash(self, package_name: str, version: str) -> str:
         """Generate a hash for the package based on name and version.
