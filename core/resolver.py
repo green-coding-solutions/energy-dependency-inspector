@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from detectors.pip_detector import PipDetector
 from detectors.apt_detector import AptDetector
+from detectors.apk_detector import ApkDetector
 
 
 class DependencyResolver:
@@ -17,7 +18,8 @@ class DependencyResolver:
         """
         self.debug = debug
         self.detectors: List[PackageManagerDetector] = [
-            AptDetector(),  # System packages first (priority order)
+            AptDetector(),  # Debian/Ubuntu system packages first (priority order)
+            ApkDetector(),  # Alpine Linux system packages
             PipDetector(),  # Language-specific packages
         ]
 

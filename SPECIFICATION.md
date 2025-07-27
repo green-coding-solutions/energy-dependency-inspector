@@ -17,7 +17,7 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 ### Target Package Managers (Initial Set)
 
 - Programming Languages with their common package managers: Python, JavaScript
-- Operating Systems with their common package managers: Ubuntu/Debian
+- Operating Systems with their common package managers: Ubuntu/Debian, Alpine Linux
 - Container images: Docker and Podman (with hash + tags methodology)
 
 ### Environment Support
@@ -92,7 +92,10 @@ Examples:
      - Searches common venv directory names: `venv`, `.venv`, `env`, `.env`, `virtualenv`
      - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
-   - `AptDetector`: System packages via `dpkg-query`
+   - `AptDetector`: Debian/Ubuntu system packages via `dpkg-query`
+     - Only executes on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
+   - `ApkDetector`: Alpine Linux system packages via `apk info`
+     - Only executes on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
    - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)
 
 4. **Main Orchestrator**
@@ -114,6 +117,7 @@ dependency_resolver/
 │   ├── pip_detector.py
 │   ├── npm_detector.py
 │   ├── apt_detector.py
+│   ├── apk_detector.py
 │   └── docker_compose_detector.py
 └── utils/
     ├── hash_utils.py         # Hash generation utilities
@@ -206,6 +210,7 @@ The dependency resolver implements a multi-tiered hash generation strategy:
 - **APT/dpkg**: Extract MD5 hashes from `/var/lib/dpkg/info/{package_name}.md5sums` files when available
   - Combines all file MD5 hashes from the package into a single SHA256 hash
   - Only includes hash field if the md5sums file exists and is readable
+- **APK**: No individual package hashes (APK doesn't provide them directly)
 - **pip**: No individual package hashes (PyPI doesn't provide them locally)
 - **npm**: No individual package hashes implemented yet
 
@@ -235,7 +240,7 @@ The dependency resolver implements a multi-tiered hash generation strategy:
 
 - Support for Podman, Docker Compose, Podman Compose
 - Extend the set of supported package managers with the common ones for Go, PHP and Java
-- Support more operating systems: RedHat Linux, openSUSE
+- Support more operating systems: RedHat Linux (yum/dnf), openSUSE (zypper)
 - Add extraction of some relevant environment variables
 - Handle containers without shells or removed package managers
   - Parse available log files (e.g. /var/lib/dpkg/status)

@@ -5,16 +5,27 @@ from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
 class AptDetector(PackageManagerDetector):
-    """Detector for system packages managed by apt/dpkg."""
+    """Detector for system packages managed by apt/dpkg (Debian/Ubuntu)."""
 
     def get_name(self) -> str:
         """Return the package manager identifier."""
-        return "system"
+        return "apt"
 
     def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if dpkg-query is available in the environment."""
-        _, _, exit_code = executor.execute_command("dpkg-query --version")
-        return exit_code == 0
+        """Check if dpkg-query is available and running on Debian/Ubuntu."""
+        # First check if dpkg-query command exists
+        _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
+        if dpkg_exit_code != 0:
+            return False
+
+        # Check if running on Debian/Ubuntu by checking /etc/os-release
+        stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
+        if exit_code == 0:
+            os_info = stdout.lower()
+            return "debian" in os_info or "ubuntu" in os_info
+
+        # Fallback: check if /etc/debian_version exists
+        return executor.file_exists("/etc/debian_version")
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
