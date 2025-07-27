@@ -1,1 +1,1 @@
-podman-py>=4.0.0
+podman>=5.0.0

@@ -1,5 +1,0 @@
-# Production dependencies
-docker>=6.0.0
-
-# Future dependencies (when Podman support is added):
-# podman-py>=4.0.0

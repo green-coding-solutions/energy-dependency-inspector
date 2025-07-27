@@ -13,6 +13,12 @@ source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# For Docker support (optional)
+pip install -e ".[docker]"
+
+# For Podman support (optional, not implemented yet)
+pip install -e ".[podman]"
 ```
 
 ## Usage
