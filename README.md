@@ -48,8 +48,9 @@ python3 dependency_resolver.py --working-dir /path/to/project
 
 Currently supported:
 
+- **apt/dpkg** - System packages Ubuntu/Debian
+- **apk** - System packages of Alpine
 - **pip** - Python packages
-- **apt/dpkg** - System packages (Ubuntu/Debian)
 
 Future support planned:
 
@@ -62,7 +63,7 @@ The tool outputs JSON with the following structure:
 
 ```json
 {
-  "system": {
+  "apt": {
     "location": "global",
     "dependencies": {
       "package-name": {

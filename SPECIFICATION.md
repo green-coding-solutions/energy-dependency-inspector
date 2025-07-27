@@ -117,15 +117,12 @@ dependency_resolver/
 │   ├── interfaces.py         # Abstract base classes
 │   ├── executor.py           # Environment executors
 │   └── resolver.py           # Main orchestrator
-├── detectors/
-│   ├── pip_detector.py
-│   ├── npm_detector.py
-│   ├── apt_detector.py
-│   ├── apk_detector.py
-│   └── docker_compose_detector.py
-└── utils/
-    ├── hash_utils.py         # Hash generation utilities
-    └── command_utils.py      # Command execution helpers
+└── detectors/
+    ├── pip_detector.py
+    ├── npm_detector.py
+    ├── apt_detector.py
+    ├── apk_detector.py
+    └── docker_compose_detector.py
 ```
 
 #### Detection Strategy
@@ -248,16 +245,4 @@ The dependency resolver implements a multi-tiered hash generation strategy:
 
 ## Future plans
 
-- Support for Podman, Docker Compose, Podman Compose
-- Extend the set of supported package managers with the common ones for Go, PHP and Java
-- Support more operating systems: RedHat Linux (yum/dnf), openSUSE (zypper)
-- Add extraction of some relevant environment variables
-- Handle containers without shells or removed package managers
-  - Parse available log files (e.g. /var/lib/dpkg/status)
-- Add configuration file
-  - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)
-  - Configure which package management systems should be checked
-  - Configurable paths for package managers (like a path for venv resolution)
-  - Override default commands (e.g., change from `pip list --format=freeze`)
-  - Make it configurable, if the JSON output is pretty-printed or not (at the start pretty-print is default)
-  - Add different log levels
+See [TODOS.md](TODOS.md).

@@ -36,7 +36,7 @@ Repository = "https://github.com/green-coding-solutions/dependency-resolver"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core*", "detectors*", "utils*"]
+include = ["core*", "detectors*"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
