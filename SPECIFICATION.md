@@ -74,6 +74,7 @@ Examples:
 
 1. **Abstract Base Classes**
    - `PackageManagerDetector`: Interface for all package manager implementations
+     - `meets_requirements(executor)`: Check if pre-requirements are met (OS compatibility, etc.)
      - `is_available(executor)`: Check if package manager exists in environment
      - `get_dependencies(executor, working_dir)`: Extract dependencies with versions/hashes
      - `get_name()`: Return package manager identifier
@@ -88,14 +89,17 @@ Examples:
 
 3. **Package Manager Detectors**
    - `PipDetector`: Python packages via `pip list --format=freeze`
+     - No OS requirements (works on any system with Python)
      - Automatically detects and uses virtual environments by searching for `pyvenv.cfg` files
      - Searches common venv directory names: `venv`, `.venv`, `env`, `.env`, `virtualenv`
      - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
    - `AptDetector`: Debian/Ubuntu system packages via `dpkg-query`
-     - Only executes on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
+     - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
+     - **Availability check**: Verifies that `dpkg-query` command exists
    - `ApkDetector`: Alpine Linux system packages via `apk info`
-     - Only executes on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
+     - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
+     - **Availability check**: Verifies that `apk` command exists
    - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)
 
 4. **Main Orchestrator**
@@ -126,10 +130,16 @@ dependency_resolver/
 
 #### Detection Strategy
 
-- **Auto-Discovery**: Each detector checks availability before execution
+- **Pre-Requirements Check**: Each detector first checks if its requirements are met (OS compatibility, etc.)
+- **Auto-Discovery**: Available detectors check if their package manager exists in the environment
 - **Error Isolation**: Failed detectors don't affect others (catch all exceptions)
 - **Priority Order**: System packages → Language-specific → Container orchestration
 - **Working Directory**: All detectors respect `--working-dir` parameter
+
+The detection process follows this sequence:
+1. Check pre-requirements via `meets_requirements(executor)`
+2. If requirements are met, check availability via `is_available(executor)`
+3. If available, extract dependencies via `get_dependencies(executor, working_dir)`
 
 ### JSON Output Schema
 

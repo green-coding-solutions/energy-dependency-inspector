@@ -10,13 +10,8 @@ class ApkDetector(PackageManagerDetector):
         """Return the package manager identifier."""
         return "apk"
 
-    def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if apk is available and running on Alpine Linux."""
-        # First check if apk command exists
-        _, _, apk_exit_code = executor.execute_command("apk --version")
-        if apk_exit_code != 0:
-            return False
-
+    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
+        """Check if running on Alpine Linux."""
         # Check if running on Alpine Linux by checking /etc/os-release
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
@@ -24,6 +19,11 @@ class ApkDetector(PackageManagerDetector):
 
         # Fallback: check if /etc/alpine-release exists
         return executor.file_exists("/etc/alpine-release")
+
+    def is_available(self, executor: EnvironmentExecutor) -> bool:
+        """Check if apk is available."""
+        _, _, apk_exit_code = executor.execute_command("apk --version")
+        return apk_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract system packages with versions using apk info.

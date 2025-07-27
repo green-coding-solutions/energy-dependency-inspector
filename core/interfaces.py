@@ -34,6 +34,20 @@ class EnvironmentExecutor(ABC):
 class PackageManagerDetector(ABC):
     """Abstract base class for package manager detection and dependency extraction."""
 
+    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:  # pylint: disable=unused-argument
+        """Check if pre-requirements are met for this detector.
+
+        This method should be overridden by detectors that have specific
+        OS or environment requirements. Default implementation returns True.
+
+        Args:
+            executor: Environment executor to use for checking
+
+        Returns:
+            True if pre-requirements are met, False otherwise
+        """
+        return True
+
     @abstractmethod
     def is_available(self, executor: EnvironmentExecutor) -> bool:
         """Check if this package manager is available in the environment.

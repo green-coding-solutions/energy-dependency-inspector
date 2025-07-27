@@ -39,9 +39,18 @@ class DependencyResolver:
             detector_name = detector.get_name()
 
             if self.debug:
-                print(f"Checking availability of {detector_name}...")
+                print(f"Checking requirements for {detector_name}...")
 
             try:
+                # First check pre-requirements
+                if not detector.meets_requirements(executor):
+                    if self.debug:
+                        print(f"{detector_name} requirements not met")
+                    continue
+
+                if self.debug:
+                    print(f"Checking availability of {detector_name}...")
+
                 if detector.is_available(executor):
                     if self.debug:
                         print(f"{detector_name} is available, extracting dependencies...")

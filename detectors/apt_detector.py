@@ -11,13 +11,8 @@ class AptDetector(PackageManagerDetector):
         """Return the package manager identifier."""
         return "apt"
 
-    def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if dpkg-query is available and running on Debian/Ubuntu."""
-        # First check if dpkg-query command exists
-        _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
-        if dpkg_exit_code != 0:
-            return False
-
+    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
+        """Check if running on Debian/Ubuntu."""
         # Check if running on Debian/Ubuntu by checking /etc/os-release
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
@@ -26,6 +21,11 @@ class AptDetector(PackageManagerDetector):
 
         # Fallback: check if /etc/debian_version exists
         return executor.file_exists("/etc/debian_version")
+
+    def is_available(self, executor: EnvironmentExecutor) -> bool:
+        """Check if dpkg-query is available."""
+        _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
+        return dpkg_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
