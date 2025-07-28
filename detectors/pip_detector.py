@@ -98,18 +98,27 @@ class PipDetector(PackageManagerDetector):
 
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
         """Generate a hash based on the contents of the location directory."""
-        try:
-            # Get directory listing
-            stdout, _, exit_code = executor.execute_command(
-                f"find '{location}' -type f -name '*.py' -o -name '*.dist-info' | sort"
-            )
-            if exit_code == 0 and stdout.strip():
-                # Hash the sorted list of files
-                content = stdout.strip()
-                return hashlib.sha256(content.encode()).hexdigest()[:32]
-        except (OSError, IOError):
-            pass
-
-        # Fallback to location-based hash if directory listing fails
-        content = f"pip:{location}"
-        return hashlib.sha256(content.encode()).hexdigest()[:32]
+        # Get directory listing with relative paths + file sizes
+        stdout, _, exit_code = executor.execute_command(
+            f"cd '{location}' && find . "
+            "-name '__pycache__' -prune -o "
+            "-name 'pip*' -prune -o "
+            "-name 'setuptools*' -prune -o "
+            "-name 'pkg_resources' -prune -o "
+            "-name '*distutils*' -prune -o "
+            "-name '*.egg-info' -prune -o "  # "-path '*/pip/_vendor' -prune -o " \
+            "-not -name '*.pyc' "
+            "-not -name '*.pyo' "
+            "-not -name 'INSTALLER' "
+            "-not -name 'RECORD' "
+            "-type f -exec stat -c '%n %s' {} \\; | sort"
+        )
+        if exit_code == 0 and stdout.strip():
+            # Hash the sorted list of files
+            content = stdout.strip()
+            return hashlib.sha256(content.encode()).hexdigest()[:32]
+        else:
+            print(f"ERROR: pip_detector hash generation command failed with exit code {exit_code}")
+            print(f"ERROR: command stdout: {stdout}")
+            print(f"ERROR: location: {location}")
+            return ""

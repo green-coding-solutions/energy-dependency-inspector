@@ -18,11 +18,10 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
-        language: python
+        entry: bash -c 'PYTHONPATH=$PWD pylint "$@"' --
+        language: system
         types: [python]
         require_serial: false
-        additional_dependencies: [pylint>=2.15.0]
         args: [--rcfile=.pylintrc]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
