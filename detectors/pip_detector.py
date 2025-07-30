@@ -111,7 +111,7 @@ class PipDetector(PackageManagerDetector):
             "-not -name '*.pyo' "
             "-not -name 'INSTALLER' "
             "-not -name 'RECORD' "
-            "-type f -exec stat -c '%n %s' {} \\; | sort"
+            "-type f -exec ls -l {} \\; | awk '{print $9, $5}' | sort"
         )
         if exit_code == 0 and stdout.strip():
             # Hash the sorted list of files
