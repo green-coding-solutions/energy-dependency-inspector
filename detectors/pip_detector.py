@@ -102,11 +102,12 @@ class PipDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "
+            "-name '__editable__*' -prune -o "
             "-name 'pip*' -prune -o "
             "-name 'setuptools*' -prune -o "
             "-name 'pkg_resources' -prune -o "
             "-name '*distutils*' -prune -o "
-            "-name '*.egg-info' -prune -o "  # "-path '*/pip/_vendor' -prune -o " \
+            "-path '*/pip/_vendor' -prune -o "
             "-not -name '*.pyc' "
             "-not -name '*.pyo' "
             "-not -name 'INSTALLER' "
