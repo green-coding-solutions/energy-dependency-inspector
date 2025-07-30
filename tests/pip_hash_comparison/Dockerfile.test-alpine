@@ -1,0 +1,18 @@
+FROM alpine:3.15
+
+# Install Python 3 and basic tools for consistent cross-environment testing
+# Alpine 3.15 comes with Python 3.9
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    python3-dev \
+    findutils \
+    build-base \
+    && python3 -m ensurepip --upgrade
+
+# Create test environment
+RUN mkdir -p /app
+WORKDIR /app
+
+# Keep container running for tests
+CMD ["sleep", "300"]

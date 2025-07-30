@@ -9,14 +9,15 @@ The test ensures that the hash function produces **identical results** when the 
 ## Test Approach
 
 1. **Real pip installations**: Uses actual `pip install` commands with specific package versions
-2. **Cross-environment comparison**: Compares hash results between Ubuntu 20.04, 22.04, and 24.04
+2. **Cross-environment comparison**: Compares hash results between Ubuntu 20.04, 24.04, and Alpine
 3. **Docker-based testing**: Creates isolated environments for reliable testing
 
 ## Files
 
 - `test_cross_environment_hash.py` - Main test suite
 - `run_cross_env_tests.sh` - Automated test runner
-- `Dockerfile.test-ubuntu{20,22,24}` - Docker environments for testing
+- `Dockerfile.test-ubuntu{20,24}` - Docker environments for Ubuntu testing
+- `Dockerfile.test-alpine` - Alpine Docker environment for testing
 
 ## Running Tests
 
@@ -42,7 +43,7 @@ The test uses lightweight packages for fast execution:
 
 ## Expected Result
 
-✅ **Test passes**: Same packages produce identical hashes across Ubuntu 20.04, 22.04, and 24.04
+✅ **Test passes**: Same packages produce identical hashes across Ubuntu 20.04, 24.04, and Alpine
 ❌ **Test fails**: Hash function behavior differs between environments
 
 ## Prerequisites

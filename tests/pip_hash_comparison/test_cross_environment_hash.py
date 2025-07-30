@@ -75,8 +75,8 @@ class TestCrossEnvironmentHash:
         if docker is not None:
             images = [
                 "pip-hash-cross-env-test-ubuntu20",
-                "pip-hash-cross-env-test-ubuntu22",
                 "pip-hash-cross-env-test-ubuntu24",
+                "pip-hash-cross-env-test-alpine",
             ]
 
             for image in images:
