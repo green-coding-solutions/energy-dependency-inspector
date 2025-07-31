@@ -39,4 +39,5 @@
 ## Instructions for Claude
 
 - see the file [SPECIFICATION](./SPECIFICATION.md) for important project requirements, design approaches and implementation constraints
+- in the folder [./docs/adr/](./docs/adr/) you can find architecture decision records. Add a new record if there is a new significant architecture decision.
 - don't forget to update [README.md](./README.md) after new features were added

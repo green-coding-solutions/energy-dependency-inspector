@@ -90,6 +90,18 @@ The tool outputs JSON with the following structure:
 }
 ```
 
+## Documentation
+
+### Architecture Decision Records (ADRs)
+
+For detailed information about architectural decisions and design rationale, see the [Architecture Decision Records](./docs/adr/) directory. Key decisions include:
+
+- [ADR-0001: Runtime Snapshot Approach](./docs/adr/0001-runtime-snapshot-approach.md) - Why we analyze running environments instead of source files
+- [ADR-0002: Modular Detector Architecture](./docs/adr/0002-modular-detector-architecture.md) - The extensible architecture for package manager detection
+- [ADR-0005: Hash Generation Strategy](./docs/adr/0005-hash-generation-strategy.md) - Multi-tiered hash generation approach
+
+See the complete [SPECIFICATION.md](./SPECIFICATION.md) for detailed requirements and implementation constraints.
+
 ## Contributing
 
 For development setup, contribution guidelines, and information about running tests and code quality checks, please see [CONTRIBUTING.md](./CONTRIBUTING.md).

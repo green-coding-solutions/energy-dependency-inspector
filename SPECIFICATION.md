@@ -28,13 +28,11 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 
 ## Design Approach
 
-### Architecture Decision
+### Architecture Decisions
 
-Runtime Snapshot vs. Source File Parsing: The team decided on a runtime snapshot approach where the resolver analyzes running environments rather than parsing source files. This captures:
+**Runtime Snapshot vs. Source File Parsing**: See [ADR-0001](docs/adr/0001-runtime-snapshot-approach.md) for the decision to analyze running environments rather than parsing source files.
 
-- Actually installed packages (not just declared ones)
-- Runtime-loaded dependencies
-- System-specific variations (ARM vs x64, firewall restrictions, etc.)
+**Modular Architecture**: See [ADR-0002](docs/adr/0002-modular-detector-architecture.md) for the modular detector architecture with abstract base classes and auto-discovery.
 
 ### Command Interface
 
@@ -88,16 +86,15 @@ Examples:
    - `PodmanExecutor`: Execute commands inside Podman containers using podman-py
 
 3. **Package Manager Detectors**
-   - `PipDetector`: Python packages via `pip list --format=freeze`
+   - `PipDetector`: Python packages via `pip list --format=freeze` (see [ADR-0006](docs/adr/0006-pip-list-for-python-packages.md))
      - No OS requirements (works on any system with Python)
-     - Automatically detects and uses virtual environments by searching for `pyvenv.cfg` files
-     - Searches common venv directory names: `venv`, `.venv`, `env`, `.env`, `virtualenv`
+     - Automatically detects and uses virtual environments (see [ADR-0007](docs/adr/0007-python-virtual-environment-detection.md))
      - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
-   - `AptDetector`: Debian/Ubuntu system packages via `dpkg-query`
+   - `AptDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [ADR-0003](docs/adr/0003-dpkg-query-for-package-information.md))
      - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
      - **Availability check**: Verifies that `dpkg-query` command exists
-   - `ApkDetector`: Alpine Linux system packages via `apk info`
+   - `ApkDetector`: Alpine Linux system packages via `apk info` (see [ADR-0004](docs/adr/0004-apk-info-for-alpine-packages.md))
      - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
      - **Availability check**: Verifies that `apk` command exists
    - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)
@@ -134,6 +131,7 @@ dependency_resolver/
 - **Working Directory**: All detectors respect `--working-dir` parameter
 
 The detection process follows this sequence:
+
 1. Check pre-requirements via `meets_requirements(executor)`
 2. If requirements are met, check availability via `is_available(executor)`
 3. If available, extract dependencies via `get_dependencies(executor, working_dir)`
@@ -198,41 +196,19 @@ Schema with example values (incomplete):
 
 ### Technical Constraints
 
-1. No Downloads: Avoid downloading files from internet
-2. No Installations: Avoid installing additional tools on target systems
-3. Read-Only Operations: All operations should be read-only on target environment
-4. Unix-Based Systems: It's sufficient to target Linux/Unix-based systems only
+1. **Read-Only Operations**: See [ADR-0009](docs/adr/0009-read-only-operations.md) for the complete read-only constraint policy
+2. **Unix-Based Systems**: See [ADR-0010](docs/adr/0010-unix-only-support.md) for platform support scope
 
 ### Hash Handling Strategy
 
-The dependency resolver implements a multi-tiered hash generation strategy:
+See [ADR-0005](docs/adr/0005-hash-generation-strategy.md) for the complete multi-tiered hash generation strategy.
 
-#### Individual Package Hashes
+**Key Points**:
 
-- **Only include hashes if they can be retrieved directly from the package manager**
-- **Do not generate synthetic hashes for individual packages**
-
-**Package Manager Specific Approaches:**
-
-- **APT/dpkg**: Extract MD5 hashes from `/var/lib/dpkg/info/{package_name}.md5sums` files when available
-  - Combines all file MD5 hashes from the package into a single SHA256 hash
-  - Only includes hash field if the md5sums file exists and is readable
-- **APK**: No individual package hashes (APK doesn't provide them directly)
-- **pip**: No individual package hashes (PyPI doesn't provide them locally)
-- **npm**: No individual package hashes implemented yet
-
-#### Package Manager Location Hashes
-
-- **Generate one hash per package manager based on the installation location**
-- **Skip location hash for "global" locations** (system-wide installations)
-- **For actual directory paths**: Generate hash from directory contents
-  - pip: Hash based on `find {location} -type f -name '*.py' -o -name '*.dist-info' | sort`
-  - Fallback to location string hash if directory listing fails
-
-#### Hash Format
-
-- All hashes are SHA256 truncated to 32 characters
-- Used for creating unique identifiers and detecting changes
+- Individual package hashes only if retrievable from package manager
+- Location-based hashes for package manager installations
+- APT MD5 extraction approach (see [ADR-0008](docs/adr/0008-apt-md5-hash-extraction.md))
+- SHA256 format truncated to 32 characters
 
 ### Logging Strategy
 

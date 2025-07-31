@@ -31,6 +31,8 @@ class AptDetector(PackageManagerDetector):
         """Extract system packages with versions using dpkg-query.
 
         Uses 'dpkg-query -W -f' to get installed packages with their versions and architecture.
+        Unlike 'dpkg -l' (fixed human-readable format) or 'apt list --installed' (repository-dependent cache),
+        'dpkg-query' offers customizable output formatting perfect for automated parsing while querying the definitive source of installed package information.
         """
         command = "dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n'"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
