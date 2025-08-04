@@ -97,6 +97,10 @@ class PipDetector(PackageManagerDetector):
         Implements package manager location hashing as part of multi-tiered hash strategy.
         See docs/adr/0005-hash-generation-strategy.md
         """
+        # Use environment-independent sorting for consistent hashes across systems.
+        # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
+        # The -printf format ensures consistent "size path" output regardless of system.
+        # LC_COLLATE=C ensures byte-wise lexicographic sorting independent of system locale.
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "
@@ -110,7 +114,7 @@ class PipDetector(PackageManagerDetector):
             "-not -name '*.pyo' "
             "-not -name 'INSTALLER' "
             "-not -name 'RECORD' "
-            "-type f -exec ls -l {} \\; | awk '{print $9, $5}' | sort"
+            "-type f -printf '%s %p\\n' | LC_COLLATE=C sort -n -k1,1 -k2,2"
         )
         if exit_code == 0 and stdout.strip():
             content = stdout.strip()
