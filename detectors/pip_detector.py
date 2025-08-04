@@ -99,7 +99,9 @@ class PipDetector(PackageManagerDetector):
         """
         # Use environment-independent sorting for consistent hashes across systems.
         # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
-        # The -printf format ensures consistent "size path" output regardless of system.
+        # Include both regular files and symbolic links to capture complete directory state.
+        # For symlinks, include the target path (%l) to make hash sensitive to link changes.
+        # The -printf format ensures consistent "size path [target]" output regardless of system.
         # LC_COLLATE=C ensures byte-wise lexicographic sorting independent of system locale.
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
@@ -114,7 +116,7 @@ class PipDetector(PackageManagerDetector):
             "-not -name '*.pyo' "
             "-not -name 'INSTALLER' "
             "-not -name 'RECORD' "
-            "-type f -printf '%s %p\\n' | LC_COLLATE=C sort -n -k1,1 -k2,2"
+            "\\( -type f -o -type l \\) -printf '%s %p %l\\n' | LC_COLLATE=C sort -n -k1,1 -k2,2"
         )
         if exit_code == 0 and stdout.strip():
             content = stdout.strip()
