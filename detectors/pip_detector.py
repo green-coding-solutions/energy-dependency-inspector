@@ -10,7 +10,7 @@ class PipDetector(PackageManagerDetector):
 
     NAME = "pip"
 
-    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if pip is usable in the environment."""
         _, _, exit_code = executor.execute_command("pip --version")
         return exit_code == 0

@@ -8,7 +8,7 @@ class ApkDetector(PackageManagerDetector):
 
     NAME = "apk"
 
-    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if apk is usable (running on Alpine Linux and apk is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:

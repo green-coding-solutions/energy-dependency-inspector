@@ -22,7 +22,7 @@ class PackageManagerDetector(ABC):
     NAME: str
 
     @abstractmethod
-    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if this package manager is usable in the environment.
 
         This should verify both that the environment meets requirements

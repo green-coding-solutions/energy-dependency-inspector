@@ -9,7 +9,7 @@ class DpkgDetector(PackageManagerDetector):
 
     NAME = "dpkg"
 
-    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if dpkg is usable (running on Debian/Ubuntu and dpkg-query is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:

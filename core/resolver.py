@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from detectors.pip_detector import PipDetector
+from detectors.npm_detector import NpmDetector
 from detectors.dpkg_detector import DpkgDetector
 from detectors.apk_detector import ApkDetector
 
@@ -16,6 +17,7 @@ class DependencyResolver:
             DpkgDetector(),
             ApkDetector(),
             PipDetector(),
+            NpmDetector(),
         ]
 
     def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
@@ -29,7 +31,7 @@ class DependencyResolver:
                 print(f"Checking usability of {detector_name}...")
 
             try:
-                if detector.is_usable(executor):
+                if detector.is_usable(executor, working_dir):
                     if self.debug:
                         print(f"{detector_name} is usable, extracting dependencies...")
 
