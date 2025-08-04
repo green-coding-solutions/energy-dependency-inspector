@@ -12,7 +12,7 @@ class PipDetector(PackageManagerDetector):
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if pip is usable in the environment."""
-        _, _, exit_code = executor.execute_command("pip --version")
+        _, _, exit_code = executor.execute_command("pip --version", working_dir)
         return exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
@@ -21,6 +21,12 @@ class PipDetector(PackageManagerDetector):
         Uses 'pip list --format=freeze' for clean package==version format.
         See docs/adr/0006-pip-list-freeze-for-python-packages.md
         """
+        # If working_dir is specified but no venv exists there, return empty dependencies
+        if working_dir:
+            venv_path = self._find_venv_path(executor, working_dir)
+            if not venv_path:
+                return {"location": os.path.abspath(working_dir), "dependencies": {}}
+
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 

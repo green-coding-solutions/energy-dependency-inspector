@@ -22,7 +22,7 @@ Examples:
   %(prog)s host                         # Analyze host system explicitly
   %(prog)s docker a1b2c3d4e5f6          # Analyze Docker container by ID
   %(prog)s docker nginx                 # Analyze Docker container by name
-  %(prog)s --working-dir /tmp/repo      # Set working directory on host
+  %(prog)s --working-dir /tmp/repo      # Set working directory on target environment
   %(prog)s --debug                      # Enable debug output
         """,
     )
