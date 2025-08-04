@@ -17,7 +17,5 @@
 - Extend the set of supported package managers with the common ones for Go, PHP and Java
 - Support more operating systems: RedHat Linux (yum/dnf), openSUSE (zypper)
 - Add extraction of some relevant environment variables
-- Handle containers without shells or removed package managers
-  - Parse available log files (e.g. /var/lib/dpkg/status)
 - Add license
 - Implement auto-completion of container id / name
