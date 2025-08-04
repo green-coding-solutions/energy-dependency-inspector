@@ -9,17 +9,18 @@ class DpkgDetector(PackageManagerDetector):
 
     NAME = "dpkg"
 
-    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
-        """Check if running on Debian/Ubuntu."""
+    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+        """Check if dpkg is usable (running on Debian/Ubuntu and dpkg-query is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
             os_info = stdout.lower()
-            return "debian" in os_info or "ubuntu" in os_info
+            meets_requirements = "debian" in os_info or "ubuntu" in os_info
+        else:
+            meets_requirements = executor.file_exists("/etc/debian_version")
 
-        return executor.file_exists("/etc/debian_version")
+        if not meets_requirements:
+            return False
 
-    def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if dpkg-query is available."""
         _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
         return dpkg_exit_code == 0
 

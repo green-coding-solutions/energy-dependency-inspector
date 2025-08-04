@@ -21,16 +21,13 @@ class PackageManagerDetector(ABC):
 
     NAME: str
 
-    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:  # pylint: disable=unused-argument
-        """Check if pre-requirements are met for this detector.
-
-        Override for detectors with specific OS or environment requirements.
-        """
-        return True
-
     @abstractmethod
-    def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if this package manager is available in the environment."""
+    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+        """Check if this package manager is usable in the environment.
+
+        This should verify both that the environment meets requirements
+        and that the package manager tool is available.
+        """
         raise NotImplementedError
 
     @abstractmethod

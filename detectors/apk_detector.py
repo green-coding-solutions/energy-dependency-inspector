@@ -8,16 +8,17 @@ class ApkDetector(PackageManagerDetector):
 
     NAME = "apk"
 
-    def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
-        """Check if running on Alpine Linux."""
+    def is_usable(self, executor: EnvironmentExecutor) -> bool:
+        """Check if apk is usable (running on Alpine Linux and apk is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
-            return "alpine" in stdout.lower()
+            meets_requirements = "alpine" in stdout.lower()
+        else:
+            meets_requirements = executor.file_exists("/etc/alpine-release")
 
-        return executor.file_exists("/etc/alpine-release")
+        if not meets_requirements:
+            return False
 
-    def is_available(self, executor: EnvironmentExecutor) -> bool:
-        """Check if apk is available."""
         _, _, apk_exit_code = executor.execute_command("apk --version")
         return apk_exit_code == 0
 
