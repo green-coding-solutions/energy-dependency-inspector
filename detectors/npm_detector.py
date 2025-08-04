@@ -13,7 +13,7 @@ class NpmDetector(PackageManagerDetector):
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if npm is usable and the project uses npm (not yarn/pnpm)."""
-        _, _, exit_code = executor.execute_command("npm --version")
+        _, _, exit_code = executor.execute_command("npm --version", working_dir)
         if exit_code != 0:
             return False
 
