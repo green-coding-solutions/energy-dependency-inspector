@@ -8,9 +8,7 @@ from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 class PipDetector(PackageManagerDetector):
     """Detector for Python packages managed by pip."""
 
-    def get_name(self) -> str:
-        """Return the package manager identifier."""
-        return "pip"
+    NAME = "pip"
 
     def is_available(self, executor: EnvironmentExecutor) -> bool:
         """Check if pip is available in the environment."""

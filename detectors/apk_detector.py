@@ -6,9 +6,7 @@ from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 class ApkDetector(PackageManagerDetector):
     """Detector for system packages managed by apk (Alpine Linux)."""
 
-    def get_name(self) -> str:
-        """Return the package manager identifier."""
-        return "apk"
+    NAME = "apk"
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
         """Check if running on Alpine Linux."""

@@ -36,7 +36,7 @@ class DependencyResolver:
         result = {}
 
         for detector in self.detectors:
-            detector_name = detector.get_name()
+            detector_name = detector.NAME
 
             if self.debug:
                 print(f"Checking requirements for {detector_name}...")

@@ -7,9 +7,7 @@ from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 class AptDetector(PackageManagerDetector):
     """Detector for system packages managed by apt/dpkg (Debian/Ubuntu)."""
 
-    def get_name(self) -> str:
-        """Return the package manager identifier."""
-        return "apt"
+    NAME = "apt"
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
         """Check if running on Debian/Ubuntu."""

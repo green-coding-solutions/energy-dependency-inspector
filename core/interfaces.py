@@ -33,6 +33,8 @@ class EnvironmentExecutor(ABC):
 
 class PackageManagerDetector(ABC):
     """Abstract base class for package manager detection and dependency extraction."""
+    
+    NAME: str
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:  # pylint: disable=unused-argument
         """Check if pre-requirements are met for this detector.
@@ -70,14 +72,5 @@ class PackageManagerDetector(ABC):
 
         Returns:
             Dictionary containing location and dependencies information
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_name(self) -> str:
-        """Return the package manager identifier.
-
-        Returns:
-            String identifier for this package manager
         """
         raise NotImplementedError
