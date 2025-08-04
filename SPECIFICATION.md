@@ -94,7 +94,7 @@ Examples:
    - `DpkgDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [ADR-0003](docs/adr/0003-dpkg-query-for-package-information.md))
      - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
      - **Availability check**: Verifies that `dpkg-query` command exists
-   - `ApkDetector`: Alpine Linux system packages via `apk info` (see [ADR-0004](docs/adr/0004-apk-info-for-alpine-packages.md))
+   - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [ADR-0004](docs/adr/0004-apk-list-for-alpine-packages.md))
      - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
      - **Availability check**: Verifies that `apk` command exists
    - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)

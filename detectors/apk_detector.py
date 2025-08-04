@@ -23,8 +23,8 @@ class ApkDetector(PackageManagerDetector):
         return apk_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract system packages with versions using apk info."""
-        command = "apk info -v"
+        """Extract system packages with versions and architecture using apk list."""
+        command = "apk list --installed"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
         if exit_code != 0:
@@ -37,16 +37,26 @@ class ApkDetector(PackageManagerDetector):
             if not line or line.startswith("WARNING:"):
                 continue
 
-            if "-" in line:
-                parts = line.rsplit("-", 2)
-                if len(parts) >= 2:
-                    package_name = parts[0].strip()
-                    version = "-".join(parts[1:]).strip()
+            # Parse format: package-name-version [architecture] {status} (license)
+            # Example: bash-5.2.15-r5 x86_64 {bash} (GPL-3.0-or-later)
+            if " " in line:
+                parts = line.split(" ")
+                package_version = parts[0]
+                architecture = parts[1] if len(parts) > 1 else ""
 
-                    package_data = {
-                        "version": version,
-                    }
+                # Extract package name and version from package-version string
+                if "-" in package_version:
+                    version_parts = package_version.rsplit("-", 2)
+                    if len(version_parts) >= 2:
+                        package_name = version_parts[0].strip()
+                        version = "-".join(version_parts[1:]).strip()
 
-                    dependencies[package_name] = package_data
+                        full_version = f"{version} {architecture}" if architecture else version
+
+                        package_data = {
+                            "version": full_version,
+                        }
+
+                        dependencies[package_name] = package_data
 
         return {"location": "global", "dependencies": dependencies}
