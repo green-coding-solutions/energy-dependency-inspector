@@ -16,7 +16,10 @@ class HostExecutor(EnvironmentExecutor):
     """Executor for running commands on the host system."""
 
     def execute_command(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
-        """Execute a command on the host system."""
+        """Execute a command on the host system.
+
+        Returns actual command exit code on success, or 1 for execution environment failures.
+        """
         try:
             result = subprocess.run(
                 command,
@@ -39,7 +42,11 @@ class HostExecutor(EnvironmentExecutor):
 
 
 class DockerExecutor(EnvironmentExecutor):
-    """Executor for running commands inside Docker containers."""
+    """Executor for running commands inside Docker containers.
+
+    Uses custom RuntimeError with actionable messages for setup failures,
+    preserving original exceptions with 'from' clause for debugging.
+    """
 
     def __init__(self, container_identifier: str):
         """Initialize Docker executor."""
@@ -61,7 +68,10 @@ class DockerExecutor(EnvironmentExecutor):
             raise RuntimeError(f"Docker API error: {str(e)}") from e
 
     def execute_command(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
-        """Execute a command inside the Docker container."""
+        """Execute a command inside the Docker container.
+
+        Returns actual command exit code on success, or 1 for execution environment failures.
+        """
         try:
             exec_kwargs = {
                 "cmd": ["sh", "-c", command],
