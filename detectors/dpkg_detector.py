@@ -4,10 +4,10 @@ from typing import Dict, Any
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
-class AptDetector(PackageManagerDetector):
-    """Detector for system packages managed by apt/dpkg (Debian/Ubuntu)."""
+class DpkgDetector(PackageManagerDetector):
+    """Detector for system packages managed by dpkg (Debian/Ubuntu)."""
 
-    NAME = "apt"
+    NAME = "dpkg"
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
         """Check if running on Debian/Ubuntu."""

@@ -100,7 +100,7 @@ dependency_resolver/
 │   └── resolver.py           # Main orchestrator
 ├── detectors/
 │   ├── pip_detector.py       # Python packages
-│   └── apt_detector.py       # System packages
+│   └── dpkg_detector.py      # Debian/Ubuntu system packages
 ├── requirements.txt          # Production dependencies
 ├── requirements-dev.txt      # Development dependencies
 ├── pyproject.toml           # Project configuration

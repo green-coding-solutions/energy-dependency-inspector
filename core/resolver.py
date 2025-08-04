@@ -3,7 +3,7 @@ from typing import Dict, Any, List
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from detectors.pip_detector import PipDetector
-from detectors.apt_detector import AptDetector
+from detectors.dpkg_detector import DpkgDetector
 from detectors.apk_detector import ApkDetector
 
 
@@ -13,7 +13,7 @@ class DependencyResolver:
     def __init__(self, debug: bool = False):
         self.debug = debug
         self.detectors: List[PackageManagerDetector] = [
-            AptDetector(),
+            DpkgDetector(),
             ApkDetector(),
             PipDetector(),
         ]

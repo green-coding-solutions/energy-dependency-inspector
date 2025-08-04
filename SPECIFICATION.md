@@ -91,7 +91,7 @@ Examples:
      - Automatically detects and uses virtual environments (see [ADR-0007](docs/adr/0007-python-virtual-environment-detection.md))
      - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
-   - `AptDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [ADR-0003](docs/adr/0003-dpkg-query-for-package-information.md))
+   - `DpkgDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [ADR-0003](docs/adr/0003-dpkg-query-for-package-information.md))
      - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
      - **Availability check**: Verifies that `dpkg-query` command exists
    - `ApkDetector`: Alpine Linux system packages via `apk info` (see [ADR-0004](docs/adr/0004-apk-info-for-alpine-packages.md))
@@ -117,7 +117,7 @@ dependency_resolver/
 └── detectors/
     ├── pip_detector.py
     ├── npm_detector.py
-    ├── apt_detector.py
+    ├── dpkg_detector.py
     ├── apk_detector.py
     └── docker_compose_detector.py
 ```
