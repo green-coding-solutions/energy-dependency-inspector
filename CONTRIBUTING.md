@@ -22,6 +22,25 @@ pip install -r requirements-dev.txt
 pip install -e ".[dev]"
 ```
 
+### Automatic Virtual Environment Activation (Recommended)
+
+To avoid forgetting to activate the Python virtual environment, we recommend using **direnv**:
+
+```bash
+# Install direnv
+sudo apt install direnv  # Ubuntu/Debian
+# brew install direnv    # macOS
+
+# Add to your shell configuration
+echo 'eval "$(direnv hook bash)"' >> ~/.bashrc  # or ~/.zshrc
+source ~/.bashrc  # or restart your terminal
+
+# Activate direnv
+direnv allow
+```
+
+This automatically activates the virtual environment when you enter the directory and deactivates it when you leave.
+
 ### Pre-commit Hooks
 
 We use pre-commit hooks to ensure code quality and consistency. All Python files are automatically linted and formatted before each commit.
@@ -29,7 +48,7 @@ We use pre-commit hooks to ensure code quality and consistency. All Python files
 #### Installing Pre-commit Hooks
 
 ```bash
-# Activate virtual environment first
+# Activate virtual environment first (automatic with direnv)
 source venv/bin/activate
 
 # Install pre-commit hooks (this is done automatically if you installed dev dependencies)
