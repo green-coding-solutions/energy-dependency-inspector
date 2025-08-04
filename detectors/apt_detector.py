@@ -11,13 +11,11 @@ class AptDetector(PackageManagerDetector):
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:
         """Check if running on Debian/Ubuntu."""
-        # Check if running on Debian/Ubuntu by checking /etc/os-release
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
             os_info = stdout.lower()
             return "debian" in os_info or "ubuntu" in os_info
 
-        # Fallback: check if /etc/debian_version exists
         return executor.file_exists("/etc/debian_version")
 
     def is_available(self, executor: EnvironmentExecutor) -> bool:
@@ -26,12 +24,7 @@ class AptDetector(PackageManagerDetector):
         return dpkg_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract system packages with versions using dpkg-query.
-
-        Uses 'dpkg-query -W -f' to get installed packages with their versions and architecture.
-        Unlike 'dpkg -l' (fixed human-readable format) or 'apt list --installed' (repository-dependent cache),
-        'dpkg-query' offers customizable output formatting perfect for automated parsing while querying the definitive source of installed package information.
-        """
+        """Extract system packages with versions using dpkg-query."""
         command = "dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n'"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
@@ -53,7 +46,6 @@ class AptDetector(PackageManagerDetector):
                         "version": full_version,
                     }
 
-                    # Try to get package hash from dpkg md5sums
                     package_hash = self._get_package_hash(executor, package_name)
                     if package_hash:
                         package_data["hash"] = package_hash
@@ -66,15 +58,12 @@ class AptDetector(PackageManagerDetector):
         """Get package hash from dpkg md5sums file if available."""
         md5sums_file = f"/var/lib/dpkg/info/{package_name}.md5sums"
 
-        # Check if the md5sums file exists
         if not executor.file_exists(md5sums_file):
             return None
 
         try:
-            # Read the md5sums file and create a hash of all the md5 hashes
             stdout, _, exit_code = executor.execute_command(f"cat '{md5sums_file}'")
             if exit_code == 0 and stdout.strip():
-                # Extract just the MD5 hashes (first column) and sort them for consistency
                 md5_hashes = []
                 for line in stdout.strip().split("\n"):
                     if line and " " in line:
@@ -83,7 +72,6 @@ class AptDetector(PackageManagerDetector):
                             md5_hashes.append(md5_hash)
 
                 if md5_hashes:
-                    # Create a hash of all the individual file hashes
                     content = "\n".join(sorted(md5_hashes))
                     return hashlib.sha256(content.encode()).hexdigest()[:32]
         except (OSError, IOError):

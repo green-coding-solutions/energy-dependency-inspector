@@ -33,7 +33,7 @@ class EnvironmentExecutor(ABC):
 
 class PackageManagerDetector(ABC):
     """Abstract base class for package manager detection and dependency extraction."""
-    
+
     NAME: str
 
     def meets_requirements(self, executor: EnvironmentExecutor) -> bool:  # pylint: disable=unused-argument

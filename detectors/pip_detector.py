@@ -16,11 +16,7 @@ class PipDetector(PackageManagerDetector):
         return exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract pip dependencies with versions.
-
-        Uses 'pip list --format=freeze' to get installed packages.
-        Since PyPI doesn't reuse filenames for same versions, version numbers are sufficient as unique identifiers.
-        """
+        """Extract pip dependencies with versions."""
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 
@@ -64,26 +60,19 @@ class PipDetector(PackageManagerDetector):
         """Get the appropriate pip command, activating venv if available."""
         venv_path = self._find_venv_path(executor, working_dir)
         if venv_path:
-            # Use the venv's pip directly
             venv_pip = os.path.join(venv_path, "bin", "pip")
             if executor.file_exists(venv_pip):
                 return venv_pip
         return "pip"
 
     def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
-        """Find virtual environment by searching for pyvenv.cfg files.
-
-        Returns the path to the virtual environment directory, or None if not found.
-        """
+        """Find virtual environment by searching for pyvenv.cfg files."""
         search_dir = working_dir or "."
 
-        # First check if current directory has pyvenv.cfg (we might be inside a venv)
         pyvenv_cfg = os.path.join(search_dir, "pyvenv.cfg")
         if executor.file_exists(pyvenv_cfg):
             return search_dir
 
-        # Search subdirectories for pyvenv.cfg
-        # Common venv directory names to check first
         common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
 
         for venv_name in common_venv_names:
@@ -96,7 +85,6 @@ class PipDetector(PackageManagerDetector):
 
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
         """Generate a hash based on the contents of the location directory."""
-        # Get directory listing with relative paths + file sizes
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "
@@ -113,7 +101,6 @@ class PipDetector(PackageManagerDetector):
             "-type f -exec ls -l {} \\; | awk '{print $9, $5}' | sort"
         )
         if exit_code == 0 and stdout.strip():
-            # Hash the sorted list of files
             content = stdout.strip()
             return hashlib.sha256(content.encode()).hexdigest()[:32]
         else:
