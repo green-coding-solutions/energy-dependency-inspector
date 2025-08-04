@@ -16,7 +16,11 @@ class PipDetector(PackageManagerDetector):
         return exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract pip dependencies with versions."""
+        """Extract pip dependencies with versions.
+
+        Uses 'pip list --format=freeze' for clean package==version format.
+        See docs/adr/0006-pip-list-freeze-for-python-packages.md
+        """
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 
@@ -66,7 +70,11 @@ class PipDetector(PackageManagerDetector):
         return "pip"
 
     def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
-        """Find virtual environment by searching for pyvenv.cfg files."""
+        """Find virtual environment by searching for pyvenv.cfg files.
+
+        Implements automatic virtual environment detection strategy.
+        See docs/adr/0007-python-virtual-environment-detection.md
+        """
         search_dir = working_dir or "."
 
         pyvenv_cfg = os.path.join(search_dir, "pyvenv.cfg")
@@ -84,7 +92,11 @@ class PipDetector(PackageManagerDetector):
         return None
 
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
-        """Generate a hash based on the contents of the location directory."""
+        """Generate a hash based on the contents of the location directory.
+
+        Implements package manager location hashing as part of multi-tiered hash strategy.
+        See docs/adr/0005-hash-generation-strategy.md
+        """
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "

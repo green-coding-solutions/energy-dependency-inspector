@@ -23,7 +23,11 @@ class ApkDetector(PackageManagerDetector):
         return apk_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract system packages with versions and architecture using apk list."""
+        """Extract system packages with versions and architecture using apk list.
+
+        Uses 'apk list --installed' for comprehensive package information including architecture.
+        See docs/adr/0004-apk-list-for-alpine-packages.md
+        """
         command = "apk list --installed"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 

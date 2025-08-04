@@ -25,7 +25,11 @@ class DpkgDetector(PackageManagerDetector):
         return dpkg_exit_code == 0
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Extract system packages with versions using dpkg-query."""
+        """Extract system packages with versions using dpkg-query.
+
+        Uses dpkg-query -W -f for reliable package information extraction.
+        See docs/adr/0003-dpkg-query-for-package-information.md
+        """
         command = "dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n'"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
@@ -56,7 +60,11 @@ class DpkgDetector(PackageManagerDetector):
         return {"location": "global", "dependencies": dependencies}
 
     def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str) -> str:
-        """Get package hash from dpkg md5sums file if available."""
+        """Get package hash from dpkg md5sums file if available.
+
+        Extracts MD5 hashes from /var/lib/dpkg/info/{package}.md5sums and combines into SHA256.
+        See docs/adr/0008-apt-md5-hash-extraction.md and docs/adr/0005-hash-generation-strategy.md
+        """
         md5sums_file = f"/var/lib/dpkg/info/{package_name}.md5sums"
 
         if not executor.file_exists(md5sums_file):
