@@ -11,28 +11,15 @@ class DependencyResolver:
     """Main orchestrator for dependency detection and extraction."""
 
     def __init__(self, debug: bool = False):
-        """Initialize the dependency resolver.
-
-        Args:
-            debug: Enable debug logging
-        """
         self.debug = debug
         self.detectors: List[PackageManagerDetector] = [
-            AptDetector(),  # Debian/Ubuntu system packages first (priority order)
-            ApkDetector(),  # Alpine Linux system packages
-            PipDetector(),  # Language-specific packages
+            AptDetector(),
+            ApkDetector(),
+            PipDetector(),
         ]
 
     def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
-        """Resolve all dependencies from available package managers.
-
-        Args:
-            executor: Environment executor to use
-            working_dir: Optional working directory
-
-        Returns:
-            Dictionary with dependencies organized by package manager
-        """
+        """Resolve all dependencies from available package managers."""
         result = {}
 
         for detector in self.detectors:
@@ -42,7 +29,6 @@ class DependencyResolver:
                 print(f"Checking requirements for {detector_name}...")
 
             try:
-                # First check pre-requirements
                 if not detector.meets_requirements(executor):
                     if self.debug:
                         print(f"{detector_name} requirements not met")
@@ -68,7 +54,6 @@ class DependencyResolver:
             except (RuntimeError, OSError, ValueError) as e:
                 if self.debug:
                     print(f"Error checking {detector_name}: {str(e)}")
-                # Error isolation: failed detectors don't affect others
                 continue
 
         return result
@@ -76,20 +61,10 @@ class DependencyResolver:
     def resolve_and_format(
         self, executor: EnvironmentExecutor, working_dir: str = None, pretty_print: bool = True
     ) -> str:
-        """Resolve dependencies and format as JSON string.
-
-        Args:
-            executor: Environment executor to use
-            working_dir: Optional working directory
-            pretty_print: Whether to pretty-print the JSON output
-
-        Returns:
-            JSON string with all resolved dependencies
-        """
+        """Resolve dependencies and format as JSON string."""
         dependencies = self.resolve_dependencies(executor, working_dir)
 
         if self.debug:
-            # Show only an excerpt when debug mode is enabled
             excerpt = self._create_excerpt(dependencies)
             if pretty_print:
                 return json.dumps(excerpt, indent=2, sort_keys=True)
@@ -102,35 +77,23 @@ class DependencyResolver:
                 return json.dumps(dependencies, sort_keys=True)
 
     def _create_excerpt(self, dependencies: Dict[str, Any], max_deps_per_manager: int = 3) -> Dict[str, Any]:
-        """Create an excerpt of dependencies showing only a few items per package manager.
-
-        Args:
-            dependencies: Full dependencies dictionary
-            max_deps_per_manager: Maximum number of dependencies to show per package manager
-
-        Returns:
-            Excerpt dictionary with limited dependencies
-        """
+        """Create an excerpt of dependencies for debug mode."""
         excerpt: Dict[str, Any] = {}
 
         for manager_name, manager_data in dependencies.items():
             excerpt[manager_name] = {}
 
-            # Copy non-dependencies fields as-is
             for key, value in manager_data.items():
                 if key != "dependencies":
                     excerpt[manager_name][key] = value
 
-            # Create excerpt of dependencies
             if "dependencies" in manager_data:
                 deps = manager_data["dependencies"]
                 total_deps = len(deps)
 
                 if total_deps <= max_deps_per_manager:
-                    # Show all if we have few dependencies
                     excerpt[manager_name]["dependencies"] = deps
                 else:
-                    # Show first few dependencies and add summary
                     limited_deps = dict(list(deps.items())[:max_deps_per_manager])
                     excerpt[manager_name]["dependencies"] = limited_deps
                     excerpt[manager_name]["_excerpt_info"] = {
