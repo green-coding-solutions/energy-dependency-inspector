@@ -102,7 +102,7 @@ class PipDetector(PackageManagerDetector):
         )
         if exit_code == 0 and stdout.strip():
             content = stdout.strip()
-            return hashlib.sha256(content.encode()).hexdigest()[:32]
+            return hashlib.sha256(content.encode()).hexdigest()
         else:
             print(f"ERROR: pip_detector hash generation command failed with exit code {exit_code}")
             print(f"ERROR: command stdout: {stdout}")

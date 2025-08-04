@@ -74,7 +74,7 @@ class DpkgDetector(PackageManagerDetector):
 
                 if md5_hashes:
                     content = "\n".join(sorted(md5_hashes))
-                    return hashlib.sha256(content.encode()).hexdigest()[:32]
+                    return hashlib.sha256(content.encode()).hexdigest()
         except (OSError, IOError):
             pass
 

@@ -19,7 +19,7 @@ We will implement a multi-tiered hash generation strategy with the following rul
 - **Individual Package Hashes**: Only include if retrievable directly from package manager
 - **Package Manager Location Hashes**: Generate one hash per package manager based on installation location
 - **Skip Global Location Hashes**: No location hash for system-wide installations
-- **SHA256 Format**: All hashes truncated to 32 characters
+- **SHA256 Format**: All hashes use full 64-character SHA256 format
 
 ## Rationale
 

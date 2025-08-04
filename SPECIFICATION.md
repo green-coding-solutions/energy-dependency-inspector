@@ -208,7 +208,7 @@ See [ADR-0005](docs/adr/0005-hash-generation-strategy.md) for the complete multi
 - Individual package hashes only if retrievable from package manager
 - Location-based hashes for package manager installations
 - APT MD5 extraction approach (see [ADR-0008](docs/adr/0008-apt-md5-hash-extraction.md))
-- SHA256 format truncated to 32 characters
+- SHA256 format using full 64-character hashes
 
 ### Logging Strategy
 
