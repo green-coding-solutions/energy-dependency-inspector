@@ -14,7 +14,7 @@ python3 dependency_resolver.py --debug
 pip install -r requirements.txt
 
 # Execute linting and formatting
-pre-commit run --files $(git diff --name-only --diff-filter=ACMR)
+pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)
 ```
 
 ## Tech Stack
@@ -44,7 +44,7 @@ Python with venv, pip, and pytest (Unix-only)
 ## Style & Workflow
 
 - **Follow PEP8**
-- **Always activate venv first**: `source venv/bin/activate` before ANY command (Python, pip, git commit, etc.)
+- **Activate venv first**: `source venv/bin/activate` at the beginning of a new task
 - **Lint after each task** - always ensure good code quality
 - **Commit frequently**
 

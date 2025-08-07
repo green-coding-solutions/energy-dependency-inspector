@@ -161,7 +161,7 @@ Schema with example values (incomplete):
     },
     // ...
   },
-  "system": {
+  "dpkg": {
     "location": "global",
     "dependencies": {
       "zip": {
