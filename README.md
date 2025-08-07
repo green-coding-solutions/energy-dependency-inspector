@@ -38,6 +38,9 @@ python3 dependency_resolver.py docker nginx
 # Analyze Docker container by ID
 python3 dependency_resolver.py docker a1b2c3d4e5f6
 
+# Analyze Docker Compose stack
+python3 dependency_resolver.py docker_compose my_app
+
 # Enable debug output
 python3 dependency_resolver.py --debug
 
@@ -52,6 +55,7 @@ python3 dependency_resolver.py --skip-global
 
 - **host** - Host system analysis (default)
 - **docker** - Docker container analysis (requires container ID or name)
+- **docker_compose** - Docker Compose stack analysis (requires stack/project name)
 
 ### Supported Package Managers
 
@@ -60,11 +64,11 @@ Currently supported:
 - **apt/dpkg** - System packages Ubuntu/Debian
 - **apk** - System packages of Alpine
 - **pip** - Python packages
+- **docker-compose** - Container orchestration dependencies
 
 Future support planned:
 
 - **npm** - Node.js packages
-- **docker-compose** - Container orchestration
 
 ### Output Format
 
@@ -72,6 +76,19 @@ The tool outputs JSON with the following structure:
 
 ```json
 {
+  "docker-compose": {
+    "location": "global",
+    "dependencies": {
+      "web": {
+        "version": "django_app-web:latest",
+        "hash": "sha256:3e4def6e2af8..."
+      },
+      "db": {
+        "version": "postgres:13",
+        "hash": "sha256:54706ca98cd5..."
+      }
+    }
+  },
   "apt": {
     "location": "global",
     "dependencies": {

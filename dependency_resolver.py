@@ -7,7 +7,7 @@ Usage: dependency_resolver.py [environment_type] [environment_identifier] [optio
 
 import sys
 import argparse
-from core.executor import HostExecutor, DockerExecutor, EnvironmentExecutor
+from core.executor import HostExecutor, DockerExecutor, DockerComposeExecutor, EnvironmentExecutor
 from core.resolver import DependencyResolver
 
 
@@ -18,13 +18,15 @@ def parse_arguments() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                              # Analyze host system
-  %(prog)s host                         # Analyze host system explicitly
-  %(prog)s docker a1b2c3d4e5f6          # Analyze Docker container by ID
-  %(prog)s docker nginx                 # Analyze Docker container by name
-  %(prog)s --working-dir /tmp/repo      # Set working directory on target environment
-  %(prog)s --debug                      # Enable debug output
-  %(prog)s --skip-global                # Skip global package manager detections
+  %(prog)s                                        # Analyze host system
+  %(prog)s host                                   # Analyze host system explicitly
+  %(prog)s docker a1b2c3d4e5f6                    # Analyze Docker container by ID
+  %(prog)s docker nginx                           # Analyze Docker container by name
+  %(prog)s docker_compose my_app                  # Analyze Docker Compose stack
+  %(prog)s --working-dir /tmp/repo                # Set working directory on target environment
+  %(prog)s --venv-path ~/.virtualenvs/myproject   # Use specific virtual environment for pip
+  %(prog)s --debug                                # Enable debug output
+  %(prog)s --skip-global                          # Skip global package manager detections
         """,
     )
 
@@ -32,7 +34,7 @@ Examples:
         "environment_type",
         nargs="?",
         default="host",
-        choices=["host", "docker"],
+        choices=["host", "docker", "docker_compose"],
         help="Type of environment to analyze",
     )
 
@@ -67,6 +69,10 @@ def main() -> None:
         print("Error: Docker environment requires a container identifier", file=sys.stderr)
         sys.exit(1)
 
+    if args.environment_type == "docker_compose" and not args.environment_identifier:
+        print("Error: Docker Compose environment requires a stack identifier", file=sys.stderr)
+        sys.exit(1)
+
     if args.environment_type == "host" and args.environment_identifier:
         print("Warning: Environment identifier is ignored for host environment", file=sys.stderr)
 
@@ -77,6 +83,8 @@ def main() -> None:
             executor = HostExecutor()
         elif args.environment_type == "docker":
             executor = DockerExecutor(args.environment_identifier)
+        elif args.environment_type == "docker_compose":
+            executor = DockerComposeExecutor(args.environment_identifier)
         else:
             print(f"Error: Unsupported environment type: {args.environment_type}", file=sys.stderr)
             sys.exit(1)

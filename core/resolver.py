@@ -2,10 +2,12 @@ import json
 from typing import Dict, Any, List, Optional
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
+from .executor import DockerComposeExecutor
 from detectors.pip_detector import PipDetector
 from detectors.npm_detector import NpmDetector
 from detectors.dpkg_detector import DpkgDetector
 from detectors.apk_detector import ApkDetector
+from detectors.docker_compose_detector import DockerComposeDetector
 
 
 class DependencyResolver:
@@ -22,6 +24,7 @@ class DependencyResolver:
 
         # Create detector instances
         self.detectors: List[PackageManagerDetector] = [
+            DockerComposeDetector(),
             DpkgDetector(),
             ApkDetector(),
             PipDetector(venv_path=venv_path),
@@ -32,7 +35,14 @@ class DependencyResolver:
         """Resolve all dependencies from available package managers."""
         result = {}
 
-        for detector in self.detectors:
+        # For Docker Compose environments, only run the DockerComposeDetector
+        if isinstance(executor, DockerComposeExecutor):
+            detectors_to_run = [d for d in self.detectors if d.NAME == "docker-compose"]
+        else:
+            # For other environments, skip the DockerComposeDetector
+            detectors_to_run = [d for d in self.detectors if d.NAME != "docker-compose"]
+
+        for detector in detectors_to_run:
             detector_name = detector.NAME
 
             if self.debug:

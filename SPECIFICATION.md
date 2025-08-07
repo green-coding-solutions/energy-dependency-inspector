@@ -23,8 +23,9 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 ### Environment Support
 
 - Primary: Docker containers (using container hash/ID or name)
+- Docker Compose stacks (using stack/project name)
 - Secondary: Host system analysis
-- Future: Podman containers, Docker/Podman Compose stacks
+- Future: Podman containers, Podman Compose stacks
 
 ## Design Approach
 
@@ -40,12 +41,13 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 dependency_resolver.py <environment_type> <environment_identifier> <options>
 ```
 
-- **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker` (additional ones in the future, not included in the initial set: `podman`, `docker_compose` and `podman_compose`)
+- **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker`, `docker_compose` (additional ones in the future: `podman`, `podman_compose`)
 - **environment_identifier**: An identifier of the environment. For `docker` and `podman` the container run id (short or full) and the container name are allowed, for `docker_compose` and `podman_compose` the name of the compose stack is allowed (specified or auto-generated project name). For `host` no identifier is required.
 - **options**: Possibility to provide multiple options parameter (see below)
 
 All parameters are optional. If no `environment_type` and `environment_identifier` is provided, the host system will be analyzed.
 If a container should be analyzed, all the checks will be executed inside the container.
+If a Docker Compose stack should be analyzed, only the container images themselves are analyzed (no commands executed inside containers).
 
 Available options:
 
@@ -83,6 +85,7 @@ Examples:
 2. **Environment Executors**
    - `HostExecutor`: Execute commands on host system using subprocess
    - `DockerExecutor`: Execute commands inside Docker containers using docker library
+   - `DockerComposeExecutor`: Manage Docker Compose stacks and extract container image metadata
    - `PodmanExecutor`: Execute commands inside Podman containers using podman-py
 
 3. **Package Manager Detectors**
@@ -97,7 +100,10 @@ Examples:
    - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [ADR-0004](docs/adr/0004-apk-list-for-alpine-packages.md))
      - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
      - **Availability check**: Verifies that `apk` command exists
-   - `DockerComposeDetector`: Container orchestration dependencies (which container images are used?)
+   - `DockerComposeDetector`: Container orchestration dependencies (extracts container images with full SHA256 hashes)
+     - **Usage**: Only activated for `DockerComposeExecutor` environments
+     - **Output**: Service names mapped to image tags and full SHA256 hashes (including `sha256:` prefix)
+     - **No command execution**: Does not execute commands inside containers, only analyzes container metadata
 
 4. **Main Orchestrator**
    - `DependencyResolver`: Coordinates detection and extraction

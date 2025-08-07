@@ -1,7 +1,6 @@
 # TODOS
 
-- Add support for Podman
-- Add support for Docker Compose + Podman Compose
+- Add support for Podman + Podman Compose
 - Add tests
   - apk_detector
   - dpkg_detector

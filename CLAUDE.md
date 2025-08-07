@@ -13,7 +13,7 @@ python3 dependency_resolver.py --debug
 # Install dependencies
 pip install -r requirements.txt
 
-# Check linting before commit
+# Execute linting and formatting
 pre-commit run --files $(git diff --name-only --diff-filter=ACMR)
 ```
 
@@ -45,7 +45,7 @@ Python with venv, pip, and pytest (Unix-only)
 
 - **Follow PEP8**
 - **Always activate venv first**: `source venv/bin/activate` before ANY command (Python, pip, git commit, etc.)
-- **Fix all linting errors before committing** - never commit with known linting issues
+- **Lint after each task** - always ensure good code quality
 - **Commit frequently**
 
 ## Project Files
