@@ -87,3 +87,7 @@ class DpkgDetector(PackageManagerDetector):
             pass
 
         return None
+
+    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """DPKG always operates globally (system packages)."""
+        return True

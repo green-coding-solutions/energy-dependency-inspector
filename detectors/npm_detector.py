@@ -100,3 +100,7 @@ class NpmDetector(PackageManagerDetector):
             return hashlib.sha256(content.encode()).hexdigest()
         else:
             return ""
+
+    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """NPM is global when no local package.json or node_modules exists."""
+        return self._get_npm_location(executor, working_dir) == "global"

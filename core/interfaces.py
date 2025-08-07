@@ -34,3 +34,12 @@ class PackageManagerDetector(ABC):
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract dependencies with versions and hashes."""
         raise NotImplementedError
+
+    @abstractmethod
+    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """Check if this detector would operate globally (system-wide) for the given working directory.
+
+        Returns True if the detector would return location: "global" in get_dependencies().
+        This allows checking global status without the overhead of extracting all dependencies.
+        """
+        raise NotImplementedError

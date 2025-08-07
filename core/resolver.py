@@ -11,8 +11,9 @@ from detectors.apk_detector import ApkDetector
 class DependencyResolver:
     """Main orchestrator for dependency detection and extraction."""
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, debug: bool = False, skip_global: bool = False):
         self.debug = debug
+        self.skip_global = skip_global
         self.detectors: List[PackageManagerDetector] = [
             DpkgDetector(),
             ApkDetector(),
@@ -32,6 +33,12 @@ class DependencyResolver:
 
             try:
                 if detector.is_usable(executor, working_dir):
+                    # Check if detector is operating globally and skip if requested
+                    if self.skip_global and detector.is_global(executor, working_dir):
+                        if self.debug:
+                            print(f"Skipping {detector_name} (operating globally, --skip-global enabled)")
+                        continue
+
                     if self.debug:
                         print(f"{detector_name} is usable, extracting dependencies...")
 

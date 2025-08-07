@@ -24,6 +24,7 @@ Examples:
   %(prog)s docker nginx                 # Analyze Docker container by name
   %(prog)s --working-dir /tmp/repo      # Set working directory on target environment
   %(prog)s --debug                      # Enable debug output
+  %(prog)s --skip-global                # Skip global package manager detections
         """,
     )
 
@@ -45,6 +46,12 @@ Examples:
     parser.add_argument("--working-dir", type=str, help="Working directory to use in the target environment")
 
     parser.add_argument("--debug", action="store_true", help="Print debug statements")
+
+    parser.add_argument(
+        "--skip-global",
+        action="store_true",
+        help="Skip global package manager detections (system packages or globally installed Python packages)",
+    )
 
     return parser.parse_args()
 
@@ -73,7 +80,7 @@ def main() -> None:
             sys.exit(1)
 
         # Create resolver and resolve dependencies
-        resolver = DependencyResolver(debug=args.debug)
+        resolver = DependencyResolver(debug=args.debug, skip_global=args.skip_global)
         result = resolver.resolve_and_format(executor, args.working_dir)
 
         # Output result

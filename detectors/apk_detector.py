@@ -64,3 +64,7 @@ class ApkDetector(PackageManagerDetector):
                         dependencies[package_name] = package_data
 
         return {"location": "global", "dependencies": dependencies}
+
+    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """APK always operates globally (system packages)."""
+        return True

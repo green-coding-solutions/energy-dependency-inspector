@@ -43,6 +43,9 @@ python3 dependency_resolver.py --debug
 
 # Set working directory
 python3 dependency_resolver.py --working-dir /path/to/project
+
+# Skip global package manager detections
+python3 dependency_resolver.py --skip-global
 ```
 
 ### Supported Environments

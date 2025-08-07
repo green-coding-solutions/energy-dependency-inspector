@@ -132,3 +132,7 @@ class PipDetector(PackageManagerDetector):
             print(f"ERROR: command stdout: {stdout}")
             print(f"ERROR: location: {location}")
             return ""
+
+    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """PIP is global when no virtual environment is found."""
+        return self._get_pip_location(executor, working_dir) == "global"
