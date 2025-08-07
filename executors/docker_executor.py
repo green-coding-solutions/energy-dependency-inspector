@@ -21,7 +21,7 @@ class DockerExecutor(EnvironmentExecutor):
     def __init__(self, container_identifier: str):
         """Initialize Docker executor."""
         if not DOCKER_AVAILABLE:
-            raise RuntimeError("Docker library not available. Install with: pip install docker")
+            raise RuntimeError('Docker library not available. Install with: pip install -e ".[docker]"')
 
         try:
             self.client = docker.from_env()

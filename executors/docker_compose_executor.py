@@ -20,7 +20,7 @@ class DockerComposeExecutor(EnvironmentExecutor):
     def __init__(self, stack_name: str):
         """Initialize Docker Compose executor."""
         if not DOCKER_AVAILABLE:
-            raise RuntimeError("Docker library not available. Install with: pip install docker")
+            raise RuntimeError('Docker library not available. Install with: pip install -e ".[docker]"')
 
         try:
             self.client = docker.from_env()
