@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from detectors.pip_detector import PipDetector
@@ -11,13 +11,20 @@ from detectors.apk_detector import ApkDetector
 class DependencyResolver:
     """Main orchestrator for dependency detection and extraction."""
 
-    def __init__(self, debug: bool = False, skip_global: bool = False):
+    def __init__(
+        self,
+        debug: bool = False,
+        skip_global: bool = False,
+        venv_path: Optional[str] = None,
+    ):
         self.debug = debug
         self.skip_global = skip_global
+
+        # Create detector instances
         self.detectors: List[PackageManagerDetector] = [
             DpkgDetector(),
             ApkDetector(),
-            PipDetector(),
+            PipDetector(venv_path=venv_path),
             NpmDetector(),
         ]
 

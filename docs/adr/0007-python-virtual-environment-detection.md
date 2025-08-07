@@ -16,12 +16,15 @@ Python projects often use virtual environments to isolate dependencies. The depe
 
 We will implement automatic virtual environment detection using the following strategy:
 
-**Detection Method**:
+**Detection Priority**:
 
-- Search for `pyvenv.cfg` files to identify virtual environments
-- Search common virtual environment directory names: `venv`, `.venv`, `env`, `.env`, `virtualenv`
-- Use the virtual environment's pip executable when available
-- Fallback to system pip if no virtual environment is detected
+1. **Explicit specification**: Use manually specified virtual environment path when provided
+2. **Environment-aware detection**: Use `VIRTUAL_ENV` environment variable in containerized environments (Docker), but not on host systems to avoid interference from the current shell's environment
+3. **Local project search**: Search for virtual environments within the project directory using standard naming conventions
+4. **External environment search**: Search common external virtual environment locations when analyzing projects with working directories
+5. **System fallback**: Use system pip if no virtual environment is detected
+
+**Virtual Environment Identification**: Uses `pyvenv.cfg` files as the definitive indicator of Python virtual environments
 
 ## Rationale
 
@@ -29,25 +32,19 @@ Automatic detection ensures the dependency resolver captures the actual Python e
 
 **Key Benefits**:
 
-- **Accuracy**: Captures dependencies from the actual environment being used
-- **Convenience**: No manual configuration required for standard setups
-- **Flexibility**: Supports various virtual environment naming conventions
-- **Reliability**: `pyvenv.cfg` is the definitive indicator of Python virtual environments
-- **Fallback Safety**: Gracefully falls back to system pip when no venv is found
-
-**Search Strategy**:
-
-1. Look for `pyvenv.cfg` files in working directory and subdirectories
-2. Check standard virtual environment directory names
-3. Verify pip executable exists in detected virtual environment
-4. Use virtual environment pip if found, otherwise use system pip
+- **Accuracy**: Captures dependencies from the actual environment being used by the project
+- **Context Awareness**: Distinguishes between host and containerized execution environments
+- **Convenience**: Automatic detection for standard setups, manual override when needed
+- **Flexibility**: Supports various virtual environment tools and naming conventions
+- **Reliability**: Uses `pyvenv.cfg` as the definitive virtual environment indicator
+- **Non-Interference**: Avoids false positives from host shell environments when analyzing external projects
 
 ## Consequences
 
-- **Positive**: Automatic detection works with most Python project setups
+- **Positive**: Environment-aware detection prevents interference from host shell environments
+- **Positive**: Supports both local and externally managed virtual environments
+- **Positive**: Manual override capability for non-standard setups
+- **Positive**: Works correctly in containerized environments (Docker)
 - **Positive**: Captures project-specific dependencies rather than system-wide packages
-- **Positive**: Supports multiple virtual environment naming conventions
-- **Positive**: Reliable detection using `pyvenv.cfg` standard
-- **Negative**: May not detect non-standard virtual environment setups
 - **Negative**: Additional complexity in environment detection logic
-- **Negative**: Potential for false positives in directories with multiple virtual environments
+- **Negative**: May require manual specification for non-standard virtual environment setups

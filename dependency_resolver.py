@@ -45,6 +45,8 @@ Examples:
 
     parser.add_argument("--working-dir", type=str, help="Working directory to use in the target environment")
 
+    parser.add_argument("--venv-path", type=str, help="Explicit virtual environment path for pip detector")
+
     parser.add_argument("--debug", action="store_true", help="Print debug statements")
 
     parser.add_argument(
@@ -80,7 +82,7 @@ def main() -> None:
             sys.exit(1)
 
         # Create resolver and resolve dependencies
-        resolver = DependencyResolver(debug=args.debug, skip_global=args.skip_global)
+        resolver = DependencyResolver(debug=args.debug, skip_global=args.skip_global, venv_path=args.venv_path)
         result = resolver.resolve_and_format(executor, args.working_dir)
 
         # Output result

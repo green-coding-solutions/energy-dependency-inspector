@@ -3,12 +3,16 @@ import os
 from typing import Dict, Any
 
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from core.executor import HostExecutor
 
 
 class PipDetector(PackageManagerDetector):
     """Detector for Python packages managed by pip."""
 
     NAME = "pip"
+
+    def __init__(self, venv_path: str = None):
+        self.explicit_venv_path = venv_path
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if pip is usable in the environment."""
@@ -81,6 +85,23 @@ class PipDetector(PackageManagerDetector):
         Implements automatic virtual environment detection strategy.
         See docs/adr/0007-python-virtual-environment-detection.md
         """
+        # If explicit venv path is provided, use it first
+        if self.explicit_venv_path:
+            expanded_path = os.path.expanduser(self.explicit_venv_path)
+            pyvenv_cfg = os.path.join(expanded_path, "pyvenv.cfg")
+            if executor.file_exists(pyvenv_cfg):
+                return expanded_path
+
+        # Use VIRTUAL_ENV environment variable in non-host environments (e.g., Docker)
+        if not isinstance(executor, HostExecutor):
+            stdout, _, exit_code = executor.execute_command("echo $VIRTUAL_ENV", working_dir)
+            if exit_code == 0 and stdout.strip():
+                virtual_env_path = stdout.strip()
+                pyvenv_cfg = os.path.join(virtual_env_path, "pyvenv.cfg")
+                if executor.file_exists(pyvenv_cfg):
+                    return virtual_env_path
+
+        # Search for local virtual environments in project directory
         search_dir = working_dir or "."
 
         pyvenv_cfg = os.path.join(search_dir, "pyvenv.cfg")
@@ -94,6 +115,22 @@ class PipDetector(PackageManagerDetector):
             pyvenv_cfg = os.path.join(venv_dir, "pyvenv.cfg")
             if executor.file_exists(pyvenv_cfg):
                 return venv_dir
+
+        # Search for virtual environments in common external locations
+        if working_dir:
+            project_name = os.path.basename(os.path.abspath(working_dir))
+            common_venv_locations = [
+                f"~/.virtualenvs/{project_name}",
+                f"~/.local/share/virtualenvs/{project_name}",
+                f"~/.cache/pypoetry/virtualenvs/{project_name}",
+                f"~/.pyenv/versions/{project_name}",
+            ]
+
+            for venv_location in common_venv_locations:
+                expanded_path = os.path.expanduser(venv_location)
+                pyvenv_cfg = os.path.join(expanded_path, "pyvenv.cfg")
+                if executor.file_exists(pyvenv_cfg):
+                    return expanded_path
 
         return None
 
