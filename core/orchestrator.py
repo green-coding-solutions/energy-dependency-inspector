@@ -10,7 +10,7 @@ from detectors.apk_detector import ApkDetector
 from detectors.docker_compose_detector import DockerComposeDetector
 
 
-class DependencyResolver:
+class Orchestrator:
     """Main orchestrator for dependency detection and extraction."""
 
     def __init__(

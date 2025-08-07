@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 
 from executors import DockerExecutor
-from core.resolver import DependencyResolver
+from core.orchestrator import Orchestrator
 
 try:
     import docker
@@ -71,10 +71,10 @@ class TestDockerExecutorFallback:
 
             # Test the dependency resolver with the distroless container
             executor = DockerExecutor(container_name)
-            resolver = DependencyResolver(debug=True)
+            orchestrator = Orchestrator(debug=True)
 
             # This should work even without sh - the resolver will use our fallback
-            result = resolver.resolve_dependencies(executor)
+            result = orchestrator.resolve_dependencies(executor)
 
             # Verify we get a proper result structure
             assert isinstance(result, dict)
@@ -85,7 +85,7 @@ class TestDockerExecutorFallback:
             # The important thing is that it doesn't crash due to missing sh
 
             # Verify the result can be formatted as JSON (as dependency_resolver.py does)
-            formatted_result = resolver.resolve_and_format(executor)
+            formatted_result = orchestrator.resolve_and_format(executor)
             assert isinstance(formatted_result, str)
 
             # Should be valid JSON
@@ -136,8 +136,8 @@ class TestDockerExecutorFallback:
                 pytest.skip(f"Could not install test package: {stderr}")
 
             # Now test the resolver
-            resolver = DependencyResolver(debug=False)  # Less verbose for this test
-            result = resolver.resolve_dependencies(executor)
+            orchestrator = Orchestrator(debug=False)  # Less verbose for this test
+            result = orchestrator.resolve_dependencies(executor)
 
             # Should find pip dependencies
             assert isinstance(result, dict)

@@ -7,9 +7,10 @@ Usage: dependency_resolver.py [environment_type] [environment_identifier] [optio
 
 import sys
 import argparse
+from typing import Optional
 from executors import HostExecutor, DockerExecutor, DockerComposeExecutor
 from core.interfaces import EnvironmentExecutor
-from core.resolver import DependencyResolver
+from core.orchestrator import Orchestrator
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -61,42 +62,44 @@ Examples:
     return parser.parse_args()
 
 
+def validate_arguments(environment_type: str, environment_identifier: Optional[str]) -> None:
+    """Validate command line arguments."""
+    if environment_type == "docker" and not environment_identifier:
+        print("Error: Docker environment requires a container identifier", file=sys.stderr)
+        sys.exit(1)
+
+    if environment_type == "docker_compose" and not environment_identifier:
+        print("Error: Docker Compose environment requires a stack identifier", file=sys.stderr)
+        sys.exit(1)
+
+    if environment_type == "host" and environment_identifier:
+        print("Warning: Environment identifier is ignored for host environment", file=sys.stderr)
+
+
+def create_executor(environment_type: str, environment_identifier: Optional[str]) -> EnvironmentExecutor:
+    """Create executor based on environment type."""
+    if environment_type == "host":
+        return HostExecutor()
+    elif environment_type == "docker":
+        return DockerExecutor(environment_identifier)
+    elif environment_type == "docker_compose":
+        return DockerComposeExecutor(environment_identifier)
+    else:
+        print(f"Error: Unsupported environment type: {environment_type}", file=sys.stderr)
+        sys.exit(1)
+
+
 def main() -> None:
     """Main entry point."""
     args = parse_arguments()
 
-    # Validate arguments
-    if args.environment_type == "docker" and not args.environment_identifier:
-        print("Error: Docker environment requires a container identifier", file=sys.stderr)
-        sys.exit(1)
-
-    if args.environment_type == "docker_compose" and not args.environment_identifier:
-        print("Error: Docker Compose environment requires a stack identifier", file=sys.stderr)
-        sys.exit(1)
-
-    if args.environment_type == "host" and args.environment_identifier:
-        print("Warning: Environment identifier is ignored for host environment", file=sys.stderr)
+    validate_arguments(args.environment_type, args.environment_identifier)
 
     try:
-        # Create executor based on environment type
-        executor: EnvironmentExecutor
-        if args.environment_type == "host":
-            executor = HostExecutor()
-        elif args.environment_type == "docker":
-            executor = DockerExecutor(args.environment_identifier)
-        elif args.environment_type == "docker_compose":
-            executor = DockerComposeExecutor(args.environment_identifier)
-        else:
-            print(f"Error: Unsupported environment type: {args.environment_type}", file=sys.stderr)
-            sys.exit(1)
-
-        # Create resolver and resolve dependencies
-        resolver = DependencyResolver(debug=args.debug, skip_global=args.skip_global, venv_path=args.venv_path)
-        result = resolver.resolve_and_format(executor, args.working_dir)
-
-        # Output result
+        executor = create_executor(args.environment_type, args.environment_identifier)
+        orchestrator = Orchestrator(debug=args.debug, skip_global=args.skip_global, venv_path=args.venv_path)
+        result = orchestrator.resolve_and_format(executor, args.working_dir)
         print(result)
-
     except (RuntimeError, OSError, ValueError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         sys.exit(1)

@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import pytest
 
 from executors import DockerExecutor, DockerComposeExecutor
-from core.resolver import DependencyResolver
+from core.orchestrator import Orchestrator
 
 try:
     import docker
@@ -48,9 +48,9 @@ class TestDjangoDockerDetection:
 
             # Test dependency detection
             executor = DockerExecutor(web_container_id)
-            resolver = DependencyResolver(debug=False)
+            orchestrator = Orchestrator(debug=False)
 
-            result = resolver.resolve_dependencies(executor)
+            result = orchestrator.resolve_dependencies(executor)
 
             # Print resolver output if requested
             if verbose_output:
@@ -86,9 +86,9 @@ class TestDjangoDockerDetection:
 
             # Test Docker Compose stack detection
             executor = DockerComposeExecutor(compose_project_name)
-            resolver = DependencyResolver(debug=False)
+            orchestrator = Orchestrator(debug=False)
 
-            result = resolver.resolve_dependencies(executor)
+            result = orchestrator.resolve_dependencies(executor)
 
             # Print resolver output if requested
             if verbose_output:

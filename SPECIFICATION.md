@@ -106,7 +106,7 @@ Examples:
      - **No command execution**: Does not execute commands inside containers, only analyzes container metadata
 
 4. **Main Orchestrator**
-   - `DependencyResolver`: Coordinates detection and extraction
+   - `Orchestrator`: Coordinates detection and extraction
    - Auto-discovers available package managers
    - Executes detectors in isolation with error handling
    - Aggregates results into unified JSON output
@@ -115,11 +115,14 @@ Examples:
 
 ```plain
 dependency_resolver/
-├── main.py                   # CLI entry point
+├── dependency_resolver.py    # CLI entry point
 ├── core/
 │   ├── interfaces.py         # Abstract base classes
-│   ├── executor.py           # Environment executors
-│   └── resolver.py           # Main orchestrator
+│   └── orchestrator.py       # Main orchestrator
+├── executors/
+│   ├── host_executor.py
+│   ├── docker_executor.py
+│   └── docker_compose_executor.py
 └── detectors/
     ├── pip_detector.py
     ├── npm_detector.py

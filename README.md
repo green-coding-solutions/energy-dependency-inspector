@@ -64,11 +64,8 @@ Currently supported:
 - **apt/dpkg** - System packages Ubuntu/Debian
 - **apk** - System packages of Alpine
 - **pip** - Python packages
-- **docker-compose** - Container orchestration dependencies
-
-Future support planned:
-
 - **npm** - Node.js packages
+- **docker-compose** - Container images
 
 ### Output Format
 
