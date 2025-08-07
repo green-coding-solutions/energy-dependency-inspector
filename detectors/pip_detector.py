@@ -3,7 +3,7 @@ import os
 from typing import Dict, Any
 
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
-from core.executor import HostExecutor
+from executors import HostExecutor
 
 
 class PipDetector(PackageManagerDetector):

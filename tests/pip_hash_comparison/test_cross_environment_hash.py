@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from core.executor import DockerExecutor, HostExecutor
+from executors import DockerExecutor, HostExecutor
 from detectors.pip_detector import PipDetector
 
 try:

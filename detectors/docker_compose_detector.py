@@ -2,7 +2,7 @@ import re
 from typing import Dict, Any, List
 
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
-from core.executor import DockerComposeExecutor
+from executors import DockerComposeExecutor
 
 
 class DockerComposeDetector(PackageManagerDetector):

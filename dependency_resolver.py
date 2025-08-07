@@ -7,7 +7,8 @@ Usage: dependency_resolver.py [environment_type] [environment_identifier] [optio
 
 import sys
 import argparse
-from core.executor import HostExecutor, DockerExecutor, DockerComposeExecutor, EnvironmentExecutor
+from executors import HostExecutor, DockerExecutor, DockerComposeExecutor
+from core.interfaces import EnvironmentExecutor
 from core.resolver import DependencyResolver
 
 

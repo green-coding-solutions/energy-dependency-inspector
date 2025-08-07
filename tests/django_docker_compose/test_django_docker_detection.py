@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 import pytest
 
-from core.executor import DockerExecutor, DockerComposeExecutor
+from executors import DockerExecutor, DockerComposeExecutor
 from core.resolver import DependencyResolver
 
 try:

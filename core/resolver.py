@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any, List, Optional
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
-from .executor import DockerComposeExecutor
+from executors import DockerComposeExecutor
 from detectors.pip_detector import PipDetector
 from detectors.npm_detector import NpmDetector
 from detectors.dpkg_detector import DpkgDetector
