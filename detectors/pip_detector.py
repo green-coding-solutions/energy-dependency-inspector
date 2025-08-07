@@ -32,10 +32,7 @@ class PipDetector(PackageManagerDetector):
 
         if exit_code != 0:
             location = self._get_pip_location(executor, working_dir)
-            result = {"location": location, "dependencies": {}}
-            if location != "global":
-                result["hash"] = self._generate_location_hash(executor, location)
-            return result
+            return {"location": location, "dependencies": {}}
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -50,8 +47,11 @@ class PipDetector(PackageManagerDetector):
 
         location = self._get_pip_location(executor, working_dir)
         result = {"location": location, "dependencies": dependencies}
-        if location != "global":
+
+        # Generate location-based hash if appropriate
+        if dependencies and location != "global":
             result["hash"] = self._generate_location_hash(executor, location)
+
         return result
 
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:

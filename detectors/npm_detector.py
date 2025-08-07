@@ -46,9 +46,6 @@ class NpmDetector(PackageManagerDetector):
         dependencies: Dict[str, Dict[str, str]] = {}
         result = {"location": location, "dependencies": dependencies}
 
-        if location != "global":
-            result["hash"] = self._generate_location_hash(executor, location)
-
         if exit_code != 0:
             return result
 
@@ -62,6 +59,10 @@ class NpmDetector(PackageManagerDetector):
 
         except (json.JSONDecodeError, AttributeError):
             pass
+
+        # Generate location-based hash if appropriate
+        if dependencies and location != "global":
+            result["hash"] = self._generate_location_hash(executor, location)
 
         return result
 
