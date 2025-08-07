@@ -50,7 +50,10 @@ class DependencyResolver:
                         print(f"{detector_name} is usable, extracting dependencies...")
 
                     dependencies = detector.get_dependencies(executor, working_dir)
-                    result[detector_name] = dependencies
+
+                    # Only include detector in result if it has dependencies or debug mode is enabled
+                    if dependencies.get("dependencies") or self.debug:
+                        result[detector_name] = dependencies
 
                     if self.debug:
                         dep_count = len(dependencies.get("dependencies", {}))
