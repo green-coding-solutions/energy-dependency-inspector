@@ -17,7 +17,7 @@ class DockerComposeDetector(PackageManagerDetector):
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract Docker Compose container images with their tags and hashes."""
         if not isinstance(executor, DockerComposeExecutor):
-            return {"location": "global", "dependencies": {}}
+            return {"scope": "compose", "dependencies": {}}
 
         containers = executor.get_containers()
         dependencies = {}
@@ -43,7 +43,7 @@ class DockerComposeDetector(PackageManagerDetector):
                 print(f"Warning: Failed to process container {container.name}: {str(e)}")
                 continue
 
-        return {"location": "global", "dependencies": dependencies}
+        return {"scope": "compose", "dependencies": dependencies}
 
     def _extract_service_name(self, container_name: str, stack_name: str) -> str:
         """Extract the service name from Docker Compose container name."""
@@ -80,6 +80,6 @@ class DockerComposeDetector(PackageManagerDetector):
 
         return first_tag
 
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """Docker Compose containers are always considered global scope."""
-        return True
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """Docker Compose containers have compose scope, not system scope."""
+        return False

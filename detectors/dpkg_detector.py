@@ -34,7 +34,7 @@ class DpkgDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
         if exit_code != 0:
-            return {"location": "global", "dependencies": {}}
+            return {"scope": "system", "dependencies": {}}
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -57,7 +57,7 @@ class DpkgDetector(PackageManagerDetector):
 
                     dependencies[package_name] = package_data
 
-        return {"location": "global", "dependencies": dependencies}
+        return {"scope": "system", "dependencies": dependencies}
 
     def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str) -> str:
         """Get package hash from dpkg md5sums file if available.
@@ -88,6 +88,6 @@ class DpkgDetector(PackageManagerDetector):
 
         return None
 
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """DPKG always operates globally (system packages)."""
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """DPKG always has system scope (system packages)."""
         return True

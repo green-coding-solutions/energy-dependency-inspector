@@ -18,7 +18,7 @@ We will implement a multi-tiered hash generation strategy with the following rul
 
 - **Individual Package Hashes**: Only include if retrievable directly from package manager
 - **Package Manager Location Hashes**: Generate one hash per package manager based on installation location
-- **Skip Global Location Hashes**: No location hash for system-wide installations
+- **Skip System Location Hashes**: No location hash for system-wide installations
 - **SHA256 Format**: All hashes use full 64-character SHA256 format
 
 ## Rationale
@@ -35,7 +35,7 @@ This approach balances accuracy with practicality by leveraging native package m
 **Location Hash Rules**:
 
 - **Actual Directory Paths**: Hash directory contents (e.g., `find {location} -type f -name '*.py' | sort`)
-- **Global Locations**: Skip hash generation for system-wide installations
+- **System Locations**: Skip hash generation for system-wide installations
 - **Fallback**: Use location string hash if directory listing fails
 
 ## Consequences
@@ -43,7 +43,7 @@ This approach balances accuracy with practicality by leveraging native package m
 - **Positive**: Leverages native package manager capabilities for maximum accuracy
 - **Positive**: Provides consistent change detection through location hashing
 - **Positive**: Avoids synthetic hashes that might not reflect actual package state
-- **Positive**: Optimizes by skipping hashes for stable global installations
+- **Positive**: Optimizes by skipping hashes for stable system installations
 - **Negative**: Inconsistent hash availability across different package managers
 - **Negative**: Additional complexity in hash generation logic
 - **Negative**: Location hashing may be slow for large directories

@@ -53,6 +53,8 @@ Available options:
 
 - `--working-dir <working-dir>`: uses the path as the working directory in the target environment and executes all checks from there
 - `--debug`: prints debug statements
+- `--skip-system-scope`: skips system scope package managers (system packages or globally installed Python packages)
+- `--venv-path <venv-path>`: explicit virtual environment path for pip detector
 
 Examples:
 
@@ -152,7 +154,7 @@ Schema with example values (incomplete):
 ```json
 {
   "docker-compose": {
-    "location": "global",
+    "scope": "compose",
     "dependencies": {
       "backend": {
           "version": "latest",
@@ -162,7 +164,7 @@ Schema with example values (incomplete):
     // ...
   },
   "dpkg": {
-    "location": "global",
+    "scope": "system",
     "dependencies": {
       "zip": {
         "version": "3.0-13ubuntu0.2 amd64",
@@ -175,7 +177,8 @@ Schema with example values (incomplete):
     }
   },
   "pip": {
-      "location": "/home/user/venv",
+      "scope": "project",
+      "location": "/home/user/venv/lib/python3.12/site-packages",
       "hash": "a1b2c3d4e5f6789012345678901234ab",
       "dependencies": {
       "numpy": {
@@ -185,6 +188,7 @@ Schema with example values (incomplete):
     // ...
   },
   "npm": {
+    "scope": "project",
     "location": "/app/frontend",
     "hash": "b2c3d4e5f67890123456789012345bcd",
     "dependencies": {
@@ -200,6 +204,26 @@ Schema with example values (incomplete):
   // ...
 }
 ```
+
+### Schema Field Definitions
+
+#### Scope Field
+
+All package manager outputs include a `scope` field indicating the installation scope:
+
+- **`"system"`**: System-wide packages (apt/dpkg, apk, globally installed pip/npm)
+- **`"project"`**: Project-specific packages (virtual environments, local node_modules)
+- **`"compose"`**: Container orchestration images (Docker Compose, Podman Compose)
+
+#### Location Field
+
+The `location` field is only present when `scope` is `"project"`, providing the specific path to the project-local installation directory.
+
+#### Hash Field
+
+- **Individual package hashes**: Included when retrievable from package manager (e.g., dpkg md5sums, Docker image hashes)
+- **Location-based hashes**: Generated for project scope installations to detect directory changes
+- **System scope**: No location-based hashes (individual package hashes only where available)
 
 ## Implementation Constraints
 

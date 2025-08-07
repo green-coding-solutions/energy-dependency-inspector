@@ -43,10 +43,16 @@ class NpmDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", working_dir)
 
         location = self._get_npm_location(executor, working_dir)
+        scope = "system" if location == "system" else "project"
         dependencies: Dict[str, Dict[str, str]] = {}
-        result = {"location": location, "dependencies": dependencies}
+
+        # Build result with desired field order: scope, location, hash, dependencies
+        result: Dict[str, Any] = {"scope": scope}
+        if scope == "project":
+            result["location"] = location
 
         if exit_code != 0:
+            result["dependencies"] = dependencies
             return result
 
         try:
@@ -61,8 +67,10 @@ class NpmDetector(PackageManagerDetector):
             pass
 
         # Generate location-based hash if appropriate
-        if dependencies and location != "global":
+        if dependencies and scope == "project":
             result["hash"] = self._generate_location_hash(executor, location)
+
+        result["dependencies"] = dependencies
 
         return result
 
@@ -78,7 +86,7 @@ class NpmDetector(PackageManagerDetector):
         if executor.file_exists(node_modules_path):
             return os.path.abspath(search_dir)
 
-        return "global"
+        return "system"
 
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
         """Generate a hash based on the contents of the location directory.
@@ -102,6 +110,6 @@ class NpmDetector(PackageManagerDetector):
         else:
             return ""
 
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """NPM is global when no local package.json or node_modules exists."""
-        return self._get_npm_location(executor, working_dir) == "global"
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """NPM has system scope when no local package.json or node_modules exists."""
+        return self._get_npm_location(executor, working_dir) == "system"

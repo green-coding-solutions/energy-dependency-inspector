@@ -16,11 +16,11 @@ class Orchestrator:
     def __init__(
         self,
         debug: bool = False,
-        skip_global: bool = False,
+        skip_system_scope: bool = False,
         venv_path: Optional[str] = None,
     ):
         self.debug = debug
-        self.skip_global = skip_global
+        self.skip_system_scope = skip_system_scope
 
         # Create detector instances
         self.detectors: List[PackageManagerDetector] = [
@@ -50,10 +50,10 @@ class Orchestrator:
 
             try:
                 if detector.is_usable(executor, working_dir):
-                    # Check if detector is operating globally and skip if requested
-                    if self.skip_global and detector.is_global(executor, working_dir):
+                    # Check if detector has system scope and skip if requested
+                    if self.skip_system_scope and detector.has_system_scope(executor, working_dir):
                         if self.debug:
-                            print(f"Skipping {detector_name} (operating globally, --skip-global enabled)")
+                            print(f"Skipping {detector_name} (system scope, --skip-system-scope enabled)")
                         continue
 
                     if self.debug:
@@ -88,14 +88,14 @@ class Orchestrator:
         if self.debug:
             excerpt = self._create_excerpt(dependencies)
             if pretty_print:
-                return json.dumps(excerpt, indent=2, sort_keys=True)
+                return json.dumps(excerpt, indent=2)
             else:
-                return json.dumps(excerpt, sort_keys=True)
+                return json.dumps(excerpt)
         else:
             if pretty_print:
-                return json.dumps(dependencies, indent=2, sort_keys=True)
+                return json.dumps(dependencies, indent=2)
             else:
-                return json.dumps(dependencies, sort_keys=True)
+                return json.dumps(dependencies)
 
     def _create_excerpt(self, dependencies: Dict[str, Any], max_deps_per_manager: int = 3) -> Dict[str, Any]:
         """Create an excerpt of dependencies for debug mode."""

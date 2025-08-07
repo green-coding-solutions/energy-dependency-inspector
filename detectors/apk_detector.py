@@ -32,7 +32,7 @@ class ApkDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
         if exit_code != 0:
-            return {"location": "global", "dependencies": {}}
+            return {"scope": "system", "dependencies": {}}
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -63,8 +63,8 @@ class ApkDetector(PackageManagerDetector):
 
                         dependencies[package_name] = package_data
 
-        return {"location": "global", "dependencies": dependencies}
+        return {"scope": "system", "dependencies": dependencies}
 
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """APK always operates globally (system packages)."""
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """APK always has system scope (system packages)."""
         return True

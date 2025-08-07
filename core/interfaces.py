@@ -36,10 +36,10 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """Check if this detector would operate globally (system-wide) for the given working directory.
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """Check if this detector operates at system scope for the given environment.
 
-        Returns True if the detector would return location: "global" in get_dependencies().
-        This allows checking global status without the overhead of extracting all dependencies.
+        Returns True if the detector would return scope: "system" in get_dependencies().
+        This allows efficient scope checking without the overhead of dependency extraction.
         """
         raise NotImplementedError

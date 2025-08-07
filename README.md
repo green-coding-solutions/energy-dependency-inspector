@@ -47,8 +47,8 @@ python3 dependency_resolver.py --debug
 # Set working directory
 python3 dependency_resolver.py --working-dir /path/to/project
 
-# Skip global package manager detections
-python3 dependency_resolver.py --skip-global
+# Skip system scope package managers
+python3 dependency_resolver.py --skip-system-scope
 ```
 
 ### Supported Environments
@@ -74,7 +74,7 @@ The tool outputs JSON with the following structure:
 ```json
 {
   "docker-compose": {
-    "location": "global",
+    "scope": "compose",
     "dependencies": {
       "web": {
         "version": "django_app-web:latest",
@@ -86,8 +86,8 @@ The tool outputs JSON with the following structure:
       }
     }
   },
-  "apt": {
-    "location": "global",
+  "dpkg": {
+    "scope": "system",
     "dependencies": {
       "package-name": {
         "version": "1.2.3 amd64",
@@ -96,11 +96,12 @@ The tool outputs JSON with the following structure:
     }
   },
   "pip": {
-    "location": "/usr/lib/python3/dist-packages",
+    "scope": "project",
+    "location": "/path/to/venv/lib/python3.12/site-packages",
+    "hash": "def456...",
     "dependencies": {
       "package-name": {
-        "version": "1.2.3",
-        "hash": "def456..."
+        "version": "1.2.3"
       }
     }
   }

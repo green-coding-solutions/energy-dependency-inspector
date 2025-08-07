@@ -28,7 +28,7 @@ Examples:
   %(prog)s --working-dir /tmp/repo                # Set working directory on target environment
   %(prog)s --venv-path ~/.virtualenvs/myproject   # Use specific virtual environment for pip
   %(prog)s --debug                                # Enable debug output
-  %(prog)s --skip-global                          # Skip global package manager detections
+  %(prog)s --skip-system-scope                    # Skip system scope package managers
         """,
     )
 
@@ -54,9 +54,9 @@ Examples:
     parser.add_argument("--debug", action="store_true", help="Print debug statements")
 
     parser.add_argument(
-        "--skip-global",
+        "--skip-system-scope",
         action="store_true",
-        help="Skip global package manager detections (system packages or globally installed Python packages)",
+        help="Skip system scope package managers (system packages or globally installed Python packages)",
     )
 
     return parser.parse_args()
@@ -97,7 +97,9 @@ def main() -> None:
 
     try:
         executor = create_executor(args.environment_type, args.environment_identifier)
-        orchestrator = Orchestrator(debug=args.debug, skip_global=args.skip_global, venv_path=args.venv_path)
+        orchestrator = Orchestrator(
+            debug=args.debug, skip_system_scope=args.skip_system_scope, venv_path=args.venv_path
+        )
         result = orchestrator.resolve_and_format(executor, args.working_dir)
         print(result)
     except (RuntimeError, OSError, ValueError) as e:

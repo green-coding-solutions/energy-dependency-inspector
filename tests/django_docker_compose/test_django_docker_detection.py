@@ -57,7 +57,7 @@ class TestDjangoDockerDetection:
                 print("\n" + "=" * 60)
                 print("DEPENDENCY RESOLVER OUTPUT:")
                 print("=" * 60)
-                print(json.dumps(result, indent=2, sort_keys=True))
+                print(json.dumps(result, indent=2))
                 print("=" * 60)
 
             # Validate results
@@ -95,7 +95,7 @@ class TestDjangoDockerDetection:
                 print("\n" + "=" * 60)
                 print("DOCKER COMPOSE STACK DETECTION OUTPUT:")
                 print("=" * 60)
-                print(json.dumps(result, indent=2, sort_keys=True))
+                print(json.dumps(result, indent=2))
                 print("=" * 60)
 
             # Validate results
@@ -229,7 +229,7 @@ class TestDjangoDockerDetection:
 
         # Check if hash is in dependency or in the pip_result (location hash for all pip dependencies)
         if "hash" not in django_dep and "hash" in pip_result:
-            # Global hash for all pip dependencies location
+            # System hash for all pip dependencies location
             location_hash = pip_result["hash"]
         else:
             location_hash = django_dep.get("hash")
@@ -237,7 +237,10 @@ class TestDjangoDockerDetection:
         assert (
             location_hash is not None
         ), f"Django dependency should have location hash somewhere: pip_result={pip_result}"
-        assert "location" in pip_result, "pip result should have location field"
+        assert "scope" in pip_result, "pip result should have scope field"
+        # Location field should only be present for project scope
+        if pip_result["scope"] == "project":
+            assert "location" in pip_result, "pip result should have location field for project scope"
 
         # Validate version format (should be semver-like)
         version = django_dep["version"]
@@ -256,8 +259,8 @@ class TestDjangoDockerDetection:
 
         compose_result = result["docker-compose"]
         assert "dependencies" in compose_result, "docker-compose result should contain 'dependencies'"
-        assert "location" in compose_result, "docker-compose result should contain 'location'"
-        assert compose_result["location"] == "global", "docker-compose location should be 'global'"
+        assert "scope" in compose_result, "docker-compose result should contain 'scope'"
+        assert compose_result["scope"] == "compose", "docker-compose scope should be 'compose'"
 
         dependencies = compose_result["dependencies"]
         assert isinstance(dependencies, dict), "Dependencies should be a dictionary"

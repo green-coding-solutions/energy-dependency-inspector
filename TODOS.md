@@ -1,5 +1,6 @@
 # TODOS
 
+- Put formatting of output in separate class
 - Add support for Podman + Podman Compose
 - Add tests
   - apk_detector

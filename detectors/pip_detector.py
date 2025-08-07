@@ -29,14 +29,19 @@ class PipDetector(PackageManagerDetector):
         if working_dir:
             venv_path = self._find_venv_path(executor, working_dir)
             if not venv_path:
-                return {"location": os.path.abspath(working_dir), "dependencies": {}}
+                return {"scope": "project", "location": os.path.abspath(working_dir), "dependencies": {}}
 
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
 
         if exit_code != 0:
             location = self._get_pip_location(executor, working_dir)
-            return {"location": location, "dependencies": {}}
+            scope = "system" if location == "system" else "project"
+            result: Dict[str, Any] = {"scope": scope}
+            if scope == "project":
+                result["location"] = location
+            result["dependencies"] = {}
+            return result
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -50,13 +55,20 @@ class PipDetector(PackageManagerDetector):
                 }
 
         location = self._get_pip_location(executor, working_dir)
-        result = {"location": location, "dependencies": dependencies}
+        scope = "system" if location == "system" else "project"
 
-        # Generate location-based hash if appropriate
-        if dependencies and location != "global":
-            result["hash"] = self._generate_location_hash(executor, location)
+        # Build result with desired field order: scope, location, hash, dependencies
+        final_result: Dict[str, Any] = {"scope": scope}
 
-        return result
+        if scope == "project":
+            final_result["location"] = location
+            # Generate location-based hash if appropriate
+            if dependencies:
+                final_result["hash"] = self._generate_location_hash(executor, location)
+
+        final_result["dependencies"] = dependencies
+
+        return final_result
 
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
         """Get the location of the pip environment."""
@@ -68,7 +80,7 @@ class PipDetector(PackageManagerDetector):
                 if line.startswith("Location:"):
                     return line.split(":", 1)[1].strip()
 
-        return "global"
+        return "system"
 
     def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
         """Get the appropriate pip command, activating venv if available."""
@@ -170,6 +182,6 @@ class PipDetector(PackageManagerDetector):
             print(f"ERROR: location: {location}")
             return ""
 
-    def is_global(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
-        """PIP is global when no virtual environment is found."""
-        return self._get_pip_location(executor, working_dir) == "global"
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+        """PIP has system scope when no virtual environment is found."""
+        return self._get_pip_location(executor, working_dir) == "system"
