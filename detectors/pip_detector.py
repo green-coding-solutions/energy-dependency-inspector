@@ -87,7 +87,7 @@ class PipDetector(PackageManagerDetector):
         """Get the appropriate pip command, activating venv if available."""
         venv_path = self._find_venv_path(executor, working_dir)
         if venv_path:
-            venv_pip = os.path.join(venv_path, "bin", "pip")
+            venv_pip = f"{venv_path}/bin/pip"
             if executor.file_exists(venv_pip):
                 return venv_pip
         return "pip"
@@ -100,32 +100,35 @@ class PipDetector(PackageManagerDetector):
         """
         # If explicit venv path is provided, use it first
         if self.explicit_venv_path:
-            expanded_path = os.path.expanduser(self.explicit_venv_path)
-            pyvenv_cfg = os.path.join(expanded_path, "pyvenv.cfg")
-            if executor.file_exists(pyvenv_cfg):
-                return expanded_path
+            # Expand ~ within the executor context, not on the host
+            stdout, _, exit_code = executor.execute_command(f"echo {self.explicit_venv_path}")
+            if exit_code == 0 and stdout.strip():
+                expanded_path = stdout.strip()
+                pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
+                if executor.file_exists(pyvenv_cfg):
+                    return expanded_path
 
         # Use VIRTUAL_ENV environment variable in non-host environments (e.g., Docker)
         if not isinstance(executor, HostExecutor):
             stdout, _, exit_code = executor.execute_command("echo $VIRTUAL_ENV", working_dir)
             if exit_code == 0 and stdout.strip():
                 virtual_env_path = stdout.strip()
-                pyvenv_cfg = os.path.join(virtual_env_path, "pyvenv.cfg")
+                pyvenv_cfg = f"{virtual_env_path}/pyvenv.cfg"
                 if executor.file_exists(pyvenv_cfg):
                     return virtual_env_path
 
         # Search for local virtual environments in project directory
         search_dir = working_dir or "."
 
-        pyvenv_cfg = os.path.join(search_dir, "pyvenv.cfg")
+        pyvenv_cfg = f"{search_dir}/pyvenv.cfg"
         if executor.file_exists(pyvenv_cfg):
             return search_dir
 
         common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
 
         for venv_name in common_venv_names:
-            venv_dir = os.path.join(search_dir, venv_name)
-            pyvenv_cfg = os.path.join(venv_dir, "pyvenv.cfg")
+            venv_dir = f"{search_dir}/{venv_name}"
+            pyvenv_cfg = f"{venv_dir}/pyvenv.cfg"
             if executor.file_exists(pyvenv_cfg):
                 return venv_dir
 
@@ -142,10 +145,13 @@ class PipDetector(PackageManagerDetector):
             ]
 
             for venv_location in common_venv_locations:
-                expanded_path = os.path.expanduser(venv_location)
-                pyvenv_cfg = os.path.join(expanded_path, "pyvenv.cfg")
-                if executor.file_exists(pyvenv_cfg):
-                    return expanded_path
+                # Expand ~ within the executor context, not on the host
+                stdout, _, exit_code = executor.execute_command(f"echo {venv_location}")
+                if exit_code == 0 and stdout.strip():
+                    expanded_path = stdout.strip()
+                    pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
+                    if executor.file_exists(pyvenv_cfg):
+                        return expanded_path
 
         return None
 
