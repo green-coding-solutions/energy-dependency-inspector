@@ -5,8 +5,6 @@
 - Add tests
   - apk_detector
   - dpkg_detector
-  - npm_detector
-  - pip_detector
 - Add configuration file
   - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)
   - Configure which package management systems should be checked

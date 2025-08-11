@@ -80,13 +80,28 @@ class NpmDetector(PackageManagerDetector):
 
         package_json_path = os.path.join(search_dir, "package.json")
         if executor.file_exists(package_json_path):
-            return os.path.abspath(search_dir)
+            return self._resolve_absolute_path(executor, search_dir)
 
         node_modules_path = os.path.join(search_dir, "node_modules")
         if executor.file_exists(node_modules_path):
-            return os.path.abspath(search_dir)
+            return self._resolve_absolute_path(executor, search_dir)
 
         return "system"
+
+    def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
+        """Resolve absolute path within the executor's context."""
+        if path == ".":
+            # Get the current working directory from the executor
+            stdout, stderr, exit_code = executor.execute_command("pwd")
+            if exit_code == 0 and stdout.strip():
+                return stdout.strip()
+            raise RuntimeError(f"Failed to resolve current directory in executor context: {stderr}")
+        else:
+            # For non-current directory paths, try to resolve within executor context
+            stdout, stderr, exit_code = executor.execute_command(f"cd '{path}' && pwd")
+            if exit_code == 0 and stdout.strip():
+                return stdout.strip()
+            raise RuntimeError(f"Failed to resolve path '{path}' in executor context: {stderr}")
 
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
         """Generate a hash based on the contents of the location directory.
