@@ -1,6 +1,6 @@
-# IF npm Docker Container Dependency Detection Test
+# npm Docker Container Dependency Detection Test
 
-This directory contains tests to validate npm dependency detection in the Impact Framework (IF) Docker container environment.
+This directory contains tests to validate npm dependency detection using the Impact Framework (IF) as an example Docker container environment.
 
 **Based on**: [Green Software Foundation IF project](https://github.com/Green-Software-Foundation/if)
 
@@ -10,19 +10,19 @@ The test pulls and runs the official IF Docker image and verifies that the depen
 
 ## Test Approach
 
-### npm Container Detection (`test_if_npm_docker_container_detection`)
+### npm Container Detection (`test_npm_docker_container_detection`)
 
 - **Purpose**: Tests npm dependency detection inside the IF Docker container
 - **Executor**: Uses `DockerExecutor` to analyze container contents
 - **Container**: Uses `ghcr.io/green-software-foundation/if` Docker image
 - **Validation**: Verifies detection of TypeScript, Jest, and other npm packages
-- **Focus**: Application dependencies installed within the IF container
+- **Focus**: npm project dependencies in containers (skips system packages for performance)
 
 The test manages the complete container lifecycle including startup, readiness checks, and cleanup.
 
 ## Files
 
-- `test_if_npm_docker_detection.py` - Main test suite for IF npm detection
+- `test_npm_docker_detection.py` - Main test suite for npm detection
 - `conftest.py` - Pytest configuration with --verbose-resolver option
 - `README.md` - This documentation file
 
@@ -39,7 +39,7 @@ The test manages the complete container lifecycle including startup, readiness c
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/if_npm_docker/test_if_npm_docker_detection.py -v
+python -m pytest tests/npm_detector/test_npm_docker_detection.py -v
 ```
 
 ### With Verbose Resolver Output
@@ -48,7 +48,7 @@ To see the complete dependency resolver output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/if_npm_docker/test_if_npm_docker_detection.py -v -s --verbose-resolver
+python -m pytest tests/npm_detector/test_npm_docker_detection.py -v -s --verbose-resolver
 ```
 
 The `--verbose-resolver` option displays the complete JSON output with all detected npm dependencies.
@@ -57,7 +57,7 @@ The `--verbose-resolver` option displays the complete JSON output with all detec
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/if_npm_docker/ -v
+python -m pytest tests/npm_detector/ -v
 ```
 
 ## Test Process
