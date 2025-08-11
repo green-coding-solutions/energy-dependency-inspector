@@ -29,7 +29,8 @@ class PipDetector(PackageManagerDetector):
         if working_dir:
             venv_path = self._find_venv_path(executor, working_dir)
             if not venv_path:
-                return {"scope": "project", "location": os.path.abspath(working_dir), "dependencies": {}}
+                location = self._resolve_absolute_path(executor, working_dir)
+                return {"scope": "project", "location": location, "dependencies": {}}
 
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
@@ -130,7 +131,9 @@ class PipDetector(PackageManagerDetector):
 
         # Search for virtual environments in common external locations
         if working_dir:
-            project_name = os.path.basename(os.path.abspath(working_dir))
+            # Get project name from the resolved working directory
+            resolved_working_dir = self._resolve_absolute_path(executor, working_dir)
+            project_name = os.path.basename(resolved_working_dir)
             common_venv_locations = [
                 f"~/.virtualenvs/{project_name}",
                 f"~/.local/share/virtualenvs/{project_name}",
@@ -146,18 +149,25 @@ class PipDetector(PackageManagerDetector):
 
         return None
 
+    def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
+        """Resolve absolute path within the executor's context."""
+        if path == ".":
+            stdout, stderr, exit_code = executor.execute_command("pwd")
+            if exit_code == 0 and stdout.strip():
+                return stdout.strip()
+            raise RuntimeError(f"Failed to resolve current directory in executor context: {stderr}")
+        else:
+            stdout, stderr, exit_code = executor.execute_command(f"cd '{path}' && pwd")
+            if exit_code == 0 and stdout.strip():
+                return stdout.strip()
+            raise RuntimeError(f"Failed to resolve path '{path}' in executor context: {stderr}")
+
     def _generate_location_hash(self, executor: EnvironmentExecutor, location: str) -> str:
         """Generate a hash based on the contents of the location directory.
 
         Implements package manager location hashing as part of multi-tiered hash strategy.
         See docs/adr/0005-hash-generation-strategy.md
         """
-        # Use environment-independent sorting for consistent hashes across systems.
-        # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
-        # Include both regular files and symbolic links to capture complete directory state.
-        # For symlinks, include the target path (%l) to make hash sensitive to link changes.
-        # The -printf format ensures consistent "size path [target]" output regardless of system.
-        # LC_COLLATE=C ensures byte-wise lexicographic sorting independent of system locale.
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "
@@ -177,9 +187,6 @@ class PipDetector(PackageManagerDetector):
             content = stdout.strip()
             return hashlib.sha256(content.encode()).hexdigest()
         else:
-            print(f"ERROR: pip_detector hash generation command failed with exit code {exit_code}")
-            print(f"ERROR: command stdout: {stdout}")
-            print(f"ERROR: location: {location}")
             return ""
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
