@@ -1,10 +1,10 @@
 # TODOS
 
-- Put formatting of output in separate class
-- Add support for Podman + Podman Compose
 - Add tests
+  - cli flags
   - apk_detector
   - dpkg_detector
+- Add support for Podman + Podman Compose
 - Add configuration file
   - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)
   - Configure which package management systems should be checked

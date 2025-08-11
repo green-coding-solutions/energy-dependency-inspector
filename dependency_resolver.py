@@ -11,6 +11,7 @@ from typing import Optional
 from executors import HostExecutor, DockerExecutor, DockerComposeExecutor
 from core.interfaces import EnvironmentExecutor
 from core.orchestrator import Orchestrator
+from core.output_formatter import OutputFormatter
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -100,7 +101,9 @@ def main() -> None:
         orchestrator = Orchestrator(
             debug=args.debug, skip_system_scope=args.skip_system_scope, venv_path=args.venv_path
         )
-        result = orchestrator.resolve_and_format(executor, args.working_dir)
+        dependencies = orchestrator.resolve_dependencies(executor, args.working_dir)
+        formatter = OutputFormatter(debug=args.debug)
+        result = formatter.format_json(dependencies, pretty_print=True)
         print(result)
     except (RuntimeError, OSError, ValueError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)
