@@ -27,8 +27,8 @@ class Orchestrator:
             DockerComposeDetector(),
             DpkgDetector(),
             ApkDetector(),
-            PipDetector(venv_path=venv_path),
-            NpmDetector(),
+            PipDetector(venv_path=venv_path, debug=debug),
+            NpmDetector(debug=debug),
         ]
 
     def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:

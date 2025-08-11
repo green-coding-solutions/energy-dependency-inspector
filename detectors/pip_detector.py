@@ -11,8 +11,9 @@ class PipDetector(PackageManagerDetector):
 
     NAME = "pip"
 
-    def __init__(self, venv_path: str = None):
+    def __init__(self, venv_path: str = None, debug: bool = False):
         self.explicit_venv_path = venv_path
+        self.debug = debug
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if pip is usable in the environment."""
@@ -174,6 +175,12 @@ class PipDetector(PackageManagerDetector):
         Implements package manager location hashing as part of multi-tiered hash strategy.
         See docs/adr/0005-hash-generation-strategy.md
         """
+        # Use environment-independent sorting for consistent hashes across systems.
+        # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
+        # Include both regular files and symbolic links to capture complete directory state.
+        # For symlinks, include the target path (%l) to make hash sensitive to link changes.
+        # The -printf format ensures consistent "size path [target]" output regardless of system.
+        # LC_COLLATE=C ensures byte-wise lexicographic sorting independent of system locale.
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name '__pycache__' -prune -o "
@@ -193,6 +200,10 @@ class PipDetector(PackageManagerDetector):
             content = stdout.strip()
             return hashlib.sha256(content.encode()).hexdigest()
         else:
+            if self.debug:
+                print(f"ERROR: pip_detector hash generation command failed with exit code {exit_code}")
+                print(f"ERROR: command stdout: {stdout}")
+                print(f"ERROR: location: {location}")
             return ""
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:

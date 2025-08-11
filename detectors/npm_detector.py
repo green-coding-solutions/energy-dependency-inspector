@@ -10,6 +10,9 @@ class NpmDetector(PackageManagerDetector):
 
     NAME = "npm"
 
+    def __init__(self, debug: bool = False):
+        self.debug = debug
+
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if npm is usable and the project uses npm (not yarn/pnpm)."""
         _, _, exit_code = executor.execute_command("npm --version", working_dir)
@@ -108,6 +111,13 @@ class NpmDetector(PackageManagerDetector):
         Implements package manager location hashing as part of multi-tiered hash strategy.
         See docs/adr/0005-hash-generation-strategy.md
         """
+        # Use environment-independent sorting for consistent hashes across systems.
+        # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
+        # Include both regular files and symbolic links to capture complete directory state.
+        # For symlinks, include the target path (%l) to make hash sensitive to link changes.
+        # The -printf format ensures consistent "size path [target]" output regardless of system.
+        # LC_COLLATE=C ensures byte-wise lexicographic sorting independent of system locale.
+        # Excludes npm cache directories and temporary files that change frequently.
         stdout, _, exit_code = executor.execute_command(
             f"cd '{location}' && find . "
             "-name 'node_modules/.cache' -prune -o "
@@ -122,6 +132,10 @@ class NpmDetector(PackageManagerDetector):
             content = stdout.strip()
             return hashlib.sha256(content.encode()).hexdigest()
         else:
+            if self.debug:
+                print(f"ERROR: npm_detector hash generation command failed with exit code {exit_code}")
+                print(f"ERROR: command stdout: {stdout}")
+                print(f"ERROR: location: {location}")
             return ""
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
