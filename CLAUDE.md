@@ -44,7 +44,7 @@ Python with venv, pip, and pytest (Unix-only)
 ## Style & Workflow
 
 - **Follow PEP8**
-- **Activate venv first**: `source venv/bin/activate` at the beginning of a new task
+- **Activate venv first**: `source venv/bin/activate` at the beginning of a new session
 - **Lint after each task** - always ensure good code quality
 - **Commit frequently**
 

@@ -16,7 +16,7 @@ class DpkgDetector(PackageManagerDetector):
             os_info = stdout.lower()
             meets_requirements = "debian" in os_info or "ubuntu" in os_info
         else:
-            meets_requirements = executor.file_exists("/etc/debian_version")
+            meets_requirements = executor.path_exists("/etc/debian_version")
 
         if not meets_requirements:
             return False
@@ -67,7 +67,7 @@ class DpkgDetector(PackageManagerDetector):
         """
         md5sums_file = f"/var/lib/dpkg/info/{package_name}.md5sums"
 
-        if not executor.file_exists(md5sums_file):
+        if not executor.path_exists(md5sums_file):
             return None
 
         try:

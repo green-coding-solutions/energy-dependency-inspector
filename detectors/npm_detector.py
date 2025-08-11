@@ -23,16 +23,16 @@ class NpmDetector(PackageManagerDetector):
         search_dir = working_dir or "."
 
         # If yarn.lock, pnpm-lock.yaml, or bun.lockb exist, prefer those package managers
-        if executor.file_exists(f"{search_dir}/yarn.lock"):
+        if executor.path_exists(f"{search_dir}/yarn.lock"):
             return False
-        if executor.file_exists(f"{search_dir}/pnpm-lock.yaml"):
+        if executor.path_exists(f"{search_dir}/pnpm-lock.yaml"):
             return False
-        if executor.file_exists(f"{search_dir}/bun.lockb"):
+        if executor.path_exists(f"{search_dir}/bun.lockb"):
             return False
 
         # If package.json exists or package-lock.json exists, and no other lock files, use npm
-        package_json_exists = executor.file_exists(f"{search_dir}/package.json")
-        package_lock_exists = executor.file_exists(f"{search_dir}/package-lock.json")
+        package_json_exists = executor.path_exists(f"{search_dir}/package.json")
+        package_lock_exists = executor.path_exists(f"{search_dir}/package-lock.json")
 
         return package_json_exists or package_lock_exists
 
@@ -81,11 +81,11 @@ class NpmDetector(PackageManagerDetector):
         search_dir = working_dir or "."
 
         package_json_path = f"{search_dir}/package.json"
-        if executor.file_exists(package_json_path):
+        if executor.path_exists(package_json_path):
             return self._resolve_absolute_path(executor, search_dir)
 
         node_modules_path = f"{search_dir}/node_modules"
-        if executor.file_exists(node_modules_path):
+        if executor.path_exists(node_modules_path):
             return self._resolve_absolute_path(executor, search_dir)
 
         return "system"

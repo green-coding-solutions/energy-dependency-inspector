@@ -32,6 +32,10 @@ class Orchestrator:
 
     def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Resolve all dependencies from available package managers."""
+        # Validate working directory if provided
+        if working_dir is not None and not executor.path_exists(working_dir):
+            raise ValueError(f"Working directory does not exist: {working_dir}")
+
         result = {}
 
         # For Docker Compose environments, only run the DockerComposeDetector

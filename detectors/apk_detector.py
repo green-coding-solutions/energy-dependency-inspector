@@ -14,7 +14,7 @@ class ApkDetector(PackageManagerDetector):
         if exit_code == 0:
             meets_requirements = "alpine" in stdout.lower()
         else:
-            meets_requirements = executor.file_exists("/etc/alpine-release")
+            meets_requirements = executor.path_exists("/etc/alpine-release")
 
         if not meets_requirements:
             return False

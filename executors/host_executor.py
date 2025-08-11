@@ -29,6 +29,6 @@ class HostExecutor(EnvironmentExecutor):
         except (subprocess.SubprocessError, OSError) as e:
             return "", f"Command execution failed: {str(e)}", 1
 
-    def file_exists(self, path: str) -> bool:
-        """Check if a file exists on the host system."""
+    def path_exists(self, path: str) -> bool:
+        """Check if a path (file or directory) exists on the host system."""
         return os.path.exists(path)

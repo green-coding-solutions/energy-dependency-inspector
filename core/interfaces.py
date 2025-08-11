@@ -11,8 +11,8 @@ class EnvironmentExecutor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def file_exists(self, path: str) -> bool:
-        """Check if a file exists in the target environment."""
+    def path_exists(self, path: str) -> bool:
+        """Check if a path (file or directory) exists in the target environment."""
         raise NotImplementedError
 
 

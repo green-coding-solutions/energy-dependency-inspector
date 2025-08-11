@@ -113,8 +113,8 @@ class DockerExecutor(EnvironmentExecutor):
 
         return None
 
-    def file_exists(self, path: str) -> bool:
-        """Check if a file exists inside the Docker container."""
+    def path_exists(self, path: str) -> bool:
+        """Check if a path (file or directory) exists inside the Docker container."""
         try:
             _, _, exit_code = self.execute_command(f'test -e "{path}"')
             return exit_code == 0

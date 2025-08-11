@@ -89,7 +89,7 @@ class PipDetector(PackageManagerDetector):
         venv_path = self._find_venv_path(executor, working_dir)
         if venv_path:
             venv_pip = f"{venv_path}/bin/pip"
-            if executor.file_exists(venv_pip):
+            if executor.path_exists(venv_pip):
                 return venv_pip
         return "pip"
 
@@ -106,7 +106,7 @@ class PipDetector(PackageManagerDetector):
             if exit_code == 0 and stdout.strip():
                 expanded_path = stdout.strip()
                 pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
-                if executor.file_exists(pyvenv_cfg):
+                if executor.path_exists(pyvenv_cfg):
                     return expanded_path
 
         # Use VIRTUAL_ENV environment variable in non-host environments (e.g., Docker)
@@ -115,14 +115,14 @@ class PipDetector(PackageManagerDetector):
             if exit_code == 0 and stdout.strip():
                 virtual_env_path = stdout.strip()
                 pyvenv_cfg = f"{virtual_env_path}/pyvenv.cfg"
-                if executor.file_exists(pyvenv_cfg):
+                if executor.path_exists(pyvenv_cfg):
                     return virtual_env_path
 
         # Search for local virtual environments in project directory
         search_dir = working_dir or "."
 
         pyvenv_cfg = f"{search_dir}/pyvenv.cfg"
-        if executor.file_exists(pyvenv_cfg):
+        if executor.path_exists(pyvenv_cfg):
             return search_dir
 
         common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
@@ -130,7 +130,7 @@ class PipDetector(PackageManagerDetector):
         for venv_name in common_venv_names:
             venv_dir = f"{search_dir}/{venv_name}"
             pyvenv_cfg = f"{venv_dir}/pyvenv.cfg"
-            if executor.file_exists(pyvenv_cfg):
+            if executor.path_exists(pyvenv_cfg):
                 return venv_dir
 
         # Search for virtual environments in common external locations
@@ -151,7 +151,7 @@ class PipDetector(PackageManagerDetector):
                 if exit_code == 0 and stdout.strip():
                     expanded_path = stdout.strip()
                     pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
-                    if executor.file_exists(pyvenv_cfg):
+                    if executor.path_exists(pyvenv_cfg):
                         return expanded_path
 
         return None

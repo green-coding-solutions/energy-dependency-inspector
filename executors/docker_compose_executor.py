@@ -59,8 +59,8 @@ class DockerComposeExecutor(EnvironmentExecutor):
         """
         return "", "Docker Compose executor does not execute commands in containers", 1
 
-    def file_exists(self, path: str) -> bool:
-        """Docker Compose executor does not check files in containers.
+    def path_exists(self, path: str) -> bool:
+        """Docker Compose executor does not check paths in containers.
 
         For Docker Compose environments, we only analyze the container images
         themselves, not the contents inside the containers.
