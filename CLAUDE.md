@@ -47,6 +47,7 @@ Python with venv, pip, and pytest (Unix-only)
 - **Activate venv first**: `source venv/bin/activate` at the beginning of a new session
 - **Lint after each task** - always ensure good code quality
 - **Commit frequently**
+- **Add tests for new functionality**
 
 ## Project Files
 
