@@ -1,10 +1,7 @@
 """Test DPKG detector using Docker Debian/Ubuntu environment."""
 
-import json
 import os
-import subprocess
 import sys
-import time
 from typing import Dict, Any
 
 # Add parent directory to path for imports
@@ -14,6 +11,7 @@ import pytest
 
 from executors import DockerExecutor
 from core.orchestrator import Orchestrator
+from tests.common.docker_test_base import DockerTestBase
 
 try:
     import docker
@@ -21,7 +19,7 @@ except ImportError:
     docker = None
 
 
-class TestDpkgDockerDetection:
+class TestDpkgDockerDetection(DockerTestBase):
     """Test DPKG detector using Docker Debian/Ubuntu environment."""
 
     UBUNTU_IMAGE = "ubuntu:22.04"
@@ -30,14 +28,12 @@ class TestDpkgDockerDetection:
     def test_dpkg_detector_ubuntu_container(self, request: pytest.FixtureRequest) -> None:
         """Test DPKG detector in Ubuntu Linux Docker container with base and additional packages."""
 
-        # Check for verbose output option
-        verbose_output = request.config.getoption("--verbose-resolver", default=False)
-
+        verbose_output = self.setup_verbose_output(request)
         container_id = None
 
         try:
-            container_id = self._start_ubuntu_container(self.UBUNTU_IMAGE)
-            self._wait_for_container_ready(container_id)
+            container_id = self.start_container(self.UBUNTU_IMAGE)
+            self.wait_for_container_ready(container_id, "dpkg-query --version")
 
             executor = DockerExecutor(container_id)
             orchestrator = Orchestrator(debug=False)
@@ -46,11 +42,7 @@ class TestDpkgDockerDetection:
             result_base = orchestrator.resolve_dependencies(executor)
 
             if verbose_output:
-                print("\n" + "=" * 60)
-                print("BASE UBUNTU DEPENDENCIES:")
-                print("=" * 60)
-                print(json.dumps(result_base, indent=2))
-                print("=" * 60)
+                self.print_verbose_results("BASE UBUNTU DEPENDENCIES:", result_base)
 
             self._validate_dpkg_dependencies(result_base)
             base_package_count = len(result_base["dpkg"]["dependencies"])
@@ -67,11 +59,7 @@ class TestDpkgDockerDetection:
             result_extended = orchestrator.resolve_dependencies(executor)
 
             if verbose_output:
-                print("\n" + "=" * 60)
-                print("EXTENDED UBUNTU DEPENDENCIES:")
-                print("=" * 60)
-                print(json.dumps(result_extended, indent=2))
-                print("=" * 60)
+                self.print_verbose_results("EXTENDED UBUNTU DEPENDENCIES:", result_extended)
 
             self._validate_dpkg_dependencies_extended(result_extended, base_package_count, packages_to_install)
 
@@ -81,66 +69,14 @@ class TestDpkgDockerDetection:
 
         finally:
             if container_id:
-                self._cleanup_container(container_id)
-
-    def _start_ubuntu_container(self, image: str) -> str:
-        """Start Ubuntu Docker container and return its ID."""
-        cmd = ["docker", "run", "-d", "--rm", image, "sleep", "300"]
-
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-
-        if result.returncode != 0:
-            pytest.fail(f"Failed to start Ubuntu container: {result.stderr}")
-
-        container_id = result.stdout.strip()
-        return container_id
-
-    def _wait_for_container_ready(self, container_id: str, max_wait: int = 30) -> None:
-        """Wait for Ubuntu container to be ready."""
-        client = docker.from_env()
-
-        start_time = time.time()
-        while time.time() - start_time < max_wait:
-            try:
-                container = client.containers.get(container_id)
-                container.reload()
-
-                if container.status == "running":
-                    try:
-                        executor = DockerExecutor(container_id)
-                        _, _, exit_code = executor.execute_command("dpkg-query --version")
-                        if exit_code == 0:
-                            return
-                    except Exception:  # pylint: disable=broad-exception-caught
-                        pass  # Continue waiting
-
-                time.sleep(1)
-
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                print(f"Error checking container status: {e}")
-                time.sleep(1)
-
-        pytest.fail("Ubuntu container did not become ready within timeout")
-
-    def _cleanup_container(self, container_id: str) -> None:
-        """Stop and remove the Docker container."""
-        cmd = ["docker", "stop", container_id]
-        subprocess.run(cmd, capture_output=True, check=False)
+                self.cleanup_container(container_id)
 
     def _validate_dpkg_dependencies(self, result: Dict[str, Any]) -> None:
         """Validate that DPKG dependencies were detected correctly."""
-        assert isinstance(result, dict), "Result should be a dictionary"
-
-        # Should have dpkg detector results
-        assert "dpkg" in result, f"Expected 'dpkg' in result keys: {list(result.keys())}"
+        self.validate_basic_structure(result, "dpkg")
 
         dpkg_result = result["dpkg"]
-        assert "dependencies" in dpkg_result, "dpkg result should contain 'dependencies'"
-        assert "scope" in dpkg_result, "dpkg result should contain 'scope'"
-
         dependencies = dpkg_result["dependencies"]
-        assert isinstance(dependencies, dict), "Dependencies should be a dictionary"
-        assert len(dependencies) > 0, "Should have detected some dependencies"
 
         # Check for expected Ubuntu base packages
         dependency_names = list(dependencies.keys())
@@ -151,16 +87,12 @@ class TestDpkgDockerDetection:
         assert len(found_expected) > 0, f"Expected to find at least one of {expected_packages} in: {dependency_names}"
 
         # Validate dependency structure
-        sample_deps = list(dependencies.items())[:5]  # Check first 5 dependencies
+        self.validate_dependency_structure(dependencies)
+
+        # DPKG-specific validation: check architecture in versions and hashes
+        sample_deps = list(dependencies.items())[:5]
         for dep_name, dep_info in sample_deps:
-            assert isinstance(dep_info, dict), f"Dependency {dep_name} should be a dict: {dep_info}"
-            assert "version" in dep_info, f"Dependency {dep_name} should have version: {dep_info}"
-
             version = dep_info["version"]
-            assert isinstance(version, str), f"Version for {dep_name} should be a string: {version}"
-            assert len(version) > 0, f"Version for {dep_name} should not be empty"
-
-            # DPKG versions should include architecture
             assert any(
                 arch in version for arch in ["amd64", "all", "arm64", "armhf", "i386"]
             ), f"Version for {dep_name} should include architecture: {version}"

@@ -1,6 +1,5 @@
 """Test Docker Compose stack dependency detection."""
 
-import json
 import os
 import subprocess
 import sys
@@ -14,6 +13,7 @@ import pytest
 
 from executors import DockerComposeExecutor
 from core.orchestrator import Orchestrator
+from tests.common.docker_test_base import DockerTestBase
 
 try:
     import docker
@@ -21,7 +21,7 @@ except ImportError:
     docker = None
 
 
-class TestDockerComposeDetection:
+class TestDockerComposeDetection(DockerTestBase):
     """Test Docker Compose stack dependency detection."""
 
     @pytest.fixture
@@ -34,8 +34,7 @@ class TestDockerComposeDetection:
         """Test Docker Compose stack detection using Django as an example."""
         compose_project_name = "dependency-resolver-compose-test"
 
-        # Check for verbose output option
-        verbose_output = request.config.getoption("--verbose-resolver", default=False)
+        verbose_output = self.setup_verbose_output(request)
 
         try:
             # Start Docker compose stack
@@ -52,11 +51,7 @@ class TestDockerComposeDetection:
 
             # Print resolver output if requested
             if verbose_output:
-                print("\n" + "=" * 60)
-                print("DOCKER COMPOSE STACK DETECTION OUTPUT:")
-                print("=" * 60)
-                print(json.dumps(result, indent=2))
-                print("=" * 60)
+                self.print_verbose_results("DOCKER COMPOSE STACK DETECTION OUTPUT:", result)
 
             # Validate results
             self._validate_docker_compose_dependencies(result)
@@ -125,18 +120,12 @@ class TestDockerComposeDetection:
 
     def _validate_docker_compose_dependencies(self, result: Dict[str, Any]) -> None:
         """Validate that Docker Compose stack dependencies were detected correctly."""
-        assert isinstance(result, dict), "Result should be a dictionary"
-
-        # Should have docker-compose detector results
-        assert "docker-compose" in result, f"Expected 'docker-compose' in result keys: {list(result.keys())}"
+        self.validate_basic_structure(result, "docker-compose")
 
         compose_result = result["docker-compose"]
-        assert "dependencies" in compose_result, "docker-compose result should contain 'dependencies'"
-        assert "scope" in compose_result, "docker-compose result should contain 'scope'"
-        assert compose_result["scope"] == "compose", "docker-compose scope should be 'compose'"
-
         dependencies = compose_result["dependencies"]
-        assert isinstance(dependencies, dict), "Dependencies should be a dictionary"
+
+        assert compose_result["scope"] == "compose", "docker-compose scope should be 'compose'"
         assert len(dependencies) >= 2, f"Should have at least 2 services (web, db): {list(dependencies.keys())}"
 
         # Check for expected service names

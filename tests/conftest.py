@@ -1,4 +1,4 @@
-"""Pytest configuration for APK detector tests."""
+"""Pytest configuration for all detector tests."""
 
 from typing import Any
 
