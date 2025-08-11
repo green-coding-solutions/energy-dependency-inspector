@@ -42,7 +42,7 @@ echo -e "\\n🔄 Starting cross-environment comparison tests..."
 cd "$SCRIPT_DIR/../.."
 source venv/bin/activate
 
-TEST_DOCKER=1 python -m pytest "$SCRIPT_DIR/test_cross_environment_hash.py::TestCrossEnvironmentHash::test_cross_environment_hash_comparison" -v -s
+python -m pytest "$SCRIPT_DIR/test_cross_environment_hash.py::TestCrossEnvironmentHash::test_cross_environment_hash_comparison" -v -s
 
 echo -e "\\n✅ Cross-environment tests completed successfully!"
 echo "Result: Hash function produces consistent results across host and Ubuntu 20.04, 24.04, and Alpine containers"

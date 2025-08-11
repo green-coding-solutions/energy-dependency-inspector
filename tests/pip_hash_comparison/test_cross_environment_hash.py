@@ -57,7 +57,7 @@ class TestCrossEnvironmentHash:
 
         return ""
 
-    @pytest.mark.skipif(not os.getenv("TEST_DOCKER"), reason="Docker tests require TEST_DOCKER=1")
+    @pytest.mark.skipif(docker is None, reason="Docker library not available")
     def test_cross_environment_hash_comparison(self) -> None:
         """Test that hashes are consistent across different Ubuntu versions and host with real pip installations."""
         environment_hashes = []
