@@ -75,6 +75,10 @@ class TestDpkgDockerDetection:
 
             self._validate_dpkg_dependencies_extended(result_extended, base_package_count, packages_to_install)
 
+            # Validate hash coverage once for the final extended package set
+            final_dependencies = result_extended["dpkg"]["dependencies"]
+            self._validate_hash_coverage(final_dependencies)
+
         finally:
             if container_id:
                 self._cleanup_container(container_id)
@@ -197,6 +201,18 @@ class TestDpkgDockerDetection:
 
         print(f"✓ Package count increased from {base_count} to {len(dependencies)}")
         print(f"✓ Found related packages: {found_related[:10]}")
+
+    def _validate_hash_coverage(self, dependencies: Dict[str, Any]) -> None:
+        """Validate that all packages have hashes."""
+        total_packages = len(dependencies)
+        packages_with_hash = sum(1 for dep_info in dependencies.values() if "hash" in dep_info)
+
+        print(f"✓ Hash coverage: {packages_with_hash}/{total_packages} packages have hashes")
+
+        assert packages_with_hash == total_packages, (
+            f"Expected all {total_packages} packages to have hashes, but only {packages_with_hash} have hashes. "
+            f"Missing hashes suggest the md5sums file handling may not be working correctly."
+        )
 
 
 if __name__ == "__main__":

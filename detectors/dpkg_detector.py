@@ -51,7 +51,7 @@ class DpkgDetector(PackageManagerDetector):
                         "version": full_version,
                     }
 
-                    package_hash = self._get_package_hash(executor, package_name)
+                    package_hash = self._get_package_hash(executor, package_name, architecture)
                     if package_hash:
                         package_data["hash"] = package_hash
 
@@ -59,32 +59,44 @@ class DpkgDetector(PackageManagerDetector):
 
         return {"scope": "system", "dependencies": dependencies}
 
-    def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str) -> str:
+    def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str, architecture: str = "") -> str:
         """Get package hash from dpkg md5sums file if available.
 
         Extracts MD5 hashes from /var/lib/dpkg/info/{package}.md5sums and combines into SHA256.
+        Tries multiple file patterns to handle architecture-specific naming.
         See docs/adr/0008-apt-md5-hash-extraction.md and docs/adr/0005-hash-generation-strategy.md
         """
-        md5sums_file = f"/var/lib/dpkg/info/{package_name}.md5sums"
+        # Try different md5sums file patterns in order of preference
+        patterns = [
+            f"/var/lib/dpkg/info/{package_name}.md5sums",  # Standard pattern
+        ]
 
-        if not executor.path_exists(md5sums_file):
-            return None
+        # Add architecture-specific patterns if architecture is available
+        if architecture:
+            patterns.extend(
+                [
+                    f"/var/lib/dpkg/info/{package_name}:{architecture}.md5sums",  # Multi-arch pattern
+                    f"/var/lib/dpkg/info/{package_name}-{architecture}.md5sums",  # Alternative pattern
+                ]
+            )
 
-        try:
-            stdout, _, exit_code = executor.execute_command(f"cat '{md5sums_file}'")
-            if exit_code == 0 and stdout.strip():
-                md5_hashes = []
-                for line in stdout.strip().split("\n"):
-                    if line and " " in line:
-                        md5_hash = line.split(" ")[0].strip()
-                        if md5_hash:
-                            md5_hashes.append(md5_hash)
+        for md5sums_file in patterns:
+            if executor.path_exists(md5sums_file):
+                try:
+                    stdout, _, exit_code = executor.execute_command(f"cat '{md5sums_file}'")
+                    if exit_code == 0 and stdout.strip():
+                        md5_hashes = []
+                        for line in stdout.strip().split("\n"):
+                            if line and " " in line:
+                                md5_hash = line.split(" ")[0].strip()
+                                if md5_hash:
+                                    md5_hashes.append(md5_hash)
 
-                if md5_hashes:
-                    content = "\n".join(sorted(md5_hashes))
-                    return hashlib.sha256(content.encode()).hexdigest()
-        except (OSError, IOError):
-            pass
+                        if md5_hashes:
+                            content = "\n".join(sorted(md5_hashes))
+                            return hashlib.sha256(content.encode()).hexdigest()
+                except (OSError, IOError):
+                    continue  # Try next pattern
 
         return None
 

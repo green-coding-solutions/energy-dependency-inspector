@@ -8,8 +8,9 @@ This test suite validates the DPKG detector's ability to:
 
 - Detect system packages in Ubuntu Linux containers
 - Parse package versions and architecture information
-- Extract package hashes from dpkg md5sums files when available
+- Extract package hashes from dpkg md5sums files with architecture-specific naming support
 - Handle both minimal and extended Ubuntu installations
+- Achieve 100% hash coverage for all detected packages
 
 ## Test Cases
 
@@ -41,5 +42,6 @@ The tests verify that:
 - DPKG packages are detected with proper version and architecture information
 - System scope is correctly identified
 - Common Ubuntu packages (base-files, libc6, bash, coreutils) are found
-- Package hashes are extracted when md5sums files are available
+- All packages have hashes extracted from their md5sums files
 - Additional installed packages and their dependencies are detected when present
+- Hash coverage validation ensures 100% of packages have hashes
