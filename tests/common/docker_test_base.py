@@ -1,7 +1,6 @@
 """Base class for Docker-based detector tests."""
 
 import json
-import subprocess
 import time
 from typing import Dict, Any, Optional
 
@@ -28,27 +27,29 @@ class DockerTestBase:
         env_vars: Optional[Dict[str, str]] = None,
     ) -> str:
         """Start Docker container and return its ID."""
-        cmd = ["docker", "run", "-d", "--rm"]
+        if docker is None:
+            pytest.fail("Docker library not available")
 
-        # Add environment variables if provided
-        if env_vars:
-            for key, value in env_vars.items():
-                cmd.extend(["-e", f"{key}={value}"])
+        client = docker.from_env()
 
-        cmd.append(image)
-
+        # Prepare command
         if additional_args:
-            cmd.extend(additional_args)
+            command = additional_args
         else:
-            cmd.extend(["sleep", sleep_duration])
+            command = ["sleep", sleep_duration]
 
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-
-        if result.returncode != 0:
-            pytest.fail(f"Failed to start container: {result.stderr}")
-
-        container_id = result.stdout.strip()
-        return container_id
+        try:
+            container = client.containers.run(
+                image=image,
+                command=command,
+                environment=env_vars or {},
+                detach=True,
+                remove=True,
+            )
+            return str(container.id)
+        except docker.errors.DockerException as e:
+            pytest.fail(f"Failed to start container: {e}")
+            return ""  # This line won't be reached due to pytest.fail, but satisfies mypy
 
     def wait_for_container_ready(self, container_id: str, health_check_cmd: str, max_wait: int = 30) -> None:
         """Wait for container to be ready using provided health check command."""
@@ -84,8 +85,17 @@ class DockerTestBase:
 
     def cleanup_container(self, container_id: str) -> None:
         """Stop and remove the Docker container."""
-        cmd = ["docker", "stop", container_id]
-        subprocess.run(cmd, capture_output=True, check=False)
+        if docker is None:
+            return  # Nothing to clean up if Docker library not available
+
+        try:
+            client = docker.from_env()
+            container = client.containers.get(container_id)
+            container.stop()
+        except docker.errors.NotFound:
+            pass  # Container already removed
+        except docker.errors.DockerException:
+            pass  # Ignore cleanup errors
 
     def print_verbose_results(self, title: str, result: Dict[str, Any]) -> None:
         """Print verbose dependency resolver results."""
