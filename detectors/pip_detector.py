@@ -1,6 +1,6 @@
 import hashlib
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from executors import HostExecutor
@@ -14,6 +14,8 @@ class PipDetector(PackageManagerDetector):
     def __init__(self, venv_path: str = None, debug: bool = False):
         self.explicit_venv_path = venv_path
         self.debug = debug
+        self._cached_venv_path: Optional[str] = None
+        self._venv_path_searched = False
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if pip is usable in the environment."""
@@ -93,12 +95,15 @@ class PipDetector(PackageManagerDetector):
                 return venv_pip
         return "pip"
 
-    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> Optional[str]:
         """Find virtual environment by searching for pyvenv.cfg files.
 
         Implements automatic virtual environment detection strategy.
         See docs/adr/0007-python-virtual-environment-detection.md
         """
+        # Return cached result if already searched
+        if self._venv_path_searched:
+            return self._cached_venv_path
         # If explicit venv path is provided, use it first
         if self.explicit_venv_path:
             # Expand ~ within the executor context, not on the host
@@ -107,6 +112,8 @@ class PipDetector(PackageManagerDetector):
                 expanded_path = stdout.strip()
                 pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
                 if executor.path_exists(pyvenv_cfg):
+                    self._cached_venv_path = expanded_path
+                    self._venv_path_searched = True
                     return expanded_path
 
         # Use VIRTUAL_ENV environment variable in non-host environments (e.g., Docker)
@@ -116,6 +123,8 @@ class PipDetector(PackageManagerDetector):
                 virtual_env_path = stdout.strip()
                 pyvenv_cfg = f"{virtual_env_path}/pyvenv.cfg"
                 if executor.path_exists(pyvenv_cfg):
+                    self._cached_venv_path = virtual_env_path
+                    self._venv_path_searched = True
                     return virtual_env_path
 
         # Search for local virtual environments in project directory
@@ -123,6 +132,8 @@ class PipDetector(PackageManagerDetector):
 
         pyvenv_cfg = f"{search_dir}/pyvenv.cfg"
         if executor.path_exists(pyvenv_cfg):
+            self._cached_venv_path = search_dir
+            self._venv_path_searched = True
             return search_dir
 
         common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
@@ -131,6 +142,8 @@ class PipDetector(PackageManagerDetector):
             venv_dir = f"{search_dir}/{venv_name}"
             pyvenv_cfg = f"{venv_dir}/pyvenv.cfg"
             if executor.path_exists(pyvenv_cfg):
+                self._cached_venv_path = venv_dir
+                self._venv_path_searched = True
                 return venv_dir
 
         # Search for virtual environments in common external locations based on project name
@@ -152,6 +165,8 @@ class PipDetector(PackageManagerDetector):
                     expanded_path = stdout.strip()
                     pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
                     if executor.path_exists(pyvenv_cfg):
+                        self._cached_venv_path = expanded_path
+                        self._venv_path_searched = True
                         return expanded_path
 
         # Fallback: System-wide search for pyvenv.cfg (only in container environments)
@@ -172,8 +187,13 @@ class PipDetector(PackageManagerDetector):
                         venv_dir = pyvenv_cfg_path.rsplit("/", 1)[0]
                         if self.debug:
                             print(f"DEBUG: pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_dir: {venv_dir}")
+                        self._cached_venv_path = venv_dir
+                        self._venv_path_searched = True
                         return venv_dir
 
+        # Cache the result and mark as searched
+        self._cached_venv_path = None
+        self._venv_path_searched = True
         return None
 
     def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
