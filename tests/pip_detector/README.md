@@ -18,9 +18,23 @@ The test spins up a Python Docker container, installs test packages, and verifie
 
 The test manages the complete container lifecycle including startup, package installation, and cleanup.
 
+### Virtual Environment Detection Tests (`test_pip_venv_detection.py`)
+
+Comprehensive test suite covering all virtual environment detection scenarios:
+
+- **`test_venv_path_argument`**: Tests detection when `--venv-path` argument is provided
+- **`test_virtual_env_environment_variable`**: Tests detection using `VIRTUAL_ENV` environment variable
+- **`test_venv_directory_in_project`**: Tests detection when venv directory exists in project directory
+- **`test_virtualenvs_project_name_detection`**: Tests detection using `~/.virtualenvs/{project_name}` pattern
+- **`test_venv_located_at_opt_venv`**: Tests system-wide fallback mechanism finding venv at `/opt/venv`
+- **`test_no_venv_found_returns_empty`**: Tests behavior when no venv is found
+
+All tests use Docker containers with `python:3.11-slim` and install test packages (requests, click) for validation.
+
 ## Files
 
 - `test_pip_docker_detection.py` - Main test suite for pip detection
+- `test_pip_venv_detection.py` - Virtual environment detection test suite
 - `conftest.py` - Pytest configuration with --verbose-resolver option
 - `README.md` - This documentation file
 
@@ -35,9 +49,32 @@ The test manages the complete container lifecycle including startup, package ins
 
 ### Test Execution
 
+#### All pip detector tests
+
+```bash
+source venv/bin/activate
+python -m pytest tests/pip_detector/ -v
+```
+
+#### Docker detection tests only
+
 ```bash
 source venv/bin/activate
 python -m pytest tests/pip_detector/test_pip_docker_detection.py -v
+```
+
+#### Virtual environment detection tests only
+
+```bash
+source venv/bin/activate
+python -m pytest tests/pip_detector/test_pip_venv_detection.py -v
+```
+
+#### Specific venv detection test
+
+```bash
+source venv/bin/activate
+python -m pytest tests/pip_detector/test_pip_venv_detection.py::TestPipVenvDetection::test_venv_located_at_opt_venv -v
 ```
 
 ### With Verbose Resolver Output
@@ -46,7 +83,7 @@ To see the complete dependency resolver output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/test_pip_docker_detection.py -v -s --verbose-resolver
+python -m pytest tests/pip_detector/test_pip_venv_detection.py -v -s --verbose-resolver
 ```
 
 The `--verbose-resolver` option displays the complete JSON output with all detected pip dependencies.
@@ -85,11 +122,21 @@ python -m pytest tests/pip_detector/ -v
 - **Scope detection**: Proper scope identification for pip packages in containers
 - **Package validation**: Common Python packages with known versions
 
+### Virtual Environment Detection Features
+
+- **Explicit venv path**: Detection via `--venv-path` argument
+- **Environment variables**: Detection via `VIRTUAL_ENV` environment variable
+- **Project-local venvs**: Detection of `venv/`, `.venv/`, `env/` directories in project
+- **User venv patterns**: Detection via `~/.virtualenvs/{project_name}` pattern
+- **System-wide fallback**: Container-only fallback searching `/opt`, `/home`, `/usr/local`
+- **Error handling**: Graceful handling when no venv is found
+
 ### Error Handling
 
 - **Container lifecycle**: Proper startup, package installation, and cleanup
 - **Network dependencies**: Handling Docker image pull and pip package installation
 - **CLI equivalence**: Both API and formatted output work correctly
+- **Venv discovery**: Robust fallback mechanisms for various venv locations
 
 ## Container Details
 

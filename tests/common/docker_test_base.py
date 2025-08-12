@@ -20,9 +20,22 @@ class DockerTestBase:
         """Get verbose output setting from pytest request."""
         return bool(request.config.getoption("--verbose-resolver", default=False))
 
-    def start_container(self, image: str, sleep_duration: str = "300", additional_args: Optional[list] = None) -> str:
+    def start_container(
+        self,
+        image: str,
+        sleep_duration: str = "300",
+        additional_args: Optional[list] = None,
+        env_vars: Optional[Dict[str, str]] = None,
+    ) -> str:
         """Start Docker container and return its ID."""
-        cmd = ["docker", "run", "-d", "--rm", image]
+        cmd = ["docker", "run", "-d", "--rm"]
+
+        # Add environment variables if provided
+        if env_vars:
+            for key, value in env_vars.items():
+                cmd.extend(["-e", f"{key}={value}"])
+
+        cmd.append(image)
 
         if additional_args:
             cmd.extend(additional_args)

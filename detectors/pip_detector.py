@@ -133,7 +133,7 @@ class PipDetector(PackageManagerDetector):
             if executor.path_exists(pyvenv_cfg):
                 return venv_dir
 
-        # Search for virtual environments in common external locations
+        # Search for virtual environments in common external locations based on project name
         if working_dir:
             # Get project name from the resolved working directory
             resolved_working_dir = self._resolve_absolute_path(executor, working_dir)
@@ -153,6 +153,26 @@ class PipDetector(PackageManagerDetector):
                     pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
                     if executor.path_exists(pyvenv_cfg):
                         return expanded_path
+
+        # Fallback: System-wide search for pyvenv.cfg (only in container environments)
+        if not isinstance(executor, HostExecutor):
+            if self.debug:
+                print("DEBUG: pip_detector performing system-wide pyvenv.cfg search in container environment")
+
+            # Search for pyvenv.cfg files in common system locations for virtual environments
+            stdout, _, exit_code = executor.execute_command(
+                "find /opt /home /usr/local -name 'pyvenv.cfg' 2>/dev/null | head -10"
+            )
+
+            if exit_code == 0 and stdout.strip():
+                for line in stdout.strip().split("\n"):
+                    pyvenv_cfg_path = line.strip()
+                    if pyvenv_cfg_path:
+                        # Extract the directory containing pyvenv.cfg
+                        venv_dir = pyvenv_cfg_path.rsplit("/", 1)[0]
+                        if self.debug:
+                            print(f"DEBUG: pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_dir: {venv_dir}")
+                        return venv_dir
 
         return None
 
