@@ -6,23 +6,23 @@
 
 ### Software Bill of Materials (SBOM) Landscape
 
-Software Bill of Materials (SBOM) generation has become a critical component of modern software supply chain security and compliance. Industry standards like **SPDX** (Software Package Data Exchange) and **CycloneDX** provide standardized formats for representing software component inventories, enabling organizations to track dependencies, vulnerabilities, and licenses across their software ecosystem.
+Software Bill of Materials (SBOM) generation has become a critical component of modern software supply chain security and compliance. Industry standards like **[SPDX](https://spdx.dev/)** (Software Package Data Exchange) and **[CycloneDX](https://cyclonedx.org/)** provide standardized formats for representing software component inventories, enabling organizations to track dependencies, vulnerabilities, and licenses across their software ecosystem.
 
 ### Current Ecosystem Solutions
 
-**GitHub** utilizes proprietary software to generate dependency graphs for repositories, automatically detecting dependencies in supported languages and providing security advisory integration. This closed-source approach offers deep integration with GitHub's platform but limited customization for specialized requirements.
+**[GitHub](https://github.com)** utilizes proprietary software to generate dependency graphs for repositories, automatically detecting dependencies in supported languages and providing security advisory integration. This closed-source approach offers deep integration with GitHub's platform but limited customization for specialized requirements.
 
-**GitLab** takes an open-source approach with their [dependency-scanning component](https://gitlab.com/gitlab-org/security-products/analyzers/dependency-scanning/-/tree/main), which provides transparent dependency analysis as part of their security scanning suite. While comprehensive for CI/CD integration, it focuses primarily on source code analysis rather than runtime environment scanning.
+**[GitLab](https://gitlab.com)** takes an open-source approach with their [dependency-scanning component](https://gitlab.com/gitlab-org/security-products/analyzers/dependency-scanning/-/tree/main), which provides transparent dependency analysis as part of their security scanning suite. While comprehensive for CI/CD integration, it focuses primarily on source code analysis rather than runtime environment scanning.
 
 **Popular Open Source Tools:**
 
-- **syft** (Anchore): Widely adopted SBOM generation tool supporting 25+ ecosystems with multiple output formats
-- **trivy** (Aqua Security): Comprehensive security scanner with SBOM capabilities, popular for vulnerability assessment
+- **[syft](https://github.com/anchore/syft)** (Anchore): Widely adopted SBOM generation tool supporting 25+ ecosystems with multiple output formats
+- **[trivy](https://github.com/aquasecurity/trivy)** (Aqua Security): Comprehensive security scanner with SBOM capabilities, popular for vulnerability assessment
 
 **Additional Notable Tools (Development Inspiration):**
 
-- **sbom-tool** (Microsoft): Comprehensive SBOM generator with extensive [component-detection](https://github.com/microsoft/component-detection) catalog supporting diverse package managers and build systems. While not directly comparable for runtime scanning, its detector architecture provides valuable implementation patterns for comprehensive package manager coverage.
-- **tern**: Python-based container analysis tool focusing on Docker image layer inspection and package detection. Shares similar Python implementation approach and provides insights into container filesystem analysis techniques.
+- **[sbom-tool](https://github.com/microsoft/sbom-tool)** (Microsoft): Comprehensive SBOM generator with extensive [component-detection](https://github.com/microsoft/component-detection) catalog supporting diverse package managers and build systems. While not directly comparable for runtime scanning, its detector architecture provides valuable implementation patterns for comprehensive package manager coverage.
+- **[tern](https://github.com/tern-tools/tern)**: Python-based container analysis tool focusing on Docker image layer inspection and package detection. Shares similar Python implementation approach and provides insights into container filesystem analysis techniques.
 
 These tools have gained significant traction in the open source ecosystem due to their broad package manager support and integration with CI/CD pipelines.
 
