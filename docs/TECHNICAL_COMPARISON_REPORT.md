@@ -477,6 +477,213 @@ The fundamental difference between filesystem scanning and runtime execution is 
 3. **Output Optimization**: Reduce JSON size and improve parsing efficiency
 4. **Documentation**: Complete API documentation and usage examples
 
+## Package Version Detection Approaches: Tool Strategy vs Lock File Strategy
+
+### Overview: Fundamentally Different Methodologies
+
+The approach to package version detection represents a core architectural difference between dependency-resolver and other SBOM tools, with significant implications for runtime container scanning accuracy and reliability.
+
+### dependency-resolver: Package Manager Tool Strategy
+
+**Implementation Approach:**
+
+```bash
+# Direct package manager queries inside running containers
+docker exec container_name dpkg-query --show --showformat='${Package}\t${Version}\t${MD5sum}\n'
+docker exec container_name pip list --format=json
+docker exec container_name npm list --json --depth=0
+```
+
+**Technical Details:**
+
+- **Live Tool Execution**: Runs actual package manager commands inside target containers
+- **Runtime State Query**: Queries the package manager's live database/registry
+- **Tool-Native Output**: Leverages each package manager's native reporting capabilities
+- **Dynamic Discovery**: Detects packages installed through any method (manual, automated, runtime)
+
+**Advantages for Runtime Container Scanning:**
+
+✅ **True Runtime State**: Captures exactly what the package manager reports as installed
+✅ **Installation Method Agnostic**: Detects packages regardless of installation source (pip install, apt install, manual compilation)
+✅ **Environment Context**: Includes virtual environments, user-local installations, and scope-specific packages
+✅ **Tool Consistency**: Results match what developers see when running package commands locally
+✅ **Dynamic Package Discovery**: Finds packages installed during container startup or runtime modifications
+✅ **Metadata Completeness**: Access to full package manager metadata (versions, dependencies, installation paths)
+
+**Limitations:**
+
+❌ **Package Manager Dependency**: Requires target containers to have package managers installed
+❌ **Execution Overhead**: Must execute commands inside each target container
+❌ **Permission Requirements**: Needs Docker exec capabilities
+
+### Alternative Tools: Lock File and Metadata Strategy
+
+**syft/trivy Implementation Approach:**
+
+```bash
+# Filesystem analysis of package metadata files
+find /container/filesystem -name "package.json" -o -name "requirements.txt" -o -name "Pipfile.lock"
+parse /var/lib/dpkg/status
+analyze /usr/local/lib/python3.x/site-packages/*.dist-info/METADATA
+```
+
+**Technical Details:**
+
+- **Static File Analysis**: Parses package manager metadata files and lock files
+- **Filesystem Scanning**: Searches for package manifests, lock files, and installed package metadata
+- **Pattern Recognition**: Uses file patterns and metadata parsing to infer installed packages
+- **Database Analysis**: Reads package manager databases directly from filesystem
+
+**Advantages for General SBOM Generation:**
+
+✅ **Broad Ecosystem Support**: Can parse 25+ different package manager formats
+✅ **No Tool Dependencies**: Works even if package managers are not installed in containers
+✅ **Filesystem Efficiency**: Can scan container images without running containers
+✅ **Batch Processing**: Can analyze multiple containers simultaneously
+✅ **Historical Analysis**: Can scan older container images or archived filesystems
+
+**Critical Limitations for Runtime Container Scanning:**
+
+❌ **Runtime Installation Gap**: Cannot detect packages installed after container startup
+❌ **Virtual Environment Blind Spots**: May miss packages in activated virtual environments
+❌ **Lock File Staleness**: Lock files may not reflect actual installed versions
+❌ **Installation Method Limitations**: May miss packages installed through alternative methods (git+https, local wheels, manual builds)
+❌ **Environment Variable Dependencies**: Cannot capture runtime-configured package sources or repositories
+❌ **Scope Ambiguity**: Difficulty distinguishing between system vs project scope installations
+
+### Concrete Example: Runtime vs Static Detection Differences
+
+**Scenario**: Python container with development workflow
+
+```bash
+# Container startup installs base requirements
+pip install -r requirements.txt
+
+# Developer installs additional packages during development
+docker exec container pip install debugpy pytest-cov
+
+# Runtime environment variable changes package behavior
+export PIP_INDEX_URL=https://private-repo/simple/
+pip install internal-package==1.2.3
+```
+
+**dependency-resolver Detection (Tool Strategy):**
+
+```json
+{
+  "pip": {
+    "scope": "project",
+    "dependencies": {
+      "flask": {"version": "2.3.0"},
+      "requests": {"version": "2.28.1"},
+      "debugpy": {"version": "1.6.3"},
+      "pytest-cov": {"version": "4.0.0"},
+      "internal-package": {"version": "1.2.3"}
+    }
+  }
+}
+```
+
+**syft/trivy Detection (Lock File Strategy):**
+
+```json
+{
+  "artifacts": [
+    {"name": "flask", "version": "2.3.0"},
+    {"name": "requests", "version": "2.28.1"}
+  ]
+}
+```
+
+**Missing from Lock File Approach:**
+
+- `debugpy` and `pytest-cov` (runtime installations)
+- `internal-package` (environment-specific repository)
+
+### Package Manager Specific Implications
+
+**Python (pip) Ecosystem:**
+
+- **Tool Strategy**: Detects virtual environments, user installations (`--user`), editable installs (`-e`)
+- **Lock File Strategy**: Limited to requirements.txt, Pipfile.lock; misses dynamic installations
+
+**Node.js (npm) Ecosystem:**
+
+- **Tool Strategy**: Captures globally installed packages, workspace configurations
+- **Lock File Strategy**: Good coverage with package-lock.json, but may miss global packages
+
+**System Packages (dpkg/apk):**
+
+- **Tool Strategy**: Real-time package database query with exact status
+- **Lock File Strategy**: Static database files may not reflect post-installation changes
+
+### Production Environment Considerations
+
+**Development vs Production Drift:**
+
+In production environments, containers often undergo modifications after initial deployment:
+
+```bash
+# Emergency security patch installation
+docker exec prod-container apt-get update && apt-get install -y package-security-fix
+
+# Runtime dependency installation
+docker exec prod-container pip install monitoring-agent
+
+# Configuration-driven package installation
+docker exec prod-container npm install ${REQUIRED_PLUGINS}
+```
+
+**Tool Strategy (dependency-resolver):**
+
+- ✅ **Drift Detection**: Captures all post-deployment changes
+- ✅ **Audit Trail Completeness**: Complete inventory of actual runtime state
+- ✅ **Compliance Accuracy**: Reports exactly what auditors will find
+
+**Lock File Strategy (syft/trivy):**
+
+- ❌ **Drift Blindness**: Misses all post-deployment modifications
+- ❌ **Compliance Gap**: May underreport actual software inventory
+- ❌ **Security Blind Spots**: Could miss security-critical runtime installations
+
+### Performance and Resource Implications
+
+**Tool Strategy Resource Profile:**
+
+- **CPU**: Medium - sequential command execution per container
+- **Memory**: Low - processes output stream by stream
+- **Network**: None - uses local package manager caches
+- **I/O**: Medium - package manager database queries
+
+**Lock File Strategy Resource Profile:**
+
+- **CPU**: Low - file parsing operations
+- **Memory**: High - loads entire filesystem metadata into memory
+- **Network**: None - pure filesystem analysis
+- **I/O**: High - extensive filesystem traversal
+
+### Strategic Decision Matrix for Runtime Container Scanning
+
+| Requirement                   | Tool Strategy        | Lock File Strategy   |
+|-------------------------------|----------------------|----------------------|
+| **Runtime Package Discovery** | ✅ Complete          | ❌ Static snapshot   |
+| **Virtual Environment Support** | ✅ Full detection   | ⚠️ Partial           |
+| **Development Workflow Support** | ✅ Dynamic changes | ❌ Build-time only   |
+| **Compliance Accuracy**      | ✅ Audit-ready       | ⚠️ May underreport   |
+| **Container Dependency**      | ❌ Requires tools    | ✅ Tool-independent  |
+| **Historical Analysis**       | ❌ Live only         | ✅ Any filesystem    |
+| **Broad Ecosystem Coverage**  | ⚠️ Incremental      | ✅ 25+ ecosystems    |
+
+### Conclusion: Context-Driven Strategy Selection
+
+**For Production Runtime Scanning** (GMT use case):
+The tool strategy (dependency-resolver approach) provides superior accuracy and completeness for runtime container analysis, despite requiring package manager presence in target containers.
+
+**For Build-Time SBOM Generation**:
+The lock file strategy (syft/trivy approach) offers broader ecosystem support and better integration with CI/CD pipelines where runtime state is less critical.
+
+**The choice fundamentally depends on whether the goal is "what was intended to be installed" (lock file strategy) versus "what is actually installed" (tool strategy).**
+
 ## Final Assessment
 
 The dependency-resolver tool addresses a specific and important gap in the current ecosystem. While syft and trivy are excellent tools for their intended use cases (comprehensive SBOM generation and security scanning), they are not architected for the specific production runtime scanning requirements outlined in the SPECIFICATION.md.
