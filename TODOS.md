@@ -1,5 +1,10 @@
 # TODOS
 
+- Add proper documentation pages
+  - one for each detector
+  - refactor ADRs
+- Add '--pretty-print' flag
+- Add '-o json' / '--output json' flag
 - Add tests
   - cli flags
 - Add support for Podman + Podman Compose
