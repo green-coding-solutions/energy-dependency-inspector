@@ -96,102 +96,90 @@ class PipDetector(PackageManagerDetector):
         return "pip"
 
     def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> Optional[str]:
-        """Find virtual environment by searching for pyvenv.cfg files.
-
-        Implements automatic virtual environment detection strategy.
-        See docs/adr/0007-python-virtual-environment-detection.md
-        """
+        """Find virtual environment using batch search for pyvenv.cfg files."""
         # Return cached result if already searched
         if self._venv_path_searched:
             return self._cached_venv_path
-        # If explicit venv path is provided, use it first
+
+        # Build search paths in priority order
+        search_paths = []
+        search_dir = working_dir or "."
+
+        # 1. Explicit venv path (highest priority)
         if self.explicit_venv_path:
-            # Expand ~ within the executor context, not on the host
             stdout, _, exit_code = executor.execute_command(f"echo {self.explicit_venv_path}")
             if exit_code == 0 and stdout.strip():
-                expanded_path = stdout.strip()
-                pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
-                if executor.path_exists(pyvenv_cfg):
-                    self._cached_venv_path = expanded_path
-                    self._venv_path_searched = True
-                    return expanded_path
+                search_paths.append(stdout.strip())
 
-        # Use VIRTUAL_ENV environment variable in non-host environments (e.g., Docker)
+        # 2. VIRTUAL_ENV environment variable (Docker containers)
         if not isinstance(executor, HostExecutor):
             stdout, _, exit_code = executor.execute_command("echo $VIRTUAL_ENV", working_dir)
             if exit_code == 0 and stdout.strip():
-                virtual_env_path = stdout.strip()
-                pyvenv_cfg = f"{virtual_env_path}/pyvenv.cfg"
-                if executor.path_exists(pyvenv_cfg):
-                    self._cached_venv_path = virtual_env_path
-                    self._venv_path_searched = True
-                    return virtual_env_path
+                search_paths.append(stdout.strip())
 
-        # Search for local virtual environments in project directory
-        search_dir = working_dir or "."
+        # 3. Local project directory and common venv names
+        search_paths.extend(
+            [
+                search_dir,
+                f"{search_dir}/venv",
+                f"{search_dir}/.venv",
+                f"{search_dir}/env",
+                f"{search_dir}/.env",
+                f"{search_dir}/virtualenv",
+            ]
+        )
 
-        pyvenv_cfg = f"{search_dir}/pyvenv.cfg"
-        if executor.path_exists(pyvenv_cfg):
-            self._cached_venv_path = search_dir
-            self._venv_path_searched = True
-            return search_dir
-
-        common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
-
-        for venv_name in common_venv_names:
-            venv_dir = f"{search_dir}/{venv_name}"
-            pyvenv_cfg = f"{venv_dir}/pyvenv.cfg"
-            if executor.path_exists(pyvenv_cfg):
-                self._cached_venv_path = venv_dir
-                self._venv_path_searched = True
-                return venv_dir
-
-        # Search for virtual environments in common external locations based on project name
+        # 4. External venv locations (if working_dir specified)
         if working_dir:
-            # Get project name from the resolved working directory
             resolved_working_dir = self._resolve_absolute_path(executor, working_dir)
             project_name = os.path.basename(resolved_working_dir)
-            common_venv_locations = [
+
+            # Expand external paths
+            external_locations = [
                 f"~/.virtualenvs/{project_name}",
                 f"~/.local/share/virtualenvs/{project_name}",
                 f"~/.cache/pypoetry/virtualenvs/{project_name}",
                 f"~/.pyenv/versions/{project_name}",
             ]
 
-            for venv_location in common_venv_locations:
-                # Expand ~ within the executor context, not on the host
-                stdout, _, exit_code = executor.execute_command(f"echo {venv_location}")
+            for location in external_locations:
+                stdout, _, exit_code = executor.execute_command(f"echo {location}")
                 if exit_code == 0 and stdout.strip():
-                    expanded_path = stdout.strip()
-                    pyvenv_cfg = f"{expanded_path}/pyvenv.cfg"
-                    if executor.path_exists(pyvenv_cfg):
-                        self._cached_venv_path = expanded_path
-                        self._venv_path_searched = True
-                        return expanded_path
+                    search_paths.append(stdout.strip())
 
-        # Fallback: System-wide search for pyvenv.cfg (only in container environments)
+        # Single batch find command to locate pyvenv.cfg in all search paths
+        if search_paths:
+            # Escape paths and create find command
+            escaped_paths = [f"'{path}'" for path in search_paths]
+            find_cmd = f"find {' '.join(escaped_paths)} -maxdepth 1 -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
+
+            stdout, _, exit_code = executor.execute_command(find_cmd)
+            if exit_code == 0 and stdout.strip():
+                pyvenv_cfg_path = stdout.strip()
+                venv_path = os.path.dirname(pyvenv_cfg_path)
+                self._cached_venv_path = venv_path
+                self._venv_path_searched = True
+                return venv_path
+
+        # Fallback: System-wide search (only in container environments)
         if not isinstance(executor, HostExecutor):
             if self.debug:
                 print("DEBUG: pip_detector performing system-wide pyvenv.cfg search in container environment")
 
-            # Search for pyvenv.cfg files in common system locations for virtual environments
             stdout, _, exit_code = executor.execute_command(
-                "find /opt /home /usr/local -name 'pyvenv.cfg' 2>/dev/null | head -10"
+                "find /opt /home /usr/local -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
             )
 
             if exit_code == 0 and stdout.strip():
-                for line in stdout.strip().split("\n"):
-                    pyvenv_cfg_path = line.strip()
-                    if pyvenv_cfg_path:
-                        # Extract the directory containing pyvenv.cfg
-                        venv_dir = pyvenv_cfg_path.rsplit("/", 1)[0]
-                        if self.debug:
-                            print(f"DEBUG: pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_dir: {venv_dir}")
-                        self._cached_venv_path = venv_dir
-                        self._venv_path_searched = True
-                        return venv_dir
+                pyvenv_cfg_path = stdout.strip()
+                venv_path = os.path.dirname(pyvenv_cfg_path)
+                if self.debug:
+                    print(f"DEBUG: pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_path: {venv_path}")
+                self._cached_venv_path = venv_path
+                self._venv_path_searched = True
+                return venv_path
 
-        # Cache the result and mark as searched
+        # No venv found
         self._cached_venv_path = None
         self._venv_path_searched = True
         return None
