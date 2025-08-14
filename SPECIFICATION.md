@@ -35,6 +35,8 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 
 **Modular Architecture**: See [ADR-0002](docs/adr/0002-modular-detector-architecture.md) for the modular detector architecture with abstract base classes and auto-discovery.
 
+**Dependency Hash Strategy**: See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the multi-tiered approach to change detection and integrity verification.
+
 ### Command Interface
 
 ```sh
@@ -91,15 +93,15 @@ Examples:
    - `PodmanExecutor`: Execute commands inside Podman containers using podman-py
 
 3. **Package Manager Detectors**
-   - `PipDetector`: Python packages via `pip list --format=freeze` (see [ADR-0006](docs/adr/0006-pip-list-for-python-packages.md))
+   - `PipDetector`: Python packages via `pip list --format=freeze` (see [docs/detectors/pip_detector.md](docs/detectors/pip_detector.md))
      - No OS requirements (works on any system with Python)
-     - Automatically detects and uses virtual environments (see [ADR-0007](docs/adr/0007-python-virtual-environment-detection.md))
+     - Automatically detects and uses virtual environments
      - Uses the virtual environment's pip executable when available
    - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
-   - `DpkgDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [ADR-0003](docs/adr/0003-dpkg-query-for-package-information.md))
+   - `DpkgDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [docs/detectors/dpkg_detector.md](docs/detectors/dpkg_detector.md))
      - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
      - **Availability check**: Verifies that `dpkg-query` command exists
-   - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [ADR-0004](docs/adr/0004-apk-list-for-alpine-packages.md))
+   - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [docs/detectors/apk_detector.md](docs/detectors/apk_detector.md))
      - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
      - **Availability check**: Verifies that `apk` command exists
    - `DockerComposeDetector`: Container orchestration dependencies (extracts container images with full SHA256 hashes)
@@ -229,18 +231,18 @@ The `location` field is only present when `scope` is `"project"`, providing the 
 
 ### Technical Constraints
 
-1. **Read-Only Operations**: See [ADR-0009](docs/adr/0009-read-only-operations.md) for the complete read-only constraint policy
-2. **Unix-Based Systems**: See [ADR-0010](docs/adr/0010-unix-only-support.md) for platform support scope
+1. **Read-Only Operations**: See [ADR-0003](docs/adr/0003-read-only-operations.md) for the complete read-only constraint policy
+2. **Unix-Based Systems**: See [ADR-0004](docs/adr/0004-unix-only-support.md) for platform support scope
 
 ### Hash Handling Strategy
 
-See [ADR-0005](docs/adr/0005-hash-generation-strategy.md) for the complete multi-tiered hash generation strategy.
+The dependency resolver uses a multi-tiered hash generation strategy for change detection and integrity verification. See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the complete rationale and individual detector documentation for implementation details.
 
 **Key Points**:
 
 - Individual package hashes only if retrievable from package manager
 - Location-based hashes for package manager installations
-- APT MD5 extraction approach (see [ADR-0008](docs/adr/0008-apt-md5-hash-extraction.md))
+- APT MD5 extraction approach (see [docs/detectors/dpkg_detector.md](docs/detectors/dpkg_detector.md))
 - SHA256 format using full 64-character hashes
 
 ### Logging Strategy

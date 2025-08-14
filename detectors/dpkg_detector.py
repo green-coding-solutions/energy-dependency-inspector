@@ -31,7 +31,7 @@ class DpkgDetector(PackageManagerDetector):
         """Extract system packages with versions using dpkg-query.
 
         Uses dpkg-query -W -f for reliable package information extraction.
-        See docs/adr/0003-dpkg-query-for-package-information.md
+        See docs/detectors/dpkg_detector.md
         """
         command = "dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n'"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
@@ -76,7 +76,7 @@ class DpkgDetector(PackageManagerDetector):
 
         Extracts MD5 hashes from /var/lib/dpkg/info/{package}.md5sums and combines into SHA256.
         Tries multiple file patterns to handle architecture-specific naming.
-        See docs/adr/0008-apt-md5-hash-extraction.md and docs/adr/0005-hash-generation-strategy.md
+        See docs/detectors/dpkg_detector.md
         """
         # Try different md5sums file patterns in order of preference
         patterns = [

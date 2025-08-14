@@ -20,13 +20,13 @@ We will implement a modular architecture using abstract base classes with auto-d
 
 - `PackageManagerDetector`: Abstract interface for all package manager implementations
 - `EnvironmentExecutor`: Abstract interface for command execution in different environments
-- `DependencyResolver`: Main orchestrator that coordinates detection and extraction
+- `Orchestrator`: Main orchestrator that coordinates detection and extraction
 
 **Detection Flow**:
 
-1. Check pre-requirements
-2. Check availability
-3. Extract dependencies
+1. Check usability (combines OS compatibility and package manager availability)
+2. Extract dependencies
+3. Check system scope (for efficient scope determination)
 
 ## Rationale
 
@@ -35,24 +35,42 @@ This modular approach provides extensibility while maintaining reliability throu
 **Key Design Principles**:
 
 - **Auto-Discovery**: Available detectors automatically check if their package manager exists
-- **Pre-Requirements Validation**: Each detector validates OS compatibility before attempting detection
+- **Combined Validation**: Each detector validates both OS compatibility and tool availability in single `is_usable()` check
 - **Error Isolation**: Failed detectors don't affect others (comprehensive exception handling)
-- **Priority Ordering**: System packages → Language-specific → Container orchestration
-- **Working Directory Respect**: All detectors honor `--working-dir` parameter
+- **Priority Ordering**: Container orchestration → System packages → Language-specific packages
+- **Working Directory Respect**: All detectors honor `working_dir` parameter
+- **Scope Efficiency**: Separate `has_system_scope()` method for efficient scope checking
+
+**Current Detector Implementations**:
+
+- `DockerComposeDetector`: Container orchestration (compose scope)
+- `DpkgDetector`: Debian/Ubuntu system packages (system scope)
+- `ApkDetector`: Alpine Linux system packages (system scope)
+- `PipDetector`: Python packages with virtual environment detection (project/system scope)
+- `NpmDetector`: Node.js packages with intelligent package manager detection (project/system scope)
 
 **Interface Contracts**:
 
-- `PackageManagerDetector.meets_requirements()`: OS compatibility checks
-- `PackageManagerDetector.is_available()`: Package manager existence validation
+- `PackageManagerDetector.is_usable()`: Combined OS compatibility and package manager availability check
 - `PackageManagerDetector.get_dependencies()`: Dependency extraction with error handling
+- `PackageManagerDetector.has_system_scope()`: Efficient system scope determination
 - `EnvironmentExecutor.execute_command()`: Environment-agnostic command execution
+- `EnvironmentExecutor.path_exists()`: Cross-environment path existence checking
 
 ## Consequences
 
-- **Positive**: Easy to add new package managers without modifying existing code
-- **Positive**: Systematic validation prevents runtime failures
-- **Positive**: Error isolation ensures partial results even with some detector failures
-- **Positive**: Clear separation of concerns between detection and execution
-- **Negative**: Additional complexity compared to monolithic approach
-- **Negative**: More abstract classes and interfaces to maintain
-- **Negative**: Potential performance overhead from systematic validation
+**Positive**:
+
+- Easy to add new package managers without modifying existing code
+- Systematic validation prevents runtime failures
+- Error isolation ensures partial results even with some detector failures
+- Clear separation of concerns between detection and execution
+- Efficient scope checking prevents unnecessary dependency extraction
+- Cross-environment compatibility through executor abstraction
+- Intelligent package manager conflict avoidance (e.g., npm vs yarn detection)
+
+**Negative**:
+
+- Additional complexity compared to monolithic approach
+- More abstract classes and interfaces to maintain
+- Potential performance overhead from systematic validation (mitigated by efficient scope checking)

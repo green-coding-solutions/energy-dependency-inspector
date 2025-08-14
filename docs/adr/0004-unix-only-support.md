@@ -1,4 +1,4 @@
-# ADR-0010: Unix-Only System Support
+# ADR-0004: Unix-Only System Support
 
 ## Status
 

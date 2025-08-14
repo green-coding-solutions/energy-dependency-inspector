@@ -40,7 +40,7 @@ class NpmDetector(PackageManagerDetector):
         """Extract npm dependencies with versions.
 
         Uses 'npm list --json --depth=0' for structured package information.
-        See docs/adr/0011-npm-list-json-for-nodejs-packages.md
+        See docs/detectors/npm_detector.md
         """
         stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", working_dir)
 
@@ -109,7 +109,7 @@ class NpmDetector(PackageManagerDetector):
         """Generate a hash based on the contents of the location directory.
 
         Implements package manager location hashing as part of multi-tiered hash strategy.
-        See docs/adr/0005-hash-generation-strategy.md
+        See docs/detectors/npm_detector.md
         """
         # Use environment-independent sorting for consistent hashes across systems.
         # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).

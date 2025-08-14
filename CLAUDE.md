@@ -71,6 +71,7 @@ python3 -c "from detectors.dpkg_detector import DpkgDetector; print(DpkgDetector
 - `core/` - Base interfaces and orchestrator
 - `tests/` - Test suites organized by detector
 - `docs/adr/` - Architecture decision records
+- `docs/detectors/` - Individual detector documentation
 
 ## Project Files
 

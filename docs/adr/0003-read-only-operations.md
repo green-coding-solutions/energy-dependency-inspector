@@ -1,4 +1,4 @@
-# ADR-0009: Read-Only Operations Constraint
+# ADR-0003: Read-Only Operations Constraint
 
 ## Status
 

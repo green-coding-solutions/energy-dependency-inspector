@@ -7,6 +7,7 @@
 - Add '-o json' / '--output json' flag
 - Add tests
   - cli flags
+- Add hash retrieval for npm packages
 - Add support for Podman + Podman Compose
 - Add configuration file
   - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)

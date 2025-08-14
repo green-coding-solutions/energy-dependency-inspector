@@ -110,13 +110,17 @@ The tool outputs JSON with the following structure:
 
 ## Documentation
 
-### Architecture Decision Records (ADRs)
+### Architecture & Detector Documentation
 
-For detailed information about architectural decisions and design rationale, see the [Architecture Decision Records](./docs/adr/) directory. Key decisions include:
+For detailed information about architectural decisions and package manager implementations:
 
-- [ADR-0001: Runtime Snapshot Approach](./docs/adr/0001-runtime-snapshot-approach.md) - Why we analyze running environments instead of source files
-- [ADR-0002: Modular Detector Architecture](./docs/adr/0002-modular-detector-architecture.md) - The extensible architecture for package manager detection
-- [ADR-0005: Hash Generation Strategy](./docs/adr/0005-hash-generation-strategy.md) - Multi-tiered hash generation approach
+- **Architecture Decision Records**: See [docs/adr/](./docs/adr/) for architectural decisions
+- **Detector Documentation**: See [docs/detectors/](./docs/detectors/) for detailed implementation information:
+  - [APK Detector](./docs/detectors/apk_detector.md) - Alpine Linux package detection
+  - [DPKG Detector](./docs/detectors/dpkg_detector.md) - Debian/Ubuntu package detection
+  - [NPM Detector](./docs/detectors/npm_detector.md) - Node.js package detection
+  - [PIP Detector](./docs/detectors/pip_detector.md) - Python package detection
+  - [Docker Compose Detector](./docs/detectors/docker_compose_detector.md) - Container image detection
 
 See the complete [SPECIFICATION.md](./SPECIFICATION.md) for detailed requirements and implementation constraints.
 

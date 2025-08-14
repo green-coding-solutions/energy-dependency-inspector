@@ -26,7 +26,7 @@ class ApkDetector(PackageManagerDetector):
         """Extract system packages with versions and architecture using apk list.
 
         Uses 'apk list --installed' for comprehensive package information including architecture.
-        See docs/adr/0004-apk-list-for-alpine-packages.md
+        See docs/detectors/apk_detector.md
         """
         command = "apk list --installed"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
