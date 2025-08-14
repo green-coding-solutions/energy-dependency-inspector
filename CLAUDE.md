@@ -62,6 +62,7 @@ python3 -c "from detectors.dpkg_detector import DpkgDetector; print(DpkgDetector
 - **Lint after each task** - always ensure good code quality
 - **Commit frequently**
 - **Add tests for new functionality**
+- **If you do measurements, persist the used scripts / commands** - measurements should be repeatable
 
 ## Key Directories
 

@@ -51,5 +51,5 @@ This approach leverages the existing package integrity metadata that dpkg mainta
 - **Positive**: High hash coverage through architecture-specific pattern support
 - **Positive**: Handles modern multi-arch Debian/Ubuntu package installations
 - **Negative**: Hash availability depends on dpkg metadata file existence
-- **Negative**: Multiple I/O operations to check different md5sums file patterns
+- **Negative**: ~~Multiple I/O operations to check different md5sums file patterns~~ **Updated 2025-08-14**: Now uses single batch operation to read all `.md5sums` files at once, dramatically reducing subprocess overhead
 - **Negative**: APT/dpkg-specific approach not portable to other package managers
