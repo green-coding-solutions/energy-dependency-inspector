@@ -11,6 +11,7 @@ import pytest
 
 from executors import DockerExecutor
 from core.orchestrator import Orchestrator
+from core.output_formatter import OutputFormatter
 
 try:
     import docker
@@ -85,7 +86,8 @@ class TestDockerExecutorFallback:
             # The important thing is that it doesn't crash due to missing sh
 
             # Verify the result can be formatted as JSON (as dependency_resolver.py does)
-            formatted_result = orchestrator.resolve_and_format(executor)
+            formatter = OutputFormatter(debug=True)
+            formatted_result = formatter.format_json(result, pretty_print=True)
             assert isinstance(formatted_result, str)
 
             # Should be valid JSON
