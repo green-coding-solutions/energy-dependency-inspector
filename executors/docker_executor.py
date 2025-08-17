@@ -120,3 +120,34 @@ class DockerExecutor(EnvironmentExecutor):
             return exit_code == 0
         except (OSError, ValueError):
             return False
+
+    def get_container_info(self) -> dict:
+        """Get container metadata including image name and hash."""
+        try:
+            # Reload container to get latest info
+            self.container.reload()
+
+            # Get image information
+            image = self.container.image
+            image_name = self._extract_image_name(image.tags)
+            image_id = image.id
+
+            return {"name": self.container.name, "image": image_name, "image_hash": image_id}
+        except (AttributeError, KeyError, ValueError) as e:
+            return {"name": self.container.name, "image": "unknown", "image_hash": "unknown", "error": str(e)}
+
+    def _extract_image_name(self, tags: list) -> str:
+        """Extract a readable image name from image tags."""
+        if not tags:
+            return "unknown"
+
+        # Use the first tag, or if empty, return 'unknown'
+        first_tag = tags[0] if tags else "unknown"
+
+        # Clean up the tag (remove registry prefixes if any)
+        if "/" in first_tag:
+            # Keep only the last part after the last slash for readability
+            parts = first_tag.split("/")
+            return parts[-1]
+
+        return first_tag

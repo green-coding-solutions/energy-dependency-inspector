@@ -7,6 +7,7 @@ from detectors.npm_detector import NpmDetector
 from detectors.dpkg_detector import DpkgDetector
 from detectors.apk_detector import ApkDetector
 from detectors.docker_compose_detector import DockerComposeDetector
+from detectors.docker_info_detector import DockerInfoDetector
 
 
 class Orchestrator:
@@ -24,13 +25,16 @@ class Orchestrator:
         # Create detector instances
         self.detectors: List[PackageManagerDetector] = [
             DockerComposeDetector(),
+            DockerInfoDetector(),
             DpkgDetector(),
             ApkDetector(),
             PipDetector(venv_path=venv_path, debug=debug),
             NpmDetector(debug=debug),
         ]
 
-    def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def resolve_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: str = None, only_container_info: bool = False
+    ) -> Dict[str, Any]:
         """Resolve all dependencies from available package managers."""
         # Validate working directory if provided
         if working_dir is not None and not executor.path_exists(working_dir):
@@ -41,6 +45,9 @@ class Orchestrator:
         # For Docker Compose environments, only run the DockerComposeDetector
         if isinstance(executor, DockerComposeExecutor):
             detectors_to_run = [d for d in self.detectors if d.NAME == "docker-compose"]
+        elif only_container_info:
+            # Only run docker-info detector when only container info is requested
+            detectors_to_run = [d for d in self.detectors if d.NAME == "docker-info"]
         else:
             # For other environments, skip the DockerComposeDetector
             detectors_to_run = [d for d in self.detectors if d.NAME != "docker-compose"]
@@ -64,13 +71,20 @@ class Orchestrator:
 
                     dependencies = detector.get_dependencies(executor, working_dir)
 
-                    # Only include detector in result if it has dependencies or debug mode is enabled
-                    if dependencies.get("dependencies") or self.debug:
-                        result[detector_name] = dependencies
+                    # Special handling for docker-info detector (simplified format)
+                    if detector_name == "docker-info":
+                        if dependencies:  # Only include if we got container info
+                            result["_container-info"] = dependencies
+                        if self.debug:
+                            print(f"Found container info for {detector_name}")
+                    else:
+                        # Standard handling for other detectors
+                        if dependencies.get("dependencies") or self.debug:
+                            result[detector_name] = dependencies
 
-                    if self.debug:
-                        dep_count = len(dependencies.get("dependencies", {}))
-                        print(f"Found {dep_count} dependencies for {detector_name}")
+                        if self.debug:
+                            dep_count = len(dependencies.get("dependencies", {}))
+                            print(f"Found {dep_count} dependencies for {detector_name}")
                 else:
                     if self.debug:
                         print(f"{detector_name} is not available")

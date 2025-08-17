@@ -38,6 +38,9 @@ python3 dependency_resolver.py docker nginx
 # Analyze Docker container by ID
 python3 dependency_resolver.py docker a1b2c3d4e5f6
 
+# Get only container metadata (skip dependency detection)
+python3 dependency_resolver.py docker nginx --only-container-info
+
 # Analyze Docker Compose stack
 python3 dependency_resolver.py docker_compose my_app
 
@@ -65,7 +68,8 @@ Currently supported:
 - **apk** - System packages of Alpine
 - **pip** - Python packages
 - **npm** - Node.js packages
-- **docker-compose** - Container images
+- **docker-compose** - Container images from Docker Compose stacks
+- **docker-info** - Individual Docker container metadata
 
 ### Output Format
 
@@ -73,6 +77,11 @@ The tool outputs JSON with the following structure:
 
 ```json
 {
+  "_container-info": {
+    "name": "nginx-container",
+    "image": "nginx:latest",
+    "hash": "sha256:2cd1d97f893f..."
+  },
   "docker-compose": {
     "scope": "compose",
     "dependencies": {
@@ -121,6 +130,7 @@ For detailed information about architectural decisions and package manager imple
   - [NPM Detector](./docs/detectors/npm_detector.md) - Node.js package detection
   - [PIP Detector](./docs/detectors/pip_detector.md) - Python package detection
   - [Docker Compose Detector](./docs/detectors/docker_compose_detector.md) - Container image detection
+  - [Docker Info Detector](./docs/detectors/docker_info_detector.md) - Individual container metadata
 
 See the complete [SPECIFICATION.md](./SPECIFICATION.md) for detailed requirements and implementation constraints.
 

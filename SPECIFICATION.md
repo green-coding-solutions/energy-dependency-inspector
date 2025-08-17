@@ -19,6 +19,7 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 - Programming Languages with their common package managers: Python, JavaScript
 - Operating Systems with their common package managers: Ubuntu/Debian, Alpine Linux
 - Container images: Docker and Podman (with hash + tags methodology)
+- Container metadata: Individual Docker container information (name, image, hash)
 
 ### Environment Support
 
@@ -48,7 +49,7 @@ dependency_resolver.py <environment_type> <environment_identifier> <options>
 - **options**: Possibility to provide multiple options parameter (see below)
 
 All parameters are optional. If no `environment_type` and `environment_identifier` is provided, the host system will be analyzed.
-If a container should be analyzed, all the checks will be executed inside the container.
+If a container should be analyzed, all the checks will be executed inside the container and container metadata will be included.
 If a Docker Compose stack should be analyzed, only the container images themselves are analyzed (no commands executed inside containers).
 
 Available options:
@@ -57,12 +58,14 @@ Available options:
 - `--debug`: prints debug statements
 - `--skip-system-scope`: skips system scope package managers (system packages or globally installed Python packages)
 - `--venv-path <venv-path>`: explicit virtual environment path for pip detector
+- `--only-container-info`: for docker environment, only analyze container metadata (skip dependency detection)
 
 Examples:
 
 - `dependency_resolver.py` (host system, no parameters)
 - `dependency_resolver.py docker a1b2c3d4e5f6` (Docker container by id)
 - `dependency_resolver.py docker nginx` (Docker container by name)
+- `dependency_resolver.py docker nginx --only-container-info` (Docker container metadata only)
 - `dependency_resolver.py docker_compose my_app` (Docker compose stack)
 - `dependency_resolver.py --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
 
@@ -108,6 +111,10 @@ Examples:
      - **Usage**: Only activated for `DockerComposeExecutor` environments
      - **Output**: Service names mapped to image tags and full SHA256 hashes (including `sha256:` prefix)
      - **No command execution**: Does not execute commands inside containers, only analyzes container metadata
+   - `DockerInfoDetector`: Individual Docker container metadata (extracts container name, image name, and SHA256 hash)
+     - **Usage**: Automatically included in `DockerExecutor` environments
+     - **Output**: Container metadata in simplified `_container-info` format
+     - **Modes**: Works in both full analysis and container-info-only modes
 
 4. **Main Orchestrator**
    - `Orchestrator`: Coordinates detection and extraction
@@ -132,7 +139,8 @@ dependency_resolver/
     ├── npm_detector.py
     ├── dpkg_detector.py
     ├── apk_detector.py
-    └── docker_compose_detector.py
+    ├── docker_compose_detector.py
+    └── docker_info_detector.py
 ```
 
 #### Detection Strategy
@@ -155,6 +163,11 @@ Schema with example values (incomplete):
 
 ```json
 {
+  "_container-info": {
+    "name": "nginx-container",
+    "image": "nginx:latest",
+    "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
+  },
   "docker-compose": {
     "scope": "compose",
     "dependencies": {
@@ -216,6 +229,7 @@ All package manager outputs include a `scope` field indicating the installation 
 - **`"system"`**: System-wide packages (apt/dpkg, apk, globally installed pip/npm)
 - **`"project"`**: Project-specific packages (virtual environments, local node_modules)
 - **`"compose"`**: Container orchestration images (Docker Compose, Podman Compose)
+- **`"container"`**: Individual container metadata (transformed to `_container-info` format in output)
 
 #### Location Field
 
@@ -226,6 +240,27 @@ The `location` field is only present when `scope` is `"project"`, providing the 
 - **Individual package hashes**: Included when retrievable from package manager (e.g., dpkg md5sums, Docker image hashes)
 - **Location-based hashes**: Generated for project scope installations to detect directory changes
 - **System scope**: No location-based hashes (individual package hashes only where available)
+
+#### Container Info Format
+
+For Docker environments, container metadata is automatically included in a simplified format:
+
+```json
+{
+  "_container-info": {
+    "name": "container-name",
+    "image": "nginx:latest",
+    "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
+  }
+}
+```
+
+**Key characteristics:**
+
+- **Always included**: Container info is present by default in Docker analysis
+- **Simplified format**: Uses flattened structure, not standard detector format
+- **Underscore prefix**: `_container-info` distinguishes it from package managers
+- **Container-only mode**: Use `--only-container-info` for metadata-only extraction
 
 ## Implementation Constraints
 
