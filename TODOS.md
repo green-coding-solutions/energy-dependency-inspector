@@ -1,11 +1,6 @@
 # TODOS
 
-- Add proper documentation pages
-  - one for each detector
-  - refactor ADRs
-- Add '--pretty-print' flag
-- Add '-o json' / '--output json' flag
-- Add tests
+- Add more tests
   - cli flags
 - Add hash retrieval for npm packages
 - Add support for Podman + Podman Compose

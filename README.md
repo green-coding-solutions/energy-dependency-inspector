@@ -52,6 +52,9 @@ python3 dependency_resolver.py --working-dir /path/to/project
 
 # Skip system scope package managers
 python3 dependency_resolver.py --skip-system-scope
+
+# Pretty print JSON output
+python3 dependency_resolver.py --pretty-print
 ```
 
 ### Supported Environments

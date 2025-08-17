@@ -66,6 +66,12 @@ Examples:
         help="For docker environment, only analyze container metadata (skip dependency detection)",
     )
 
+    parser.add_argument(
+        "--pretty-print",
+        action="store_true",
+        help="Format JSON output with indentation",
+    )
+
     return parser.parse_args()
 
 
@@ -115,7 +121,7 @@ def main() -> None:
         )
         dependencies = orchestrator.resolve_dependencies(executor, args.working_dir, args.only_container_info)
         formatter = OutputFormatter(debug=args.debug)
-        result = formatter.format_json(dependencies, pretty_print=True)
+        result = formatter.format_json(dependencies, pretty_print=args.pretty_print)
         print(result)
     except (RuntimeError, OSError, ValueError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)
