@@ -43,7 +43,7 @@ The test manages the complete stack lifecycle including startup, readiness check
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/docker_compose_detector/test_docker_compose_detection.py -v
+python -m pytest tests/detectors/docker_compose/test_docker_compose_detection.py -v
 ```
 
 ### With Verbose Resolver Output
@@ -52,7 +52,7 @@ To see the complete dependency resolver output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/docker_compose_detector/test_docker_compose_detection.py -v -s --verbose-resolver
+python -m pytest tests/detectors/docker_compose/test_docker_compose_detection.py -v -s --verbose-resolver
 ```
 
 The `--verbose-resolver` option displays the complete JSON output with all detected dependencies.
@@ -61,7 +61,7 @@ The `--verbose-resolver` option displays the complete JSON output with all detec
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/docker_compose_detector/ -v
+python -m pytest tests/detectors/docker_compose/ -v
 ```
 
 ## Test Dependencies

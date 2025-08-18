@@ -1,4 +1,4 @@
-"""Pytest configuration for all detector tests."""
+"""Pytest configuration for all tests."""
 
 from typing import Any
 

@@ -21,10 +21,10 @@ This test suite validates the APK detector's ability to:
 
 ```bash
 # Run APK detector tests
-pytest tests/apk_detector/ -v
+pytest tests/detectors/apk/ -v
 
 # Run with verbose resolver output
-pytest tests/apk_detector/ -v -s --verbose-resolver
+pytest tests/detectors/apk/ -v -s --verbose-resolver
 ```
 
 ## Requirements

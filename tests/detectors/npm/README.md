@@ -39,7 +39,7 @@ The test manages the complete container lifecycle including startup, readiness c
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/npm_detector/test_npm_docker_detection.py -v
+python -m pytest tests/detectors/npm/test_npm_docker_detection.py -v
 ```
 
 ### With Verbose Resolver Output
@@ -48,7 +48,7 @@ To see the complete dependency resolver output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/npm_detector/test_npm_docker_detection.py -v -s --verbose-resolver
+python -m pytest tests/detectors/npm/test_npm_docker_detection.py -v -s --verbose-resolver
 ```
 
 The `--verbose-resolver` option displays the complete JSON output with all detected npm dependencies.
@@ -57,7 +57,7 @@ The `--verbose-resolver` option displays the complete JSON output with all detec
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/npm_detector/ -v
+python -m pytest tests/detectors/npm/ -v
 ```
 
 ## Test Process

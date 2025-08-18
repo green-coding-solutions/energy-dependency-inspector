@@ -53,28 +53,28 @@ All tests use Docker containers with `python:3.11-slim` and install test package
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/ -v
+python -m pytest tests/detectors/pip/ -v
 ```
 
 #### Docker detection tests only
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/test_pip_docker_detection.py -v
+python -m pytest tests/detectors/pip/test_pip_docker_detection.py -v
 ```
 
 #### Virtual environment detection tests only
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/test_pip_venv_detection.py -v
+python -m pytest tests/detectors/pip/test_pip_venv_detection.py -v
 ```
 
 #### Specific venv detection test
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/test_pip_venv_detection.py::TestPipVenvDetection::test_venv_located_at_opt_venv -v
+python -m pytest tests/detectors/pip/test_pip_venv_detection.py::TestPipVenvDetection::test_venv_located_at_opt_venv -v
 ```
 
 ### With Verbose Resolver Output
@@ -83,7 +83,7 @@ To see the complete dependency resolver output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/test_pip_venv_detection.py -v -s --verbose-resolver
+python -m pytest tests/detectors/pip/test_pip_venv_detection.py -v -s --verbose-resolver
 ```
 
 The `--verbose-resolver` option displays the complete JSON output with all detected pip dependencies.
@@ -92,7 +92,7 @@ The `--verbose-resolver` option displays the complete JSON output with all detec
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_detector/ -v
+python -m pytest tests/detectors/pip/ -v
 ```
 
 ## Test Process

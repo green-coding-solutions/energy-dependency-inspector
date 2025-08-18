@@ -69,7 +69,7 @@ python3 -c "from dependency_resolver.detectors.dpkg_detector import DpkgDetector
 - `dependency_resolver/detectors/` - Package manager detection implementations
 - `dependency_resolver/executors/` - Environment execution adapters
 - `dependency_resolver/core/` - Base interfaces and orchestrator
-- `tests/` - Test suites organized by detector
+- `tests/` - Test suites organized by component (detectors, executors, integration, specialized)
 - `docs/adr/` - Architecture decision records
 - `docs/detectors/` - Individual detector documentation
 

@@ -41,13 +41,13 @@ This directory contains tests for the Docker Info detector, which extracts metad
 
 ```bash
 # Run all docker info detector tests
-pytest tests/docker_info_detector/ -v
+pytest tests/detectors/docker_info/ -v
 
 # Run with verbose output from resolver
-pytest tests/docker_info_detector/ -v --verbose-resolver
+pytest tests/detectors/docker_info/ -v --verbose-resolver
 
 # Run specific test
-pytest tests/docker_info_detector/test_docker_info_detection.py::TestDockerInfoDetection::test_docker_info_detection_real_container -v
+pytest tests/detectors/docker_info/test_docker_info_detection.py::TestDockerInfoDetection::test_docker_info_detection_real_container -v
 ```
 
 ## Test Requirements

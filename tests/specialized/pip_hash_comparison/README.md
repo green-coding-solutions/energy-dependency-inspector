@@ -39,7 +39,7 @@ The test manages virtual environments, package installation, and hash generation
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_hash_comparison/test_cross_environment_hash.py -v
+python -m pytest tests/specialized/pip_hash_comparison/test_cross_environment_hash.py -v
 ```
 
 ### With Output
@@ -48,14 +48,14 @@ To see the hash comparison output:
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_hash_comparison/test_cross_environment_hash.py -v -s
+python -m pytest tests/specialized/pip_hash_comparison/test_cross_environment_hash.py -v -s
 ```
 
 ### Quick Integration Test
 
 ```bash
 source venv/bin/activate
-python -m pytest tests/pip_hash_comparison/ -v
+python -m pytest tests/specialized/pip_hash_comparison/ -v
 ```
 
 ### Automated Test Runner
@@ -63,7 +63,7 @@ python -m pytest tests/pip_hash_comparison/ -v
 The automated test runner builds Docker images and runs the complete test suite:
 
 ```bash
-./tests/pip_hash_comparison/run_cross_env_tests.sh
+./tests/specialized/pip_hash_comparison/run_cross_env_tests.sh
 ```
 
 This script will:

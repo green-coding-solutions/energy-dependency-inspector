@@ -23,10 +23,10 @@ This test suite validates the DPKG detector's ability to:
 
 ```bash
 # Run DPKG detector tests
-pytest tests/dpkg_detector/ -v
+pytest tests/detectors/dpkg/ -v
 
 # Run with verbose resolver output
-pytest tests/dpkg_detector/ -v -s --verbose-resolver
+pytest tests/detectors/dpkg/ -v -s --verbose-resolver
 ```
 
 ## Requirements

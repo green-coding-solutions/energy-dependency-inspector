@@ -65,7 +65,7 @@ pytest
 pytest --cov=dependency_resolver
 
 # Run specific test file
-pytest tests/test_pip_detector.py
+pytest tests/detectors/pip/test_pip_docker_detection.py
 ```
 
 ### Code Quality Checks
