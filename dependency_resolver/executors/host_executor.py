@@ -2,12 +2,13 @@ import os
 import subprocess
 
 from ..core.interfaces import EnvironmentExecutor
+from typing import Optional
 
 
 class HostExecutor(EnvironmentExecutor):
     """Executor for running commands on the host system."""
 
-    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Execute a command on the host system.
 
         Returns actual command exit code on success, or 1 for execution environment failures.

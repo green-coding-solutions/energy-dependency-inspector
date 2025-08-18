@@ -9,7 +9,7 @@ import pytest
 try:
     import docker
 except ImportError:
-    docker = None
+    docker = None  # type: ignore
 
 
 class DockerTestBase:

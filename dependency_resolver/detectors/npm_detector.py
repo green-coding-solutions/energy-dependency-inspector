@@ -1,6 +1,6 @@
 import hashlib
 import json
-from typing import Any
+from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
@@ -13,7 +13,7 @@ class NpmDetector(PackageManagerDetector):
     def __init__(self, debug: bool = False):
         self.debug = debug
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if npm is usable and the project uses npm (not yarn/pnpm)."""
         _, _, exit_code = executor.execute_command("npm --version", working_dir)
         if exit_code != 0:
@@ -34,7 +34,7 @@ class NpmDetector(PackageManagerDetector):
         # Fallback to package-lock.json
         return executor.path_exists(f"{search_dir}/package-lock.json")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract npm dependencies with versions.
 
         Uses 'npm list --json --depth=0' for structured package information.
@@ -74,7 +74,7 @@ class NpmDetector(PackageManagerDetector):
 
         return result
 
-    def _get_npm_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+    def _get_npm_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the location of the npm project."""
         search_dir = working_dir or "."
 
@@ -136,6 +136,6 @@ class NpmDetector(PackageManagerDetector):
                 print(f"ERROR: location: {location}")
             return ""
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """NPM has system scope when no local package.json or node_modules exists."""
         return self._get_npm_location(executor, working_dir) == "system"

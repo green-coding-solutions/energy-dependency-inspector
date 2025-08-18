@@ -1,5 +1,5 @@
 import hashlib
-from typing import Any
+from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
@@ -12,7 +12,7 @@ class DpkgDetector(PackageManagerDetector):
     def __init__(self) -> None:
         self._batch_hash_cache: dict[str, str] | None = None
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if dpkg is usable (running on Debian/Ubuntu and dpkg-query is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
@@ -27,7 +27,7 @@ class DpkgDetector(PackageManagerDetector):
         _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
         return dpkg_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
 
         Uses dpkg-query -W -f for reliable package information extraction.
@@ -220,6 +220,6 @@ done
         content = "\n".join(sorted(md5_hashes))
         return hashlib.sha256(content.encode()).hexdigest()
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """DPKG always has system scope (system packages)."""
         return True

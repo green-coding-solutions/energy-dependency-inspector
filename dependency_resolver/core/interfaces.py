@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Optional, Any
 
 
 class EnvironmentExecutor(ABC):
     """Abstract base class for executing commands in different environments."""
 
     @abstractmethod
-    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Execute a command in the target environment."""
         raise NotImplementedError
 
@@ -22,7 +22,7 @@ class PackageManagerDetector(ABC):
     NAME: str
 
     @abstractmethod
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this package manager is usable in the environment.
 
         This should verify both that the environment meets requirements
@@ -31,12 +31,12 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract dependencies with versions and hashes."""
         raise NotImplementedError
 
     @abstractmethod
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this detector operates at system scope for the given environment.
 
         Returns True if the detector would return scope: "system" in get_dependencies().

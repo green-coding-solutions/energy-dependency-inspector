@@ -1,6 +1,6 @@
 import docker
 
-from typing import Any
+from typing import Optional, Any
 from ..core.interfaces import EnvironmentExecutor
 
 
@@ -43,7 +43,7 @@ class DockerComposeExecutor(EnvironmentExecutor):
                     matching_containers.append(container)
             return matching_containers
 
-    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Docker Compose executor does not execute commands in containers.
 
         For Docker Compose environments, we only analyze the container images

@@ -3,6 +3,7 @@ import shlex
 import docker
 
 from ..core.interfaces import EnvironmentExecutor
+from typing import Optional
 
 
 class DockerExecutor(EnvironmentExecutor):
@@ -29,7 +30,7 @@ class DockerExecutor(EnvironmentExecutor):
         except docker.errors.APIError as e:
             raise RuntimeError(f"Docker API error: {str(e)}") from e
 
-    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Execute a command inside the Docker container with direct execution fallback.
 
         Returns actual command exit code on success, or 1 for execution environment failures.
@@ -53,11 +54,11 @@ class DockerExecutor(EnvironmentExecutor):
         except (OSError, ValueError) as e:
             return "", f"Command execution failed: {str(e)}", 1
 
-    def _execute_command_direct(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
+    def _execute_command_direct(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Fallback: execute simple commands directly without shell."""
         try:
             # Handle only the simple cases we actually use
-            cmd_parts = self._parse_simple_command(command)
+            cmd_parts = DockerExecutor._parse_simple_command(command)
             if not cmd_parts:
                 return "", f"Command too complex for direct execution (no shell available): {command}", 1
 
@@ -70,7 +71,8 @@ class DockerExecutor(EnvironmentExecutor):
         except docker.errors.APIError as e:
             return "", f"Direct execution failed: {str(e)}", 1
 
-    def _parse_simple_command(self, command: str) -> list:
+    @staticmethod
+    def _parse_simple_command(command: str) -> list[str] | None:
         """Parse commands that can be executed directly without shell."""
         # Reject complex shell operations
         if any(op in command for op in ["&&", "||", "|", ">", "<", ";", "`", "$(", "$"]):
@@ -103,6 +105,8 @@ class DockerExecutor(EnvironmentExecutor):
 
             # Get image information
             image = self.container.image
+            if image is None:
+                return {"name": self.container.name, "image": "unknown", "image_hash": "unknown"}
             image_name = self._extract_image_name(image.tags)
             image_id = image.id
 

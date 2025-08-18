@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Optional, Any
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_compose_executor import DockerComposeExecutor
 from ..detectors.pip_detector import PipDetector
@@ -32,7 +32,7 @@ class Orchestrator:
         ]
 
     def resolve_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: str = None, only_container_info: bool = False
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, only_container_info: bool = False
     ) -> dict[str, Any]:
         """Resolve all dependencies from available package managers."""
         # Validate working directory if provided

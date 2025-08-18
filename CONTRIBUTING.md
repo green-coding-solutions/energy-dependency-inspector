@@ -43,7 +43,7 @@ pre-commit run --all-files
 
 Our pre-commit configuration includes:
 
-- **Black** - Code formatting with 100 character line length
+- **Black** - Code formatting with 120 character line length
 - **Pylint** - Code quality checks and linting
 - **MyPy** - Type checking
 - **General hooks** - Trailing whitespace removal, end-of-file fixes, etc.
@@ -80,7 +80,7 @@ source venv/bin/activate
 pylint dependency_resolver/
 
 # Run type checking
-mypy dependency_resolver/ --no-strict-optional
+mypy dependency_resolver/
 
 # Format code
 black dependency_resolver/

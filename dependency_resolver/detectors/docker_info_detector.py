@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Optional, Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_executor import DockerExecutor
 
@@ -8,11 +8,11 @@ class DockerInfoDetector(PackageManagerDetector):
 
     NAME = "docker-info"
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this is a Docker environment."""
         return isinstance(executor, DockerExecutor)
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract Docker container metadata."""
         if not isinstance(executor, DockerExecutor):
             return {}
@@ -32,6 +32,6 @@ class DockerInfoDetector(PackageManagerDetector):
 
         return result
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Docker container info has container scope, not system scope."""
         return False

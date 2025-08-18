@@ -18,7 +18,7 @@ from tests.common.docker_test_base import DockerTestBase
 try:
     import docker
 except ImportError:
-    docker = None
+    docker = None  # type: ignore
 
 
 class TestDockerComposeDetection(DockerTestBase):

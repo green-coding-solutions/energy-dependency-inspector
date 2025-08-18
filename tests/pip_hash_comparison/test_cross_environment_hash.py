@@ -16,7 +16,7 @@ from dependency_resolver.detectors.pip_detector import PipDetector
 try:
     import docker
 except ImportError:
-    docker = None
+    docker = None  # type: ignore
 
 
 class TestCrossEnvironmentHash:
@@ -114,7 +114,10 @@ class TestCrossEnvironmentHash:
         )
 
         try:
-            executor = DockerExecutor(container.id)
+            container_id = container.id
+            if container_id is None:
+                raise ValueError("Container ID is None")
+            executor = DockerExecutor(container_id)
 
             # Create virtual environment in container
             venv_path = "/tmp/test_venv"

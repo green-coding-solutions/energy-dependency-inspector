@@ -99,8 +99,14 @@ def create_executor(environment_type: str, environment_identifier: str | None) -
     if environment_type == "host":
         return HostExecutor()
     elif environment_type == "docker":
+        if environment_identifier is None:
+            print("Error: Docker environment requires container identifier", file=sys.stderr)
+            sys.exit(1)
         return DockerExecutor(environment_identifier)
     elif environment_type == "docker_compose":
+        if environment_identifier is None:
+            print("Error: Docker Compose environment requires service identifier", file=sys.stderr)
+            sys.exit(1)
         return DockerComposeExecutor(environment_identifier)
     else:
         print(f"Error: Unsupported environment type: {environment_type}", file=sys.stderr)

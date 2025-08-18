@@ -1,6 +1,6 @@
 import hashlib
 import os
-from typing import Any
+from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.host_executor import HostExecutor
@@ -11,18 +11,18 @@ class PipDetector(PackageManagerDetector):
 
     NAME = "pip"
 
-    def __init__(self, venv_path: str = None, debug: bool = False):
+    def __init__(self, venv_path: Optional[str] = None, debug: bool = False):
         self.explicit_venv_path = venv_path
         self.debug = debug
         self._cached_venv_path: str | None = None
         self._venv_path_searched = False
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if pip is usable in the environment."""
         _, _, exit_code = executor.execute_command("pip --version", working_dir)
         return exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract pip dependencies with versions.
 
         Uses 'pip list --format=freeze' for clean package==version format.
@@ -74,7 +74,7 @@ class PipDetector(PackageManagerDetector):
 
         return final_result
 
-    def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+    def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the location of the pip environment."""
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} show pip", working_dir)
@@ -86,7 +86,7 @@ class PipDetector(PackageManagerDetector):
 
         return "system"
 
-    def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: str = None) -> str:
+    def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the appropriate pip command, activating venv if available."""
         venv_path = self._find_venv_path(executor, working_dir)
         if venv_path:
@@ -95,7 +95,7 @@ class PipDetector(PackageManagerDetector):
                 return venv_pip
         return "pip"
 
-    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str | None:
+    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str | None:
         """Find virtual environment using batch search for pyvenv.cfg files."""
         # Return cached result if already searched
         if self._venv_path_searched:
@@ -234,6 +234,6 @@ class PipDetector(PackageManagerDetector):
                 print(f"ERROR: location: {location}")
             return ""
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """PIP has system scope when no virtual environment is found."""
         return self._get_pip_location(executor, working_dir) == "system"

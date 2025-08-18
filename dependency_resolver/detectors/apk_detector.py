@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Optional, Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
@@ -7,7 +7,7 @@ class ApkDetector(PackageManagerDetector):
 
     NAME = "apk"
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if apk is usable (running on Alpine Linux and apk is available)."""
         stdout, _, exit_code = executor.execute_command("cat /etc/os-release")
         if exit_code == 0:
@@ -21,7 +21,7 @@ class ApkDetector(PackageManagerDetector):
         _, _, apk_exit_code = executor.execute_command("apk --version")
         return apk_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract system packages with versions and architecture using apk list.
 
         Uses 'apk list --installed' for comprehensive package information including architecture.
@@ -64,6 +64,6 @@ class ApkDetector(PackageManagerDetector):
 
         return {"scope": "system", "dependencies": dependencies}
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """APK always has system scope (system packages)."""
         return True

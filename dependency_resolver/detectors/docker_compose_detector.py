@@ -1,5 +1,5 @@
 import re
-from typing import Any
+from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_compose_executor import DockerComposeExecutor
@@ -10,11 +10,11 @@ class DockerComposeDetector(PackageManagerDetector):
 
     NAME = "docker-compose"
 
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this is a Docker Compose environment and if we can extract container information."""
         return isinstance(executor, DockerComposeExecutor) and len(executor.get_containers()) > 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Extract Docker Compose container images with their tags and hashes."""
         if not isinstance(executor, DockerComposeExecutor):
             return {"scope": "compose", "dependencies": {}}
@@ -80,6 +80,6 @@ class DockerComposeDetector(PackageManagerDetector):
 
         return first_tag
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
+    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Docker Compose containers have compose scope, not system scope."""
         return False

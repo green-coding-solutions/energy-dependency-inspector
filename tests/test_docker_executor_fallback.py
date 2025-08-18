@@ -16,7 +16,7 @@ from dependency_resolver.core.output_formatter import OutputFormatter
 try:
     import docker
 except ImportError:
-    docker = None
+    docker = None  # type: ignore
 
 
 class TestDockerExecutorFallback:
@@ -32,22 +32,22 @@ class TestDockerExecutorFallback:
         executor_class = DockerExecutor
 
         # Test simple commands
-        assert executor_class._parse_simple_command(None, "python3 --version") == ["python3", "--version"]
-        assert executor_class._parse_simple_command(None, "cat /etc/os-release") == ["cat", "/etc/os-release"]
-        assert executor_class._parse_simple_command(None, "test -e /usr/bin/python3") == [
+        assert executor_class._parse_simple_command("python3 --version") == ["python3", "--version"]
+        assert executor_class._parse_simple_command("cat /etc/os-release") == ["cat", "/etc/os-release"]
+        assert executor_class._parse_simple_command("test -e /usr/bin/python3") == [
             "test",
             "-e",
             "/usr/bin/python3",
         ]
 
         # Test complex commands that should be rejected
-        assert executor_class._parse_simple_command(None, "echo hello | cat") is None
-        assert executor_class._parse_simple_command(None, "cd /tmp && ls") is None
-        assert executor_class._parse_simple_command(None, "echo hello > file.txt") is None
-        assert executor_class._parse_simple_command(None, "echo $HOME") is None
+        assert executor_class._parse_simple_command("echo hello | cat") is None
+        assert executor_class._parse_simple_command("cd /tmp && ls") is None
+        assert executor_class._parse_simple_command("echo hello > file.txt") is None
+        assert executor_class._parse_simple_command("echo $HOME") is None
 
         # Test commands starting with flags (should be rejected)
-        assert executor_class._parse_simple_command(None, "--version python3") is None
+        assert executor_class._parse_simple_command("--version python3") is None
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
     def test_dependency_resolver_integration_with_distroless(self) -> None:
