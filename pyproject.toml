@@ -39,8 +39,6 @@ include = ["core*", "detectors*"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies.dev = {file = ["requirements-dev.txt"]}
-optional-dependencies.docker = {file = ["requirements-docker.txt"]}
-optional-dependencies.podman = {file = ["requirements-podman.txt"]}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

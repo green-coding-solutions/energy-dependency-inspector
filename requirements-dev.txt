@@ -1,16 +1,16 @@
 # Development dependencies
 
-# Testing framework (as specified in CLAUDE.md)
+# Testing framework
 pytest>=7.0.0
 pytest-cov>=4.0.0
 
-# Code quality (as specified in CLAUDE.md)
+# Code quality
 pylint>=2.15.0
 
 # Type checking
 mypy>=1.0.0
 
-# Code formatting (optional but helpful)
+# Code formatting
 black>=22.0.0
 
 # Pre-commit hooks

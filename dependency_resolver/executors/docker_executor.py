@@ -1,11 +1,6 @@
 import shlex
 
-try:
-    import docker
-
-    DOCKER_AVAILABLE = True
-except ImportError:
-    DOCKER_AVAILABLE = False
+import docker
 
 from ..core.interfaces import EnvironmentExecutor
 
@@ -19,8 +14,6 @@ class DockerExecutor(EnvironmentExecutor):
 
     def __init__(self, container_identifier: str):
         """Initialize Docker executor."""
-        if not DOCKER_AVAILABLE:
-            raise RuntimeError('Docker library not available. Install with: pip install -e ".[docker]"')
 
         try:
             self.client = docker.from_env()

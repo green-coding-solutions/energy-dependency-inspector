@@ -15,12 +15,6 @@ source venv/bin/activate
 
 # Install for development (includes dev dependencies)
 pip install -e ".[dev]"
-
-# For Docker support (optional)
-pip install -e ".[docker]"
-
-# For Podman support (optional, not implemented yet)
-pip install -e ".[podman]"
 ```
 
 The `-e` flag installs the package in editable mode, allowing you to make changes to the code and test them without reinstalling the package.

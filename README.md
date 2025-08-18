@@ -11,9 +11,6 @@ The output is a structured JSON that includes information about all the installe
 git clone https://github.com/green-coding-solutions/dependency-resolver
 cd dependency-resolver
 pip install .
-
-# For Docker support (optional)
-pip install ".[docker]"
 ```
 
 ## Usage
