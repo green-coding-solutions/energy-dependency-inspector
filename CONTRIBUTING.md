@@ -92,19 +92,17 @@ black dependency_resolver/
 ### Project Structure
 
 ```plain
-dependency_resolver/
-├── __main__.py                       # CLI entry point
-├── core/
-│   ├── interfaces.py         # Abstract base classes
-│   ├── executor.py           # Environment executors
-│   └── resolver.py           # Main orchestrator
-├── detectors/
-│   ├── pip_detector.py       # Python packages
-│   └── dpkg_detector.py      # Debian/Ubuntu system packages
-├── requirements.txt          # Production dependencies
-├── requirements-dev.txt      # Development dependencies
-├── pyproject.toml           # Project configuration
-└── .pre-commit-config.yaml  # Pre-commit hook configuration
+dependency-resolver/
+├── pyproject.toml
+├── requirements*.txt
+├── dependency_resolver/             # Main package
+│   ├── __main__.py                  # CLI entry point
+│   ├── core/                        # Orchestration and interfaces
+│   ├── detectors/                   # Package manager detectors
+│   └── executors/                   # Environment executors
+├── tests/
+├── docs/
+└── venv/
 ```
 
 ## Development Guidelines

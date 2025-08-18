@@ -127,20 +127,9 @@ Examples:
 ```plain
 dependency_resolver/
 ├── __main__.py                       # CLI entry point
-├── core/
-│   ├── interfaces.py         # Abstract base classes
-│   └── orchestrator.py       # Main orchestrator
-├── executors/
-│   ├── host_executor.py
-│   ├── docker_executor.py
-│   └── docker_compose_executor.py
-└── detectors/
-    ├── pip_detector.py
-    ├── npm_detector.py
-    ├── dpkg_detector.py
-    ├── apk_detector.py
-    ├── docker_compose_detector.py
-    └── docker_info_detector.py
+├── core/                             # Orchestration and interfaces
+├── executors/                        # Environment execution adapters
+└── detectors/                        # Package manager detection implementations
 ```
 
 #### Detection Strategy
