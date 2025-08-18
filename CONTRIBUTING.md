@@ -4,8 +4,6 @@ Thank you for your interest in contributing to the dependency-resolver project! 
 
 ## Development Setup
 
-### Initial Setup
-
 ```bash
 # Clone the repository
 git clone https://github.com/green-coding-solutions/dependency-resolver
@@ -15,18 +13,23 @@ cd dependency-resolver
 python3 -m venv venv
 source venv/bin/activate
 
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Or using pyproject.toml (recommended)
+# Install for development (includes dev dependencies)
 pip install -e ".[dev]"
+
+# For Docker support (optional)
+pip install -e ".[docker]"
+
+# For Podman support (optional, not implemented yet)
+pip install -e ".[podman]"
 ```
 
-### Pre-commit Hooks
+The `-e` flag installs the package in editable mode, allowing you to make changes to the code and test them without reinstalling the package.
+
+## Pre-commit Hooks
 
 We use pre-commit hooks to ensure code quality and consistency. All Python files are automatically linted and formatted before each commit.
 
-#### Installing Pre-commit Hooks
+### Installing Pre-commit Hooks
 
 ```bash
 # Activate virtual environment first
@@ -42,7 +45,7 @@ pre-commit run --files $(git diff --name-only --diff-filter=ACMR)
 pre-commit run --all-files
 ```
 
-#### What the Hooks Do
+### What the Hooks Do
 
 Our pre-commit configuration includes:
 

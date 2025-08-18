@@ -7,18 +7,13 @@ The output is a structured JSON that includes information about all the installe
 ## Installation
 
 ```bash
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+# Clone and install
+git clone https://github.com/green-coding-solutions/dependency-resolver
+cd dependency-resolver
+pip install .
 
 # For Docker support (optional)
-pip install -e ".[docker]"
-
-# For Podman support (optional, not implemented yet)
-pip install -e ".[podman]"
+pip install ".[docker]"
 ```
 
 ## Usage
