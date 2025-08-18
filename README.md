@@ -56,7 +56,9 @@ python3 -m dependency_resolver --pretty-print
 
 ### Programmatic Interface
 
-The dependency-resolver can also be used as a Python library in other projects. Here are some examples:
+The dependency-resolver can be used as a Python library in other projects with both functional and class-based interfaces:
+
+#### Functional Interface (Simple Usage)
 
 ```python
 import dependency_resolver
@@ -75,8 +77,62 @@ docker_deps = dependency_resolver.resolve_docker_dependencies(
     container_identifier="nginx",
     working_dir="/app"
 )
+```
 
-# Advanced usage with direct access to core classes
+#### Class-Based Interface (Advanced Usage)
+
+For complex scenarios, especially when analyzing multiple environments in parallel:
+
+```python
+from dependency_resolver import DependencyResolver, ResolveRequest
+
+# Create resolver with shared configuration
+resolver = DependencyResolver(
+    debug=True,
+    skip_system_scope=False,
+    max_workers=4  # Parallel processing
+)
+
+# Single environment analysis
+result = resolver.resolve(
+    environment_type="docker",
+    environment_identifier="nginx"
+)
+
+# Parallel multi-environment analysis
+requests = [
+    ResolveRequest("docker", "container1"),
+    ResolveRequest("docker", "container2"),
+    ResolveRequest("host", working_dir="/path/to/project", venv_path="/opt/venv"),
+    ResolveRequest("docker_compose", "my-stack")
+]
+
+def progress_callback(completed, total, result):
+    print(f"Progress: {completed}/{total} - {result.request.environment_type} ({'✓' if result.success else '✗'})")
+
+# Execute in parallel with progress tracking
+results = resolver.resolve_batch(
+    requests,
+    progress_callback=progress_callback,
+    fail_fast=False  # Continue processing even if some fail
+)
+
+# Process results
+for result in results:
+    if result.success:
+        print(f"Found {len(result.dependencies)} detectors")
+    else:
+        print(f"Error: {result.error}")
+
+# Get results as dictionary format
+dict_results = resolver.resolve_batch_as_dict(requests)
+```
+
+#### Low-Level Interface
+
+For maximum control, access core classes directly:
+
+```python
 from dependency_resolver import Orchestrator, HostExecutor, OutputFormatter
 
 executor = HostExecutor()
@@ -92,11 +148,20 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 - `resolve_docker_dependencies()` - Analyze Docker container, returns JSON string
 - `resolve_dependencies_as_dict()` - Generic analysis, returns Python dictionary
 
-**Available classes for advanced usage:**
+**Available classes:**
 
-- `Orchestrator` - Main dependency resolution coordinator
+- `DependencyResolver` - Main class for single and batch operations with parallel processing
+- `ResolveRequest` - Configuration for individual resolution requests
+- `ResolveResult` - Result object containing dependencies, errors, and execution metadata
+- `Orchestrator` - Core dependency resolution coordinator
 - `HostExecutor`, `DockerExecutor`, `DockerComposeExecutor` - Environment adapters
 - `OutputFormatter` - JSON formatting utilities
+
+**When to use each interface:**
+
+- **Functional Interface**: Simple one-off dependency resolution
+- **Class-Based Interface**: Multiple environments, parallel processing, shared configuration, progress tracking
+- **Low-Level Interface**: Custom orchestration, advanced error handling, integration with existing frameworks
 
 ### Supported Environments
 

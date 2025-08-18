@@ -3,6 +3,7 @@
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator
 from .core.output_formatter import OutputFormatter
+from .core.resolver import DependencyResolver, ResolveRequest, ResolveResult
 from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
 
 from typing import Optional, Any

@@ -23,7 +23,7 @@ pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)
 
 ## Tech Stack
 
-Python with venv, pip, and pytest (Unix-only)
+Python 3.10 with venv, pip, and pytest (Unix-only)
 
 ## Code Principles
 
