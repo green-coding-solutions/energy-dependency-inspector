@@ -80,20 +80,20 @@ While pre-commit hooks will run automatically, you can also run these tools manu
 source venv/bin/activate
 
 # Run pylint (as specified in project guidelines)
-pylint core/ detectors/ dependency_resolver.py
+pylint dependency_resolver/
 
 # Run type checking
-mypy core/ detectors/ dependency_resolver.py
+mypy dependency_resolver/ --ignore-missing-imports --no-strict-optional
 
 # Format code
-black core/ detectors/ dependency_resolver.py
+black dependency_resolver/
 ```
 
 ### Project Structure
 
 ```plain
 dependency_resolver/
-├── dependency_resolver.py    # CLI entry point
+├── __main__.py                       # CLI entry point
 ├── core/
 │   ├── interfaces.py         # Abstract base classes
 │   ├── executor.py           # Environment executors

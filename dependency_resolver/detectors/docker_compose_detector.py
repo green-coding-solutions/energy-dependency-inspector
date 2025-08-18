@@ -1,8 +1,8 @@
 import re
 from typing import Dict, Any, List
 
-from core.interfaces import EnvironmentExecutor, PackageManagerDetector
-from executors import DockerComposeExecutor
+from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from ..executors.docker_compose_executor import DockerComposeExecutor
 
 
 class DockerComposeDetector(PackageManagerDetector):

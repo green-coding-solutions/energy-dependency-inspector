@@ -9,9 +9,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from executors import DockerExecutor
-from core.orchestrator import Orchestrator
-from core.output_formatter import OutputFormatter
+from dependency_resolver.executors import DockerExecutor
+from dependency_resolver.core.orchestrator import Orchestrator
+from dependency_resolver.core.output_formatter import OutputFormatter
 
 try:
     import docker
@@ -85,7 +85,7 @@ class TestDockerExecutorFallback:
             # but the resolver should still work and return an empty result
             # The important thing is that it doesn't crash due to missing sh
 
-            # Verify the result can be formatted as JSON (as dependency_resolver.py does)
+            # Verify the result can be formatted as JSON (as python3 -m dependency_resolver does)
             formatter = OutputFormatter(debug=True)
             formatted_result = formatter.format_json(result, pretty_print=True)
             assert isinstance(formatted_result, str)

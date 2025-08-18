@@ -2,7 +2,7 @@ import hashlib
 import json
 from typing import Dict, Any
 
-from core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
 class NpmDetector(PackageManagerDetector):

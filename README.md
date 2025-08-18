@@ -27,34 +27,34 @@ pip install -e ".[podman]"
 
 ```bash
 # Analyze host system (default behavior)
-python3 dependency_resolver.py
+python3 -m dependency_resolver
 
 # Explicitly specify host environment
-python3 dependency_resolver.py host
+python3 -m dependency_resolver host
 
 # Analyze Docker container by name
-python3 dependency_resolver.py docker nginx
+python3 -m dependency_resolver docker nginx
 
 # Analyze Docker container by ID
-python3 dependency_resolver.py docker a1b2c3d4e5f6
+python3 -m dependency_resolver docker a1b2c3d4e5f6
 
 # Get only container metadata (skip dependency detection)
-python3 dependency_resolver.py docker nginx --only-container-info
+python3 -m dependency_resolver docker nginx --only-container-info
 
 # Analyze Docker Compose stack
-python3 dependency_resolver.py docker_compose my_app
+python3 -m dependency_resolver docker_compose my_app
 
 # Enable debug output
-python3 dependency_resolver.py --debug
+python3 -m dependency_resolver --debug
 
 # Set working directory
-python3 dependency_resolver.py --working-dir /path/to/project
+python3 -m dependency_resolver --working-dir /path/to/project
 
 # Skip system scope package managers
-python3 dependency_resolver.py --skip-system-scope
+python3 -m dependency_resolver --skip-system-scope
 
 # Pretty print JSON output
-python3 dependency_resolver.py --pretty-print
+python3 -m dependency_resolver --pretty-print
 ```
 
 ### Supported Environments

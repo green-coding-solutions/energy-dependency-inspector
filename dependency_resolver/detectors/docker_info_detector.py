@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
-from core.interfaces import EnvironmentExecutor, PackageManagerDetector
-from executors import DockerExecutor
+from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from ..executors.docker_executor import DockerExecutor
 
 
 class DockerInfoDetector(PackageManagerDetector):

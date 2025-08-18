@@ -8,7 +8,7 @@ try:
 except ImportError:
     DOCKER_AVAILABLE = False
 
-from core.interfaces import EnvironmentExecutor
+from ..core.interfaces import EnvironmentExecutor
 
 
 class DockerExecutor(EnvironmentExecutor):

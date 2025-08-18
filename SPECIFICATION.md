@@ -41,7 +41,7 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 ### Command Interface
 
 ```sh
-dependency_resolver.py <environment_type> <environment_identifier> <options>
+python3 -m dependency_resolver <environment_type> <environment_identifier> <options>
 ```
 
 - **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker`, `docker_compose` (additional ones in the future: `podman`, `podman_compose`)
@@ -62,12 +62,12 @@ Available options:
 
 Examples:
 
-- `dependency_resolver.py` (host system, no parameters)
-- `dependency_resolver.py docker a1b2c3d4e5f6` (Docker container by id)
-- `dependency_resolver.py docker nginx` (Docker container by name)
-- `dependency_resolver.py docker nginx --only-container-info` (Docker container metadata only)
-- `dependency_resolver.py docker_compose my_app` (Docker compose stack)
-- `dependency_resolver.py --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
+- `python3 -m dependency_resolver` (host system, no parameters)
+- `python3 -m dependency_resolver docker a1b2c3d4e5f6` (Docker container by id)
+- `python3 -m dependency_resolver docker nginx` (Docker container by name)
+- `python3 -m dependency_resolver docker nginx --only-container-info` (Docker container metadata only)
+- `python3 -m dependency_resolver docker_compose my_app` (Docker compose stack)
+- `python3 -m dependency_resolver --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
 
 ### Execution Method
 
@@ -126,7 +126,7 @@ Examples:
 
 ```plain
 dependency_resolver/
-├── dependency_resolver.py    # CLI entry point
+├── __main__.py                       # CLI entry point
 ├── core/
 │   ├── interfaces.py         # Abstract base classes
 │   └── orchestrator.py       # Main orchestrator

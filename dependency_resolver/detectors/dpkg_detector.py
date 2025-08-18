@@ -1,7 +1,7 @@
 import hashlib
 from typing import Dict, Any, Optional, List
 
-from core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
 class DpkgDetector(PackageManagerDetector):

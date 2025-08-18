@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 import pytest
 
-from executors import DockerExecutor
-from core.orchestrator import Orchestrator
+from dependency_resolver.executors import DockerExecutor
+from dependency_resolver.core.orchestrator import Orchestrator
 from tests.common.docker_test_base import DockerTestBase
 
 try:

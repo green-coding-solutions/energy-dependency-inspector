@@ -66,7 +66,10 @@ class DockerTestBase:
 
                 if container.status == "running":
                     try:
-                        from executors import DockerExecutor  # pylint: disable=import-outside-toplevel
+                        # pylint: disable=import-outside-toplevel
+                        from dependency_resolver.executors import (
+                            DockerExecutor,
+                        )
 
                         executor = DockerExecutor(container_id)
                         _, _, exit_code = executor.execute_command(health_check_cmd)

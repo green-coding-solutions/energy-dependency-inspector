@@ -2,8 +2,8 @@ import hashlib
 import os
 from typing import Dict, Any, Optional
 
-from core.interfaces import EnvironmentExecutor, PackageManagerDetector
-from executors import HostExecutor
+from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
+from ..executors.host_executor import HostExecutor
 
 
 class PipDetector(PackageManagerDetector):

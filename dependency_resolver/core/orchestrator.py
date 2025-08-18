@@ -1,13 +1,13 @@
 from typing import Dict, Any, List, Optional
 
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
-from executors import DockerComposeExecutor
-from detectors.pip_detector import PipDetector
-from detectors.npm_detector import NpmDetector
-from detectors.dpkg_detector import DpkgDetector
-from detectors.apk_detector import ApkDetector
-from detectors.docker_compose_detector import DockerComposeDetector
-from detectors.docker_info_detector import DockerInfoDetector
+from ..executors.docker_compose_executor import DockerComposeExecutor
+from ..detectors.pip_detector import PipDetector
+from ..detectors.npm_detector import NpmDetector
+from ..detectors.dpkg_detector import DpkgDetector
+from ..detectors.apk_detector import ApkDetector
+from ..detectors.docker_compose_detector import DockerComposeDetector
+from ..detectors.docker_info_detector import DockerInfoDetector
 
 
 class Orchestrator:

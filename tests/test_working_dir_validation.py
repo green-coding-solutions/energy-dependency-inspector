@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from core.orchestrator import Orchestrator
-from executors import HostExecutor
+from dependency_resolver.core.orchestrator import Orchestrator
+from dependency_resolver.executors import HostExecutor
 
 
 class TestWorkingDirValidation:

@@ -2,16 +2,16 @@
 """
 Dependency Resolver - CLI entry point
 
-Usage: dependency_resolver.py [environment_type] [environment_identifier] [options]
+Usage: python -m dependency_resolver [environment_type] [environment_identifier] [options]
 """
 
 import sys
 import argparse
 from typing import Optional
-from executors import HostExecutor, DockerExecutor, DockerComposeExecutor
-from core.interfaces import EnvironmentExecutor
-from core.orchestrator import Orchestrator
-from core.output_formatter import OutputFormatter
+from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
+from .core.interfaces import EnvironmentExecutor
+from .core.orchestrator import Orchestrator
+from .core.output_formatter import OutputFormatter
 
 
 def parse_arguments() -> argparse.Namespace:

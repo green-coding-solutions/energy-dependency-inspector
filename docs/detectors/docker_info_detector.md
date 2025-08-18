@@ -132,7 +132,7 @@ Works exclusively with `DockerExecutor` to:
 When using `--only-container-info` flag:
 
 ```bash
-python3 dependency_resolver.py docker my-container --only-container-info
+python3 -m dependency_resolver docker my-container --only-container-info
 ```
 
 Output contains only container metadata, skipping all package dependency detection.
@@ -142,7 +142,7 @@ Output contains only container metadata, skipping all package dependency detecti
 When running standard docker analysis:
 
 ```bash
-python3 dependency_resolver.py docker my-container
+python3 -m dependency_resolver docker my-container
 ```
 
 Container info is included alongside package dependencies (dpkg, pip, npm, etc.).

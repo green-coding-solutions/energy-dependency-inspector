@@ -2,7 +2,7 @@ import os
 import subprocess
 from typing import Tuple
 
-from core.interfaces import EnvironmentExecutor
+from ..core.interfaces import EnvironmentExecutor
 
 
 class HostExecutor(EnvironmentExecutor):
