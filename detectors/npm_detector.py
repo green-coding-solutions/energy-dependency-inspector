@@ -22,19 +22,17 @@ class NpmDetector(PackageManagerDetector):
         # Check if project uses npm by looking for npm-specific files in the working directory
         search_dir = working_dir or "."
 
-        # If yarn.lock, pnpm-lock.yaml, or bun.lockb exist, prefer those package managers
-        if executor.path_exists(f"{search_dir}/yarn.lock"):
-            return False
-        if executor.path_exists(f"{search_dir}/pnpm-lock.yaml"):
-            return False
-        if executor.path_exists(f"{search_dir}/bun.lockb"):
-            return False
+        # Check package.json first (most common case)
+        if executor.path_exists(f"{search_dir}/package.json"):
+            # Only check exclusions if package.json exists
+            exclusions = ["yarn.lock", "pnpm-lock.yaml", "bun.lockb"]
+            for exclusion in exclusions:
+                if executor.path_exists(f"{search_dir}/{exclusion}"):
+                    return False
+            return True
 
-        # If package.json exists or package-lock.json exists, and no other lock files, use npm
-        package_json_exists = executor.path_exists(f"{search_dir}/package.json")
-        package_lock_exists = executor.path_exists(f"{search_dir}/package-lock.json")
-
-        return package_json_exists or package_lock_exists
+        # Fallback to package-lock.json
+        return executor.path_exists(f"{search_dir}/package-lock.json")
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
         """Extract npm dependencies with versions.
