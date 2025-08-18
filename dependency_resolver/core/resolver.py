@@ -15,11 +15,9 @@ from ..executors import HostExecutor, DockerExecutor, DockerComposeExecutor
 class ResolveRequest:
     """Configuration for a single dependency resolution request."""
 
-    environment_type: str
     environment_identifier: Optional[str] = None
     working_dir: Optional[str] = None
     venv_path: Optional[str] = None
-    only_container_info: bool = False
     # Optional metadata for tracking
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -44,6 +42,8 @@ class DependencyResolver:
 
     def __init__(
         self,
+        environment_type: str = "host",
+        only_container_info: bool = False,
         debug: bool = False,
         skip_system_scope: bool = False,
         max_workers: Optional[int] = None,
@@ -52,10 +52,21 @@ class DependencyResolver:
         Initialize the dependency resolver.
 
         Args:
+            environment_type: Type of environment ("host", "docker", "docker_compose")
+            only_container_info: Only analyze container metadata (only valid for docker)
             debug: Enable debug output
             skip_system_scope: Skip system-scope package managers
             max_workers: Maximum number of worker threads for parallel operations
         """
+        # Validate inputs early to provide clear error messages
+        if environment_type not in ["host", "docker", "docker_compose"]:
+            raise ValueError(f"Unsupported environment type: {environment_type}")
+
+        if only_container_info and environment_type != "docker":
+            raise ValueError("only_container_info flag is only valid for docker environment")
+
+        self.environment_type = environment_type
+        self.only_container_info = only_container_info
         self.debug = debug
         self.skip_system_scope = skip_system_scope
         self.max_workers = max_workers
@@ -63,41 +74,32 @@ class DependencyResolver:
 
     def resolve(
         self,
-        environment_type: str = "host",
         environment_identifier: Optional[str] = None,
         working_dir: Optional[str] = None,
         venv_path: Optional[str] = None,
-        only_container_info: bool = False,
     ) -> Dict[str, Any]:
         """
-        Resolve dependencies for a single environment.
+        Resolve dependencies for the configured environment.
 
         Args:
-            environment_type: Type of environment ("host", "docker", "docker_compose")
             environment_identifier: Environment identifier (required for docker/docker_compose)
             working_dir: Working directory to analyze
             venv_path: Explicit virtual environment path for pip detector
-            only_container_info: Only analyze container metadata (for docker environments)
 
         Returns:
             Dictionary containing all discovered dependencies
         """
-        # Validate inputs early to provide clear error messages
-        if environment_type not in ["host", "docker", "docker_compose"]:
-            raise ValueError(f"Unsupported environment type: {environment_type}")
-
-        if environment_type == "docker" and not environment_identifier:
+        # Validate environment_identifier requirements
+        if self.environment_type == "docker" and not environment_identifier:
             raise ValueError("Docker environment requires container identifier")
 
-        if environment_type == "docker_compose" and not environment_identifier:
+        if self.environment_type == "docker_compose" and not environment_identifier:
             raise ValueError("Docker Compose environment requires service identifier")
 
         request = ResolveRequest(
-            environment_type=environment_type,
             environment_identifier=environment_identifier,
             working_dir=working_dir,
             venv_path=venv_path,
-            only_container_info=only_container_info,
         )
 
         result = self._resolve_single(request)
@@ -185,7 +187,7 @@ class DependencyResolver:
                     "error": result.error,
                     "execution_time": result.execution_time,
                     "request": {
-                        "environment_type": result.request.environment_type,
+                        "environment_type": self.environment_type,
                         "environment_identifier": result.request.environment_identifier,
                         "working_dir": result.request.working_dir,
                     },
@@ -215,7 +217,7 @@ class DependencyResolver:
             )
 
             # Resolve dependencies
-            dependencies = orchestrator.resolve_dependencies(executor, request.working_dir, request.only_container_info)
+            dependencies = orchestrator.resolve_dependencies(executor, request.working_dir, self.only_container_info)
 
             execution_time = time.time() - start_time
 
@@ -228,29 +230,29 @@ class DependencyResolver:
             error_msg = str(e)
 
             if self.debug:
-                print(f"Error resolving {request.environment_type}: {error_msg}")
+                print(f"Error resolving {self.environment_type}: {error_msg}")
 
             return ResolveResult(request=request, error=error_msg, execution_time=execution_time, success=False)
 
     def _create_executor(self, request: ResolveRequest) -> EnvironmentExecutor:
         """
-        Create the appropriate executor for the given request.
+        Create the appropriate executor for the configured environment.
 
         Args:
-            request: The resolution request
+            request: The resolution request containing environment_identifier
 
         Returns:
             Configured executor instance
         """
-        if request.environment_type == "host":
+        if self.environment_type == "host":
             return HostExecutor()
-        elif request.environment_type == "docker":
+        elif self.environment_type == "docker":
             if not request.environment_identifier:
                 raise ValueError("Docker environment requires container identifier")
             return DockerExecutor(request.environment_identifier)
-        elif request.environment_type == "docker_compose":
+        elif self.environment_type == "docker_compose":
             if not request.environment_identifier:
                 raise ValueError("Docker Compose environment requires service identifier")
             return DockerComposeExecutor(request.environment_identifier)
         else:
-            raise ValueError(f"Unsupported environment type: {request.environment_type}")
+            raise ValueError(f"Unsupported environment type: {self.environment_type}")

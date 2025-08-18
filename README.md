@@ -81,51 +81,78 @@ docker_deps = dependency_resolver.resolve_docker_dependencies(
 
 #### Class-Based Interface (Advanced Usage)
 
-For complex scenarios, especially when analyzing multiple environments in parallel:
+For complex scenarios and when you need environment-specific configuration:
 
 ```python
 from dependency_resolver import DependencyResolver, ResolveRequest
 
-# Create resolver with shared configuration
-resolver = DependencyResolver(
+# Create resolver for specific environment with configuration
+host_resolver = DependencyResolver(
+    environment_type="host",
     debug=True,
     skip_system_scope=False,
     max_workers=4  # Parallel processing
 )
 
-# Single environment analysis
-result = resolver.resolve(
+# Docker resolver with container-specific options
+docker_resolver = DependencyResolver(
     environment_type="docker",
-    environment_identifier="nginx"
+    only_container_info=True,  # Only valid for docker environment
+    debug=True
 )
 
-# Parallel multi-environment analysis
-requests = [
-    ResolveRequest("docker", "container1"),
-    ResolveRequest("docker", "container2"),
-    ResolveRequest("host", working_dir="/path/to/project", venv_path="/opt/venv"),
-    ResolveRequest("docker_compose", "my-stack")
+# Single environment analysis
+host_result = host_resolver.resolve(
+    working_dir="/path/to/project",
+    venv_path="/opt/venv"
+)
+
+docker_result = docker_resolver.resolve(
+    environment_identifier="nginx",
+    working_dir="/app"
+)
+
+# Parallel multi-environment analysis (same environment type)
+# For host environments
+host_requests = [
+    ResolveRequest(working_dir="/path/to/project1"),
+    ResolveRequest(working_dir="/path/to/project2", venv_path="/opt/venv"),
+    ResolveRequest(working_dir="/path/to/project3")
+]
+
+# For docker containers
+docker_requests = [
+    ResolveRequest(environment_identifier="nginx", working_dir="/app"),
+    ResolveRequest(environment_identifier="redis", working_dir="/data"),
+    ResolveRequest(environment_identifier="postgres")
 ]
 
 def progress_callback(completed, total, result):
-    print(f"Progress: {completed}/{total} - {result.request.environment_type} ({'✓' if result.success else '✗'})")
+    print(f"Progress: {completed}/{total} ({'✓' if result.success else '✗'})")
 
 # Execute in parallel with progress tracking
-results = resolver.resolve_batch(
-    requests,
+host_results = host_resolver.resolve_batch(
+    host_requests,
     progress_callback=progress_callback,
     fail_fast=False  # Continue processing even if some fail
 )
 
+docker_results = docker_resolver.resolve_batch(
+    docker_requests,
+    progress_callback=progress_callback,
+    fail_fast=False
+)
+
 # Process results
-for result in results:
+for result in host_results:
     if result.success:
         print(f"Found {len(result.dependencies)} detectors")
     else:
         print(f"Error: {result.error}")
 
 # Get results as dictionary format
-dict_results = resolver.resolve_batch_as_dict(requests)
+host_dict_results = host_resolver.resolve_batch_as_dict(host_requests)
+docker_dict_results = docker_resolver.resolve_batch_as_dict(docker_requests)
 ```
 
 #### Low-Level Interface

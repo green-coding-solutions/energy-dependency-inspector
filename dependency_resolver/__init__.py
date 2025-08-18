@@ -91,22 +91,13 @@ def resolve_dependencies_as_dict(
     Returns:
         Dictionary containing all discovered dependencies
     """
-    executor: EnvironmentExecutor
-    if environment_type == "host":
-        executor = HostExecutor()
-    elif environment_type == "docker":
-        if not environment_identifier:
-            raise ValueError("Docker environment requires container identifier")
-        executor = DockerExecutor(environment_identifier)
-    elif environment_type == "docker_compose":
-        if not environment_identifier:
-            raise ValueError("Docker Compose environment requires service identifier")
-        executor = DockerComposeExecutor(environment_identifier)
-    else:
-        raise ValueError(f"Unsupported environment type: {environment_type}")
-
-    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
-    return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
+    resolver = DependencyResolver(
+        environment_type=environment_type,
+        only_container_info=only_container_info,
+        debug=debug,
+        skip_system_scope=skip_system_scope,
+    )
+    return resolver.resolve(environment_identifier=environment_identifier, working_dir=working_dir, venv_path=venv_path)
 
 
 def main() -> None:
