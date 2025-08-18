@@ -7,12 +7,13 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
 
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
+  - repo: local
     hooks:
       - id: black
-        language_version: python3
-        args: [--line-length=120]
+        name: black
+        entry: black
+        language: system
+        types: [python]
 
   - repo: local
     hooks:
@@ -21,15 +22,14 @@ repos:
         entry: bash -c 'PYTHONPATH=$PWD pylint "$@"' --
         language: system
         types: [python]
-        require_serial: false
-        args: [--rcfile=.pylintrc]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.12.1
+  - repo: local
     hooks:
       - id: mypy
-        args: [--ignore-missing-imports, --no-strict-optional, --explicit-package-bases]
-        additional_dependencies: [types-requests]
+        name: mypy
+        entry: bash -c 'PYTHONPATH=$PWD mypy "$@"' --
+        language: system
+        types: [python]
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.14.0

@@ -80,7 +80,7 @@ source venv/bin/activate
 pylint dependency_resolver/
 
 # Run type checking
-mypy dependency_resolver/ --ignore-missing-imports --no-strict-optional
+mypy dependency_resolver/ --no-strict-optional
 
 # Format code
 black dependency_resolver/

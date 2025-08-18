@@ -36,17 +36,9 @@ class DockerExecutor(EnvironmentExecutor):
         """
         try:
             # First, try with sh
-            exec_kwargs = {
-                "cmd": ["sh", "-c", command],
-                "stdout": True,
-                "stderr": True,
-                "tty": False,
-            }
-
-            if working_dir:
-                exec_kwargs["workdir"] = working_dir
-
-            result = self.container.exec_run(**exec_kwargs)
+            result = self.container.exec_run(
+                cmd=["sh", "-c", command], stdout=True, stderr=True, tty=False, workdir=working_dir
+            )
             stdout = result.output.decode("utf-8") if result.output else ""
             stderr = ""
 
@@ -69,17 +61,7 @@ class DockerExecutor(EnvironmentExecutor):
             if not cmd_parts:
                 return "", f"Command too complex for direct execution (no shell available): {command}", 1
 
-            exec_kwargs = {
-                "cmd": cmd_parts,
-                "stdout": True,
-                "stderr": True,
-                "tty": False,
-            }
-
-            if working_dir:
-                exec_kwargs["workdir"] = working_dir
-
-            result = self.container.exec_run(**exec_kwargs)
+            result = self.container.exec_run(cmd=cmd_parts, stdout=True, stderr=True, tty=False, workdir=working_dir)
             stdout = result.output.decode("utf-8") if result.output else ""
             stderr = ""
 
