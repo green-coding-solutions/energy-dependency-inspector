@@ -16,6 +16,7 @@ from .core.output_formatter import OutputFormatter
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
+        prog="python -m dependency_resolver",
         description="Resolve dependencies from various package managers",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""

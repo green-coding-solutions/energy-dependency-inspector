@@ -1,7 +1,7 @@
 # dependency-resolver
 
-The purpose of this project is to create a snapshot of the installed packages on a specified target environment.
-Its main focus is the dependency resolving of Docker containers.
+A tool for creating snapshots of installed packages on specified target environments. The project provides both a command-line interface and a Python library for programmatic use.
+Its main focus is dependency resolving of Docker containers, but it also supports host systems and Docker Compose stacks.
 The output is a structured JSON that includes information about all the installed packages from supported sources with their version and unique hash values.
 
 ## Installation
@@ -15,7 +15,12 @@ pip install .
 
 ## Usage
 
-### Basic Usage
+The dependency-resolver can be used in two ways:
+
+1. **Command Line Interface (CLI)** - For direct terminal usage
+2. **Programmatic Interface** - As a Python library in other projects
+
+### Command Line Interface
 
 ```bash
 # Analyze host system (default behavior)
@@ -48,6 +53,50 @@ python3 -m dependency_resolver --skip-system-scope
 # Pretty print JSON output
 python3 -m dependency_resolver --pretty-print
 ```
+
+### Programmatic Interface
+
+The dependency-resolver can also be used as a Python library in other projects. Here are some examples:
+
+```python
+import dependency_resolver
+
+# Simple host system analysis
+deps_json = dependency_resolver.resolve_host_dependencies()
+
+# Get results as Python dictionary for further processing
+deps_dict = dependency_resolver.resolve_dependencies_as_dict(
+    environment_type="host",
+    skip_system_scope=True
+)
+
+# Docker container analysis
+docker_deps = dependency_resolver.resolve_docker_dependencies(
+    container_identifier="nginx",
+    working_dir="/app"
+)
+
+# Advanced usage with direct access to core classes
+from dependency_resolver import Orchestrator, HostExecutor, OutputFormatter
+
+executor = HostExecutor()
+orchestrator = Orchestrator(debug=True, skip_system_scope=True)
+dependencies = orchestrator.resolve_dependencies(executor)
+formatter = OutputFormatter()
+json_output = formatter.format_json(dependencies, pretty_print=True)
+```
+
+**Available convenience functions:**
+
+- `resolve_host_dependencies()` - Analyze host system, returns JSON string
+- `resolve_docker_dependencies()` - Analyze Docker container, returns JSON string
+- `resolve_dependencies_as_dict()` - Generic analysis, returns Python dictionary
+
+**Available classes for advanced usage:**
+
+- `Orchestrator` - Main dependency resolution coordinator
+- `HostExecutor`, `DockerExecutor`, `DockerComposeExecutor` - Environment adapters
+- `OutputFormatter` - JSON formatting utilities
 
 ### Supported Environments
 
