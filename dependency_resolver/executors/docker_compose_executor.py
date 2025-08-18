@@ -1,5 +1,3 @@
-from typing import Tuple, List, Any
-
 try:
     import docker
 
@@ -7,6 +5,7 @@ try:
 except ImportError:
     DOCKER_AVAILABLE = False
 
+from typing import Any
 from ..core.interfaces import EnvironmentExecutor
 
 
@@ -33,7 +32,7 @@ class DockerComposeExecutor(EnvironmentExecutor):
         except docker.errors.APIError as e:
             raise RuntimeError(f"Docker API error: {str(e)}") from e
 
-    def _get_compose_containers(self) -> List[Any]:
+    def _get_compose_containers(self) -> list[Any]:
         """Get all running containers that belong to the Docker Compose stack."""
         try:
             # Docker Compose sets labels on containers to identify the project
@@ -51,7 +50,7 @@ class DockerComposeExecutor(EnvironmentExecutor):
                     matching_containers.append(container)
             return matching_containers
 
-    def execute_command(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
         """Docker Compose executor does not execute commands in containers.
 
         For Docker Compose environments, we only analyze the container images
@@ -67,6 +66,6 @@ class DockerComposeExecutor(EnvironmentExecutor):
         """
         return False
 
-    def get_containers(self) -> List[Any]:
+    def get_containers(self) -> list[Any]:
         """Get all containers in the Docker Compose stack."""
         return self.containers

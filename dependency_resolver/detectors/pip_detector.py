@@ -1,6 +1,6 @@
 import hashlib
 import os
-from typing import Dict, Any, Optional
+from typing import Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.host_executor import HostExecutor
@@ -14,7 +14,7 @@ class PipDetector(PackageManagerDetector):
     def __init__(self, venv_path: str = None, debug: bool = False):
         self.explicit_venv_path = venv_path
         self.debug = debug
-        self._cached_venv_path: Optional[str] = None
+        self._cached_venv_path: str | None = None
         self._venv_path_searched = False
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
@@ -22,7 +22,7 @@ class PipDetector(PackageManagerDetector):
         _, _, exit_code = executor.execute_command("pip --version", working_dir)
         return exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract pip dependencies with versions.
 
         Uses 'pip list --format=freeze' for clean package==version format.
@@ -41,7 +41,7 @@ class PipDetector(PackageManagerDetector):
         if exit_code != 0:
             location = self._get_pip_location(executor, working_dir)
             scope = "system" if location == "system" else "project"
-            result: Dict[str, Any] = {"scope": scope}
+            result: dict[str, Any] = {"scope": scope}
             if scope == "project":
                 result["location"] = location
             result["dependencies"] = {}
@@ -62,7 +62,7 @@ class PipDetector(PackageManagerDetector):
         scope = "system" if location == "system" else "project"
 
         # Build result with desired field order: scope, location, hash, dependencies
-        final_result: Dict[str, Any] = {"scope": scope}
+        final_result: dict[str, Any] = {"scope": scope}
 
         if scope == "project":
             final_result["location"] = location
@@ -95,7 +95,7 @@ class PipDetector(PackageManagerDetector):
                 return venv_pip
         return "pip"
 
-    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> Optional[str]:
+    def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: str = None) -> str | None:
         """Find virtual environment using batch search for pyvenv.cfg files."""
         # Return cached result if already searched
         if self._venv_path_searched:

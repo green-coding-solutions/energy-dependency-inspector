@@ -1,5 +1,4 @@
-from typing import Dict, Any
-
+from typing import Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_executor import DockerExecutor
 
@@ -13,7 +12,7 @@ class DockerInfoDetector(PackageManagerDetector):
         """Check if this is a Docker environment."""
         return isinstance(executor, DockerExecutor)
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract Docker container metadata."""
         if not isinstance(executor, DockerExecutor):
             return {}

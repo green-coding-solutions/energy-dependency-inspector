@@ -1,8 +1,16 @@
 # TODOS
 
+Next:
+
+- Add a license
+- Publish package to PyPI
+- Add hash retrieval for npm packages
+
+Others:
+
+- Add Dockerfile
 - Add more tests
   - cli flags
-- Add hash retrieval for npm packages
 - Add support for Podman + Podman Compose
 - Add configuration file
   - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)
@@ -14,5 +22,4 @@
 - Extend the set of supported package managers with the common ones for Go, PHP and Java
 - Support more operating systems: RedHat Linux (yum/dnf), openSUSE (zypper)
 - Add extraction of some relevant environment variables
-- Add license
 - Implement auto-completion of container id / name

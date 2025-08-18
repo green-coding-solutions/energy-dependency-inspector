@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any, List
+from typing import Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_compose_executor import DockerComposeExecutor
@@ -14,7 +14,7 @@ class DockerComposeDetector(PackageManagerDetector):
         """Check if this is a Docker Compose environment and if we can extract container information."""
         return isinstance(executor, DockerComposeExecutor) and len(executor.get_containers()) > 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract Docker Compose container images with their tags and hashes."""
         if not isinstance(executor, DockerComposeExecutor):
             return {"scope": "compose", "dependencies": {}}
@@ -49,14 +49,14 @@ class DockerComposeDetector(PackageManagerDetector):
         """Extract the service name from Docker Compose container name."""
         # Handle newer Docker Compose naming: <project>-<service>-<number>
         if container_name.startswith(f"{stack_name}-"):
-            service_part = container_name[len(f"{stack_name}-") :]
+            service_part = container_name.removeprefix(f"{stack_name}-")
             # Remove trailing -<number> pattern
             service_name = re.sub(r"-\d+$", "", service_part)
             return service_name
 
         # Handle legacy Docker Compose naming: <project>_<service>_<number>
         if container_name.startswith(f"{stack_name}_"):
-            service_part = container_name[len(f"{stack_name}_") :]
+            service_part = container_name.removeprefix(f"{stack_name}_")
             # Remove trailing _<number> pattern
             service_name = re.sub(r"_\d+$", "", service_part)
             return service_name
@@ -64,7 +64,7 @@ class DockerComposeDetector(PackageManagerDetector):
         # Fallback: use the full container name
         return container_name
 
-    def _extract_image_name(self, tags: List[str]) -> str:
+    def _extract_image_name(self, tags: list[str]) -> str:
         """Extract a readable image name from image tags."""
         if not tags:
             return "unknown"

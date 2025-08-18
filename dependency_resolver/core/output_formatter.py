@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Any
+from typing import Any
 
 
 class OutputFormatter:
@@ -8,7 +8,7 @@ class OutputFormatter:
     def __init__(self, debug: bool = False):
         self.debug = debug
 
-    def format_json(self, dependencies: Dict[str, Any], pretty_print: bool = True) -> str:
+    def format_json(self, dependencies: dict[str, Any], pretty_print: bool = True) -> str:
         """Format dependencies as JSON string."""
         if self.debug:
             excerpt = self.create_excerpt(dependencies)
@@ -22,9 +22,9 @@ class OutputFormatter:
             else:
                 return json.dumps(dependencies)
 
-    def create_excerpt(self, dependencies: Dict[str, Any], max_deps_per_manager: int = 3) -> Dict[str, Any]:
+    def create_excerpt(self, dependencies: dict[str, Any], max_deps_per_manager: int = 3) -> dict[str, Any]:
         """Create an excerpt of dependencies for debug mode."""
-        excerpt: Dict[str, Any] = {}
+        excerpt: dict[str, Any] = {}
 
         for manager_name, manager_data in dependencies.items():
             excerpt[manager_name] = {}

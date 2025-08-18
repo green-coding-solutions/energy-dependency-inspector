@@ -7,7 +7,7 @@ name = "dependency-resolver"
 version = "0.1.0"
 description = "A standalone dependency resolver that exports JSON with all project dependencies"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Green Coding Solutions"}
@@ -19,8 +19,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -54,10 +52,10 @@ python_functions = ["test_*"]
 
 [tool.black]
 line-length = 120
-target-version = ['py38']
+target-version = ['py310']
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

@@ -7,7 +7,6 @@ Usage: python -m dependency_resolver [environment_type] [environment_identifier]
 
 import sys
 import argparse
-from typing import Optional
 from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator
@@ -76,7 +75,7 @@ Examples:
 
 
 def validate_arguments(
-    environment_type: str, environment_identifier: Optional[str], only_container_info: bool = False
+    environment_type: str, environment_identifier: str | None, only_container_info: bool = False
 ) -> None:
     """Validate command line arguments."""
     if environment_type == "docker" and not environment_identifier:
@@ -95,7 +94,7 @@ def validate_arguments(
         sys.exit(1)
 
 
-def create_executor(environment_type: str, environment_identifier: Optional[str]) -> EnvironmentExecutor:
+def create_executor(environment_type: str, environment_identifier: str | None) -> EnvironmentExecutor:
     """Create executor based on environment type."""
     if environment_type == "host":
         return HostExecutor()

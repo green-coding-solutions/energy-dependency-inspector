@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Tuple
+from typing import Any
 
 
 class EnvironmentExecutor(ABC):
     """Abstract base class for executing commands in different environments."""
 
     @abstractmethod
-    def execute_command(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
         """Execute a command in the target environment."""
         raise NotImplementedError
 
@@ -31,7 +31,7 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract dependencies with versions and hashes."""
         raise NotImplementedError
 

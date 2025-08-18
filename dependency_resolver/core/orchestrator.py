@@ -1,5 +1,4 @@
-from typing import Dict, Any, List, Optional
-
+from typing import Any
 from .interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_compose_executor import DockerComposeExecutor
 from ..detectors.pip_detector import PipDetector
@@ -17,13 +16,13 @@ class Orchestrator:
         self,
         debug: bool = False,
         skip_system_scope: bool = False,
-        venv_path: Optional[str] = None,
+        venv_path: str | None = None,
     ):
         self.debug = debug
         self.skip_system_scope = skip_system_scope
 
         # Create detector instances
-        self.detectors: List[PackageManagerDetector] = [
+        self.detectors: list[PackageManagerDetector] = [
             DockerComposeDetector(),
             DockerInfoDetector(),
             DpkgDetector(),
@@ -34,7 +33,7 @@ class Orchestrator:
 
     def resolve_dependencies(
         self, executor: EnvironmentExecutor, working_dir: str = None, only_container_info: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Resolve all dependencies from available package managers."""
         # Validate working directory if provided
         if working_dir is not None and not executor.path_exists(working_dir):

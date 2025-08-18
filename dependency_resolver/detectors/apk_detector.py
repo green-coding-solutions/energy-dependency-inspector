@@ -1,5 +1,4 @@
-from typing import Dict, Any
-
+from typing import Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
 
@@ -22,7 +21,7 @@ class ApkDetector(PackageManagerDetector):
         _, _, apk_exit_code = executor.execute_command("apk --version")
         return apk_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract system packages with versions and architecture using apk list.
 
         Uses 'apk list --installed' for comprehensive package information including architecture.

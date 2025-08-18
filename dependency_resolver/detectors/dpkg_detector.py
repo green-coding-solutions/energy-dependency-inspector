@@ -1,5 +1,5 @@
 import hashlib
-from typing import Dict, Any, Optional, List
+from typing import Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
@@ -10,7 +10,7 @@ class DpkgDetector(PackageManagerDetector):
     NAME = "dpkg"
 
     def __init__(self) -> None:
-        self._batch_hash_cache: Optional[Dict[str, str]] = None
+        self._batch_hash_cache: dict[str, str] | None = None
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: str = None) -> bool:
         """Check if dpkg is usable (running on Debian/Ubuntu and dpkg-query is available)."""
@@ -27,7 +27,7 @@ class DpkgDetector(PackageManagerDetector):
         _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
         return dpkg_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
 
         Uses dpkg-query -W -f for reliable package information extraction.
@@ -69,9 +69,7 @@ class DpkgDetector(PackageManagerDetector):
 
         return {"scope": "system", "dependencies": dependencies}
 
-    def _get_package_hash(
-        self, executor: EnvironmentExecutor, package_name: str, architecture: str = ""
-    ) -> Optional[str]:
+    def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str, architecture: str = "") -> str | None:
         """Get package hash from dpkg md5sums file if available.
 
         Extracts MD5 hashes from /var/lib/dpkg/info/{package}.md5sums and combines into SHA256.
@@ -112,7 +110,7 @@ class DpkgDetector(PackageManagerDetector):
 
         return None
 
-    def _collect_all_package_hashes(self, executor: EnvironmentExecutor) -> Dict[str, str]:
+    def _collect_all_package_hashes(self, executor: EnvironmentExecutor) -> dict[str, str]:
         """Collect all package hashes in a single batch operation.
 
         Uses a single command to read all .md5sums files at once,
@@ -145,7 +143,7 @@ done
         self._batch_hash_cache = self._parse_batch_hash_output(stdout)
         return self._batch_hash_cache
 
-    def _parse_batch_hash_output(self, batch_output: str) -> Dict[str, str]:
+    def _parse_batch_hash_output(self, batch_output: str) -> dict[str, str]:
         """Parse batch hash collection output into per-package hashes.
 
         Args:
@@ -156,7 +154,7 @@ done
         """
         package_hashes = {}
         current_package = None
-        current_md5s: List[str] = []
+        current_md5s: list[str] = []
 
         for line in batch_output.strip().split("\n"):
             line = line.strip()
@@ -214,7 +212,7 @@ done
 
         return package_part
 
-    def _combine_md5_hashes(self, md5_hashes: List[str]) -> Optional[str]:
+    def _combine_md5_hashes(self, md5_hashes: list[str]) -> str | None:
         """Combine multiple MD5 hashes into a single SHA256 hash."""
         if not md5_hashes:
             return None

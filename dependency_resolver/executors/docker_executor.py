@@ -1,5 +1,4 @@
 import shlex
-from typing import Tuple
 
 try:
     import docker
@@ -37,7 +36,7 @@ class DockerExecutor(EnvironmentExecutor):
         except docker.errors.APIError as e:
             raise RuntimeError(f"Docker API error: {str(e)}") from e
 
-    def execute_command(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
+    def execute_command(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
         """Execute a command inside the Docker container with direct execution fallback.
 
         Returns actual command exit code on success, or 1 for execution environment failures.
@@ -69,7 +68,7 @@ class DockerExecutor(EnvironmentExecutor):
         except (OSError, ValueError) as e:
             return "", f"Command execution failed: {str(e)}", 1
 
-    def _execute_command_direct(self, command: str, working_dir: str = None) -> Tuple[str, str, int]:
+    def _execute_command_direct(self, command: str, working_dir: str = None) -> tuple[str, str, int]:
         """Fallback: execute simple commands directly without shell."""
         try:
             # Handle only the simple cases we actually use

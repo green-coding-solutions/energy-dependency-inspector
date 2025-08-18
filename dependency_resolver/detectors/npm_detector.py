@@ -1,6 +1,6 @@
 import hashlib
 import json
-from typing import Dict, Any
+from typing import Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
@@ -34,7 +34,7 @@ class NpmDetector(PackageManagerDetector):
         # Fallback to package-lock.json
         return executor.path_exists(f"{search_dir}/package-lock.json")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> Dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = None) -> dict[str, Any]:
         """Extract npm dependencies with versions.
 
         Uses 'npm list --json --depth=0' for structured package information.
@@ -44,10 +44,10 @@ class NpmDetector(PackageManagerDetector):
 
         location = self._get_npm_location(executor, working_dir)
         scope = "system" if location == "system" else "project"
-        dependencies: Dict[str, Dict[str, str]] = {}
+        dependencies: dict[str, dict[str, str]] = {}
 
         # Build result with desired field order: scope, location, hash, dependencies
-        result: Dict[str, Any] = {"scope": scope}
+        result: dict[str, Any] = {"scope": scope}
         if scope == "project":
             result["location"] = location
 
