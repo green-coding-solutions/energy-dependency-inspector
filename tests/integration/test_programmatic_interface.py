@@ -7,6 +7,7 @@ from unittest.mock import patch, MagicMock
 from dependency_resolver import (
     resolve_host_dependencies,
     resolve_docker_dependencies,
+    resolve_docker_dependencies_as_dict,
     resolve_dependencies_as_dict,
     main,
 )
@@ -247,6 +248,85 @@ class TestResolveDependenciesAsDict:
         """Test resolve_dependencies_as_dict with docker_compose but missing identifier."""
         with pytest.raises(ValueError, match="Docker Compose environment requires service identifier"):
             resolve_dependencies_as_dict(environment_type="docker_compose")
+
+
+class TestResolveDockerDependenciesAsDict:
+    """Tests for resolve_docker_dependencies_as_dict function."""
+
+    @patch("dependency_resolver.Orchestrator")
+    @patch("dependency_resolver.DockerExecutor")
+    def test_resolve_docker_dependencies_as_dict_default_args(
+        self, mock_docker_executor: Any, mock_orchestrator: Any
+    ) -> None:
+        """Test resolve_docker_dependencies_as_dict with minimal arguments."""
+        # Setup mocks
+        mock_executor_instance = MagicMock()
+        mock_docker_executor.return_value = mock_executor_instance
+
+        mock_orchestrator_instance = MagicMock()
+        mock_orchestrator.return_value = mock_orchestrator_instance
+        mock_dependencies = {"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}
+        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
+
+        # Call function
+        result = resolve_docker_dependencies_as_dict("test-container")
+
+        # Verify calls
+        mock_docker_executor.assert_called_once_with("test-container")
+        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+
+        assert result == mock_dependencies
+
+    @patch("dependency_resolver.Orchestrator")
+    @patch("dependency_resolver.DockerExecutor")
+    def test_resolve_docker_dependencies_as_dict_with_all_args(
+        self, mock_docker_executor: Any, mock_orchestrator: Any
+    ) -> None:
+        """Test resolve_docker_dependencies_as_dict with all arguments."""
+        # Setup mocks
+        mock_executor_instance = MagicMock()
+        mock_docker_executor.return_value = mock_executor_instance
+
+        mock_orchestrator_instance = MagicMock()
+        mock_orchestrator.return_value = mock_orchestrator_instance
+        mock_dependencies = {"_container-info": {"name": "my-container", "image": "ubuntu:20.04", "hash": "abc123"}}
+        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
+
+        # Call function with all arguments
+        result = resolve_docker_dependencies_as_dict(
+            container_identifier="my-container",
+            working_dir="/app",
+            debug=True,
+            skip_system_scope=True,
+            venv_path="/opt/venv",
+            only_container_info=True,
+        )
+
+        # Verify calls
+        mock_docker_executor.assert_called_once_with("my-container")
+        mock_orchestrator.assert_called_once_with(debug=True, skip_system_scope=True, venv_path="/opt/venv")
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app", True)
+
+        assert result == mock_dependencies
+
+    def test_resolve_docker_dependencies_as_dict_empty_container_identifier(self) -> None:
+        """Test resolve_docker_dependencies_as_dict with empty container identifier."""
+        with pytest.raises(ValueError, match="Container identifier is required"):
+            resolve_docker_dependencies_as_dict("")
+
+    def test_resolve_docker_dependencies_as_dict_none_container_identifier(self) -> None:
+        """Test resolve_docker_dependencies_as_dict with None container identifier."""
+        with pytest.raises(ValueError, match="Container identifier is required"):
+            resolve_docker_dependencies_as_dict(None)  # type: ignore
+
+    @patch("dependency_resolver.DockerExecutor")
+    def test_resolve_docker_dependencies_as_dict_docker_executor_error(self, mock_docker_executor: Any) -> None:
+        """Test resolve_docker_dependencies_as_dict when DockerExecutor raises error."""
+        mock_docker_executor.side_effect = RuntimeError("Container 'nonexistent' not found")
+
+        with pytest.raises(RuntimeError, match="Container 'nonexistent' not found"):
+            resolve_docker_dependencies_as_dict("nonexistent")
 
 
 class TestMain:

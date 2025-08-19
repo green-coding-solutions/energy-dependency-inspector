@@ -66,6 +66,43 @@ def resolve_docker_dependencies(
     return formatter.format_json(dependencies, pretty_print=pretty_print)
 
 
+def resolve_docker_dependencies_as_dict(
+    container_identifier: str,
+    working_dir: Optional[str] = None,
+    debug: bool = False,
+    skip_system_scope: bool = False,
+    venv_path: Optional[str] = None,
+    only_container_info: bool = False,
+) -> dict[str, Any]:
+    """
+    Specialized function to resolve dependencies in Docker containers and return as a Python dictionary.
+
+    This is a Docker-optimized version of resolve_dependencies_as_dict that provides
+    better ergonomics and type safety for the most common use case.
+
+    Args:
+        container_identifier: Container ID or name
+        working_dir: Working directory to analyze within the container
+        debug: Enable debug output
+        skip_system_scope: Skip system-scope package managers
+        venv_path: Explicit virtual environment path for pip detector
+        only_container_info: Only analyze container metadata (skip dependency detection)
+
+    Returns:
+        Dictionary containing all discovered dependencies
+
+    Raises:
+        ValueError: If container_identifier is empty or None
+        RuntimeError: If container is not found or not running
+    """
+    if not container_identifier:
+        raise ValueError("Container identifier is required")
+
+    executor = DockerExecutor(container_identifier)
+    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
+    return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
+
+
 def resolve_dependencies_as_dict(
     environment_type: str = "host",
     environment_identifier: Optional[str] = None,

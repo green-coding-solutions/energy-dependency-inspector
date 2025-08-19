@@ -90,6 +90,7 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 
 - `resolve_host_dependencies()` - Analyze host system, returns JSON string
 - `resolve_docker_dependencies()` - Analyze Docker container, returns JSON string
+- `resolve_docker_dependencies_as_dict()` - Analyze Docker container, returns Python dictionary
 - `resolve_dependencies_as_dict()` - Generic analysis, returns Python dictionary
 
 **Available classes for advanced usage:**
