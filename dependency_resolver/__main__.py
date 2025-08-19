@@ -7,9 +7,7 @@ Usage: python -m dependency_resolver [environment_type] [environment_identifier]
 
 import sys
 import argparse
-from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
-from .core.interfaces import EnvironmentExecutor
-from .core.orchestrator import Orchestrator
+from .core.resolver import DependencyResolver
 from .core.output_formatter import OutputFormatter
 
 
@@ -95,25 +93,6 @@ def validate_arguments(
         sys.exit(1)
 
 
-def create_executor(environment_type: str, environment_identifier: str | None) -> EnvironmentExecutor:
-    """Create executor based on environment type."""
-    if environment_type == "host":
-        return HostExecutor()
-    elif environment_type == "docker":
-        if environment_identifier is None:
-            print("Error: Docker environment requires container identifier", file=sys.stderr)
-            sys.exit(1)
-        return DockerExecutor(environment_identifier)
-    elif environment_type == "docker_compose":
-        if environment_identifier is None:
-            print("Error: Docker Compose environment requires service identifier", file=sys.stderr)
-            sys.exit(1)
-        return DockerComposeExecutor(environment_identifier)
-    else:
-        print(f"Error: Unsupported environment type: {environment_type}", file=sys.stderr)
-        sys.exit(1)
-
-
 def main() -> None:
     """Main entry point."""
     args = parse_arguments()
@@ -121,11 +100,15 @@ def main() -> None:
     validate_arguments(args.environment_type, args.environment_identifier, args.only_container_info)
 
     try:
-        executor = create_executor(args.environment_type, args.environment_identifier)
-        orchestrator = Orchestrator(
-            debug=args.debug, skip_system_scope=args.skip_system_scope, venv_path=args.venv_path
+        resolver = DependencyResolver(
+            environment_type=args.environment_type,
+            only_container_info=args.only_container_info,
+            debug=args.debug,
+            skip_system_scope=args.skip_system_scope,
         )
-        dependencies = orchestrator.resolve_dependencies(executor, args.working_dir, args.only_container_info)
+        dependencies = resolver.resolve(
+            environment_identifier=args.environment_identifier, working_dir=args.working_dir, venv_path=args.venv_path
+        )
         formatter = OutputFormatter(debug=args.debug)
         result = formatter.format_json(dependencies, pretty_print=args.pretty_print)
         print(result)

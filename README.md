@@ -56,7 +56,9 @@ python3 -m dependency_resolver --pretty-print
 
 ### Programmatic Interface
 
-The dependency-resolver can also be used as a Python library in other projects. Here are some examples:
+The dependency-resolver can be used as a Python library in other projects with both functional and class-based interfaces:
+
+#### Functional Interface (Simple Usage)
 
 ```python
 import dependency_resolver
@@ -75,8 +77,89 @@ docker_deps = dependency_resolver.resolve_docker_dependencies(
     container_identifier="nginx",
     working_dir="/app"
 )
+```
 
-# Advanced usage with direct access to core classes
+#### Class-Based Interface (Advanced Usage)
+
+For complex scenarios and when you need environment-specific configuration:
+
+```python
+from dependency_resolver import DependencyResolver, ResolveRequest
+
+# Create resolver for specific environment with configuration
+host_resolver = DependencyResolver(
+    environment_type="host",
+    debug=True,
+    skip_system_scope=False,
+    max_workers=4  # Parallel processing
+)
+
+# Docker resolver with container-specific options
+docker_resolver = DependencyResolver(
+    environment_type="docker",
+    only_container_info=True,  # Only valid for docker environment
+    debug=True
+)
+
+# Single environment analysis
+host_result = host_resolver.resolve(
+    working_dir="/path/to/project",
+    venv_path="/opt/venv"
+)
+
+docker_result = docker_resolver.resolve(
+    environment_identifier="nginx",
+    working_dir="/app"
+)
+
+# Parallel multi-environment analysis (same environment type)
+# For host environments
+host_requests = [
+    ResolveRequest(working_dir="/path/to/project1"),
+    ResolveRequest(working_dir="/path/to/project2", venv_path="/opt/venv"),
+    ResolveRequest(working_dir="/path/to/project3")
+]
+
+# For docker containers
+docker_requests = [
+    ResolveRequest(environment_identifier="nginx", working_dir="/app"),
+    ResolveRequest(environment_identifier="redis", working_dir="/data"),
+    ResolveRequest(environment_identifier="postgres")
+]
+
+def progress_callback(completed, total, result):
+    print(f"Progress: {completed}/{total} ({'✓' if result.success else '✗'})")
+
+# Execute in parallel with progress tracking
+host_results = host_resolver.resolve_batch(
+    host_requests,
+    progress_callback=progress_callback,
+    fail_fast=False  # Continue processing even if some fail
+)
+
+docker_results = docker_resolver.resolve_batch(
+    docker_requests,
+    progress_callback=progress_callback,
+    fail_fast=False
+)
+
+# Process results
+for result in host_results:
+    if result.success:
+        print(f"Found {len(result.dependencies)} detectors")
+    else:
+        print(f"Error: {result.error}")
+
+# Get results as dictionary format
+host_dict_results = host_resolver.resolve_batch_as_dict(host_requests)
+docker_dict_results = docker_resolver.resolve_batch_as_dict(docker_requests)
+```
+
+#### Low-Level Interface
+
+For maximum control, access core classes directly:
+
+```python
 from dependency_resolver import Orchestrator, HostExecutor, OutputFormatter
 
 executor = HostExecutor()
@@ -92,11 +175,20 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 - `resolve_docker_dependencies()` - Analyze Docker container, returns JSON string
 - `resolve_dependencies_as_dict()` - Generic analysis, returns Python dictionary
 
-**Available classes for advanced usage:**
+**Available classes:**
 
-- `Orchestrator` - Main dependency resolution coordinator
+- `DependencyResolver` - Main class for single and batch operations with parallel processing
+- `ResolveRequest` - Configuration for individual resolution requests
+- `ResolveResult` - Result object containing dependencies, errors, and execution metadata
+- `Orchestrator` - Core dependency resolution coordinator
 - `HostExecutor`, `DockerExecutor`, `DockerComposeExecutor` - Environment adapters
 - `OutputFormatter` - JSON formatting utilities
+
+**When to use each interface:**
+
+- **Functional Interface**: Simple one-off dependency resolution
+- **Class-Based Interface**: Multiple environments, parallel processing, shared configuration, progress tracking
+- **Low-Level Interface**: Custom orchestration, advanced error handling, integration with existing frameworks
 
 ### Supported Environments
 
