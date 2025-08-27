@@ -106,6 +106,21 @@ Implements package manager location hashing for project-scoped dependencies:
 - **Location Hashes**: Generated for project scope using directory contents
 - **System Scope**: No location hash (system-wide installations)
 
+### Individual Package Hash Rationale
+
+Individual package-level hashes are **not implemented** for npm dependencies, despite being available in `package-lock.json` integrity fields. This design decision is based on npm's public registry immutability:
+
+**For detailed analysis, see: [NPM Hash Implementation Analysis](../analyses/npm_hash_implementation_analysis.md)**
+
+**Key considerations:**
+
+- **Version immutability**: Public npm registry enforces permanent version immutability - once `package@version` is published, that version number can never be reused, even after unpublishing
+- **Version-hash correlation**: For public registry packages, version numbers effectively serve as content identifiers since each version maps to exactly one content hash
+- **Implementation cost**: Parsing package-lock.json adds complexity without significant benefit for the common case of public registry usage
+- **Location-based fallback**: Directory-level hashing still detects environment changes, corruption, and modification scenarios
+
+**Future consideration**: Individual package hashing may be valuable for organizations using private registries that allow version overwrites, or mixed public/private registry environments.
+
 ### Directory Content Hashing
 
 ```bash

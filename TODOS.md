@@ -4,7 +4,6 @@ Next:
 
 - Add a license
 - Publish package to PyPI
-- Add hash retrieval for npm packages
 
 Others:
 

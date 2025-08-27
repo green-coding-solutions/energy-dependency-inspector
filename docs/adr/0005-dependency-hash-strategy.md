@@ -45,7 +45,7 @@ We will implement a multi-tiered hash-based strategy for dependency change detec
 - **APT/DPKG**: Provides MD5 hashes via `/var/lib/dpkg/info/*.md5sums` files
 - **APK**: No individual package hashes available
 - **PIP**: PyPI hashes not stored locally after installation
-- **NPM**: Provides SHA-512 integrity hashes in package-lock.json files but parsing adds complexity
+- **NPM**: Provides SHA-512 integrity hashes in package-lock.json files but parsing adds complexity (see [NPM Hash Analysis](../analyses/npm_hash_implementation_analysis.md))
 
 **Authentic vs Synthetic Hashes**: We prefer authentic hashes from package managers over self-generated ones because:
 
