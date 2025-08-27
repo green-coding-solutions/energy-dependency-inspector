@@ -1,7 +1,7 @@
 # dependency-resolver
 
 A tool for creating snapshots of installed packages on specified target environments. The project provides both a command-line interface and a Python library for programmatic use.
-Its main focus is dependency resolving of Docker containers, but it also supports host systems and Docker Compose stacks.
+Its main focus is dependency resolving of Docker containers, but it also supports dependency resolving on the host system.
 The output is a structured JSON that includes information about all the installed packages from supported sources with their version and unique hash values.
 
 ## Installation
@@ -37,9 +37,6 @@ python3 -m dependency_resolver docker a1b2c3d4e5f6
 
 # Get only container metadata (skip dependency detection)
 python3 -m dependency_resolver docker nginx --only-container-info
-
-# Analyze Docker Compose stack
-python3 -m dependency_resolver docker_compose my_app
 
 # Enable debug output
 python3 -m dependency_resolver --debug
@@ -96,14 +93,13 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 **Available classes for advanced usage:**
 
 - `Orchestrator` - Main dependency resolution coordinator
-- `HostExecutor`, `DockerExecutor`, `DockerComposeExecutor` - Environment adapters
+- `HostExecutor`, `DockerExecutor` - Environment adapters
 - `OutputFormatter` - JSON formatting utilities
 
 ### Supported Environments
 
 - **host** - Host system analysis (default)
 - **docker** - Docker container analysis (requires container ID or name)
-- **docker_compose** - Docker Compose stack analysis (requires stack/project name)
 
 ### Supported Package Managers
 
@@ -113,7 +109,6 @@ Currently supported:
 - **apk** - System packages of Alpine
 - **pip** - Python packages
 - **npm** - Node.js packages
-- **docker-compose** - Container images from Docker Compose stacks
 - **docker-info** - Individual Docker container metadata
 
 ### Output Format
@@ -126,19 +121,6 @@ The tool outputs JSON with the following structure:
     "name": "nginx-container",
     "image": "nginx:latest",
     "hash": "sha256:2cd1d97f893f..."
-  },
-  "docker-compose": {
-    "scope": "compose",
-    "dependencies": {
-      "web": {
-        "version": "django_app-web:latest",
-        "hash": "sha256:3e4def6e2af8..."
-      },
-      "db": {
-        "version": "postgres:13",
-        "hash": "sha256:54706ca98cd5..."
-      }
-    }
   },
   "dpkg": {
     "scope": "system",
@@ -174,7 +156,6 @@ For detailed information about architectural decisions and package manager imple
   - [DPKG Detector](./docs/detectors/dpkg_detector.md) - Debian/Ubuntu package detection
   - [NPM Detector](./docs/detectors/npm_detector.md) - Node.js package detection
   - [PIP Detector](./docs/detectors/pip_detector.md) - Python package detection
-  - [Docker Compose Detector](./docs/detectors/docker_compose_detector.md) - Container image detection
   - [Docker Info Detector](./docs/detectors/docker_info_detector.md) - Individual container metadata
 
 See the complete [SPECIFICATION.md](./SPECIFICATION.md) for detailed requirements and implementation constraints.

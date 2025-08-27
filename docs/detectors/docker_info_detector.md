@@ -59,8 +59,6 @@ def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = Non
 
 ### Image Name Processing
 
-Uses the same image extraction logic as Docker Compose detector:
-
 - **Tag selection**: Uses first available image tag
 - **Registry cleanup**: Removes registry prefixes for readability
 - **Fallback handling**: Defaults to "unknown" for missing tags
@@ -187,7 +185,7 @@ def get_container_info(self) -> dict:
 
 - **Docker-specific**: Only works with Docker containers via `DockerExecutor`
 - **Running containers only**: Requires active container to extract information
-- **Single container**: Analyzes one container at a time (unlike Docker Compose)
+- **Single container**: Analyzes one container at a time
 - **Metadata only**: Does not analyze internal container dependencies
 
 ## Use Cases
@@ -197,13 +195,3 @@ def get_container_info(self) -> dict:
 - **CI/CD pipelines**: Fast container verification without full dependency scan
 - **Container auditing**: Track container images across environments
 - **Deployment validation**: Verify correct container images are running
-
-## Comparison with Docker Compose Detector
-
-| Feature | Docker Info | Docker Compose |
-|---------|-------------|----------------|
-| **Scope** | Single container | Multiple containers |
-| **Output** | `_container-info` | `docker-compose` |
-| **Executor** | `DockerExecutor` | `DockerComposeExecutor` |
-| **Format** | Simplified flat structure | Standard detector format |
-| **Use case** | Individual container metadata | Service stack analysis |

@@ -7,7 +7,7 @@ Usage: python -m dependency_resolver [environment_type] [environment_identifier]
 
 import sys
 import argparse
-from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
+from .executors import HostExecutor, DockerExecutor
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator
 from .core.output_formatter import OutputFormatter
@@ -25,7 +25,6 @@ Examples:
   %(prog)s host                                   # Analyze host system explicitly
   %(prog)s docker a1b2c3d4e5f6                    # Analyze Docker container by ID
   %(prog)s docker nginx                           # Analyze Docker container by name
-  %(prog)s docker_compose my_app                  # Analyze Docker Compose stack
   %(prog)s --working-dir /tmp/repo                # Set working directory on target environment
   %(prog)s --venv-path ~/.virtualenvs/myproject   # Use specific virtual environment for pip
   %(prog)s --debug                                # Enable debug output
@@ -37,7 +36,7 @@ Examples:
         "environment_type",
         nargs="?",
         default="host",
-        choices=["host", "docker", "docker_compose"],
+        choices=["host", "docker"],
         help="Type of environment to analyze",
     )
 
@@ -83,10 +82,6 @@ def validate_arguments(
         print("Error: Docker environment requires a container identifier", file=sys.stderr)
         sys.exit(1)
 
-    if environment_type == "docker_compose" and not environment_identifier:
-        print("Error: Docker Compose environment requires a stack identifier", file=sys.stderr)
-        sys.exit(1)
-
     if environment_type == "host" and environment_identifier:
         print("Warning: Environment identifier is ignored for host environment", file=sys.stderr)
 
@@ -104,11 +99,6 @@ def create_executor(environment_type: str, environment_identifier: str | None) -
             print("Error: Docker environment requires container identifier", file=sys.stderr)
             sys.exit(1)
         return DockerExecutor(environment_identifier)
-    elif environment_type == "docker_compose":
-        if environment_identifier is None:
-            print("Error: Docker Compose environment requires service identifier", file=sys.stderr)
-            sys.exit(1)
-        return DockerComposeExecutor(environment_identifier)
     else:
         print(f"Error: Unsupported environment type: {environment_type}", file=sys.stderr)
         sys.exit(1)

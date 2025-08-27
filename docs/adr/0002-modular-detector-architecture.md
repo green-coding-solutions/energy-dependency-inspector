@@ -43,7 +43,6 @@ This modular approach provides extensibility while maintaining reliability throu
 
 **Current Detector Implementations**:
 
-- `DockerComposeDetector`: Container orchestration (compose scope)
 - `DpkgDetector`: Debian/Ubuntu system packages (system scope)
 - `ApkDetector`: Alpine Linux system packages (system scope)
 - `PipDetector`: Python packages with virtual environment detection (project/system scope)

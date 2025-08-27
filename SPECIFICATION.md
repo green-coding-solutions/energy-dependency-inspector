@@ -24,9 +24,8 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 ### Environment Support
 
 - Primary: Docker containers (using container hash/ID or name)
-- Docker Compose stacks (using stack/project name)
 - Secondary: Host system analysis
-- Future: Podman containers, Podman Compose stacks
+- Future: Podman containers
 
 ## Design Approach
 
@@ -44,14 +43,12 @@ The Green Metrics Tool (GMT) currently cannot detect dependency changes because 
 python3 -m dependency_resolver <environment_type> <environment_identifier> <options>
 ```
 
-- **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker`, `docker_compose` (additional ones in the future: `podman`, `podman_compose`)
-- **environment_identifier**: An identifier of the environment. For `docker` and `podman` the container run id (short or full) and the container name are allowed, for `docker_compose` and `podman_compose` the name of the compose stack is allowed (specified or auto-generated project name). For `host` no identifier is required.
+- **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker` (additional ones in the future: `podman`)
+- **environment_identifier**: An identifier of the environment. For `docker` and `podman` the container run id (short or full) and the container name are allowed. For `host` no identifier is required.
 - **options**: Possibility to provide multiple options parameter (see below)
 
 All parameters are optional. If no `environment_type` and `environment_identifier` is provided, the host system will be analyzed.
 If a container should be analyzed, all the checks will be executed inside the container and container metadata will be included.
-If a Docker Compose stack should be analyzed, only the container images themselves are analyzed (no commands executed inside containers).
-
 Available options:
 
 - `--working-dir <working-dir>`: uses the path as the working directory in the target environment and executes all checks from there
@@ -66,7 +63,6 @@ Examples:
 - `python3 -m dependency_resolver docker a1b2c3d4e5f6` (Docker container by id)
 - `python3 -m dependency_resolver docker nginx` (Docker container by name)
 - `python3 -m dependency_resolver docker nginx --only-container-info` (Docker container metadata only)
-- `python3 -m dependency_resolver docker_compose my_app` (Docker compose stack)
 - `python3 -m dependency_resolver --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
 
 ### Execution Method
@@ -92,7 +88,6 @@ Examples:
 2. **Environment Executors**
    - `HostExecutor`: Execute commands on host system using subprocess
    - `DockerExecutor`: Execute commands inside Docker containers using docker library
-   - `DockerComposeExecutor`: Manage Docker Compose stacks and extract container image metadata
    - `PodmanExecutor`: Execute commands inside Podman containers using podman-py
 
 3. **Package Manager Detectors**
@@ -107,10 +102,6 @@ Examples:
    - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [docs/detectors/apk_detector.md](docs/detectors/apk_detector.md))
      - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
      - **Availability check**: Verifies that `apk` command exists
-   - `DockerComposeDetector`: Container orchestration dependencies (extracts container images with full SHA256 hashes)
-     - **Usage**: Only activated for `DockerComposeExecutor` environments
-     - **Output**: Service names mapped to image tags and full SHA256 hashes (including `sha256:` prefix)
-     - **No command execution**: Does not execute commands inside containers, only analyzes container metadata
    - `DockerInfoDetector`: Individual Docker container metadata (extracts container name, image name, and SHA256 hash)
      - **Usage**: Automatically included in `DockerExecutor` environments
      - **Output**: Container metadata in simplified `_container-info` format
@@ -156,16 +147,6 @@ Schema with example values (incomplete):
     "name": "nginx-container",
     "image": "nginx:latest",
     "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
-  },
-  "docker-compose": {
-    "scope": "compose",
-    "dependencies": {
-      "backend": {
-          "version": "latest",
-          "hash": "a1b2c3d4e5f6"
-      }
-    },
-    // ...
   },
   "dpkg": {
     "scope": "system",
@@ -217,7 +198,6 @@ All package manager outputs include a `scope` field indicating the installation 
 
 - **`"system"`**: System-wide packages (apt/dpkg, apk, globally installed pip/npm)
 - **`"project"`**: Project-specific packages (virtual environments, local node_modules)
-- **`"compose"`**: Container orchestration images (Docker Compose, Podman Compose)
 - **`"container"`**: Individual container metadata (transformed to `_container-info` format in output)
 
 #### Location Field

@@ -11,7 +11,7 @@ Others:
 - Add Dockerfile
 - Add more tests
   - cli flags
-- Add support for Podman + Podman Compose
+- Add support for Podman
 - Add configuration file
   - use Dependabot configuration as an inspiration (<https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference>)
   - Configure which package management systems should be checked

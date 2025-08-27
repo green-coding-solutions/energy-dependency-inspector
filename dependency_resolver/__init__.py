@@ -3,7 +3,7 @@
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator
 from .core.output_formatter import OutputFormatter
-from .executors import HostExecutor, DockerExecutor, DockerComposeExecutor
+from .executors import HostExecutor, DockerExecutor
 
 from typing import Optional, Any
 
@@ -116,8 +116,8 @@ def resolve_dependencies_as_dict(
     Generic function to resolve dependencies and return as a Python dictionary.
 
     Args:
-        environment_type: Type of environment ("host", "docker", "docker_compose")
-        environment_identifier: Environment identifier (required for docker/docker_compose)
+        environment_type: Type of environment ("host", "docker")
+        environment_identifier: Environment identifier (required for docker)
         working_dir: Working directory to analyze
         debug: Enable debug output
         skip_system_scope: Skip system-scope package managers
@@ -134,10 +134,6 @@ def resolve_dependencies_as_dict(
         if not environment_identifier:
             raise ValueError("Docker environment requires container identifier")
         executor = DockerExecutor(environment_identifier)
-    elif environment_type == "docker_compose":
-        if not environment_identifier:
-            raise ValueError("Docker Compose environment requires service identifier")
-        executor = DockerComposeExecutor(environment_identifier)
     else:
         raise ValueError(f"Unsupported environment type: {environment_type}")
 

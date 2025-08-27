@@ -209,31 +209,6 @@ class TestResolveDependenciesAsDict:
 
         assert result == mock_dependencies
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerComposeExecutor")
-    def test_resolve_dependencies_as_dict_docker_compose(
-        self, mock_docker_compose_executor: Any, mock_orchestrator: Any
-    ) -> None:
-        """Test resolve_dependencies_as_dict with docker_compose environment."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_compose_executor.return_value = mock_executor_instance
-
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"npm": [{"name": "react", "version": "18.2.0"}]}
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        # Call function
-        result = resolve_dependencies_as_dict(environment_type="docker_compose", environment_identifier="web-service")
-
-        # Verify calls
-        mock_docker_compose_executor.assert_called_once_with("web-service")
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
-
-        assert result == mock_dependencies
-
     def test_resolve_dependencies_as_dict_unsupported_environment(self) -> None:
         """Test resolve_dependencies_as_dict with unsupported environment type."""
         with pytest.raises(ValueError, match="Unsupported environment type: invalid"):
@@ -243,11 +218,6 @@ class TestResolveDependenciesAsDict:
         """Test resolve_dependencies_as_dict with docker but missing identifier."""
         with pytest.raises(ValueError, match="Docker environment requires container identifier"):
             resolve_dependencies_as_dict(environment_type="docker")
-
-    def test_resolve_dependencies_as_dict_docker_compose_missing_identifier(self) -> None:
-        """Test resolve_dependencies_as_dict with docker_compose but missing identifier."""
-        with pytest.raises(ValueError, match="Docker Compose environment requires service identifier"):
-            resolve_dependencies_as_dict(environment_type="docker_compose")
 
 
 class TestResolveDockerDependenciesAsDict:
