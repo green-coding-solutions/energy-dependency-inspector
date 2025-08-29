@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-The Green Metrics Tool (GMT) currently cannot detect dependency changes because while repositories are fixed via git hash, source/package manager files without version pinning appear unchanged to GMT even when actual installed versions differ over time.
+The [Green Metrics Tool](https://github.com/green-coding-solutions/green-metrics-tool) (GMT) currently cannot detect dependency changes because while repositories are fixed via git hash, source/package manager files without version pinning appear unchanged to GMT even when actual installed versions differ over time.
 
 ## Core Requirements
 
@@ -65,77 +65,22 @@ Examples:
 - `python3 -m dependency_resolver docker nginx --only-container-info` (Docker container metadata only)
 - `python3 -m dependency_resolver --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
 
-### Execution Method
+### Architecture Overview
 
-- Modular check/dump routines for each package manager
-  - abstraction layer is used to separate the check/dump logic from the environment specific execution (e.g. using the docker library to run the checks inside containers)
-- `docker` Python library is used to execute commands in containers
+The system uses a modular architecture with these core components:
 
-### Modular Architecture Details
+- **Detectors**: Implement package manager-specific logic (pip, npm, dpkg, apk, docker-info)
+- **Executors**: Handle command execution in different environments (host, docker)
+- **Orchestrator**: Coordinates detection and aggregates results
 
-#### Core Components
+**Detection Strategy:**
 
-1. **Abstract Base Classes**
-   - `PackageManagerDetector`: Interface for all package manager implementations
-     - `meets_requirements(executor)`: Check if pre-requirements are met (OS compatibility, etc.)
-     - `is_available(executor)`: Check if package manager exists in environment
-     - `get_dependencies(executor, working_dir)`: Extract dependencies with versions/hashes
-     - `get_name()`: Return package manager identifier
-   - `EnvironmentExecutor`: Interface for command execution in different environments
-     - `execute_command(command, working_dir)`: Run commands in target environment
-     - `file_exists(path)`: Check file existence in target environment
+- Auto-discovery of available package managers
+- Error isolation (failed detectors don't affect others)
+- Configurable scope filtering (system vs project packages)
+- Multi-tier hash generation for dependency integrity
 
-2. **Environment Executors**
-   - `HostExecutor`: Execute commands on host system using subprocess
-   - `DockerExecutor`: Execute commands inside Docker containers using docker library
-   - `PodmanExecutor`: Execute commands inside Podman containers using podman-py
-
-3. **Package Manager Detectors**
-   - `PipDetector`: Python packages via `pip list --format=freeze` (see [docs/detectors/pip_detector.md](docs/detectors/pip_detector.md))
-     - No OS requirements (works on any system with Python)
-     - Automatically detects and uses virtual environments
-     - Uses the virtual environment's pip executable when available
-   - `NpmDetector`: Node.js packages via `npm list --json --depth=0`
-   - `DpkgDetector`: Debian/Ubuntu system packages via `dpkg-query` (see [docs/detectors/dpkg_detector.md](docs/detectors/dpkg_detector.md))
-     - **Pre-requirement**: Must be running on Debian/Ubuntu systems (checks `/etc/os-release` and `/etc/debian_version`)
-     - **Availability check**: Verifies that `dpkg-query` command exists
-   - `ApkDetector`: Alpine Linux system packages via `apk list --installed` (see [docs/detectors/apk_detector.md](docs/detectors/apk_detector.md))
-     - **Pre-requirement**: Must be running on Alpine Linux systems (checks `/etc/os-release` and `/etc/alpine-release`)
-     - **Availability check**: Verifies that `apk` command exists
-   - `DockerInfoDetector`: Individual Docker container metadata (extracts container name, image name, and SHA256 hash)
-     - **Usage**: Automatically included in `DockerExecutor` environments
-     - **Output**: Container metadata in simplified `_container-info` format
-     - **Modes**: Works in both full analysis and container-info-only modes
-
-4. **Main Orchestrator**
-   - `Orchestrator`: Coordinates detection and extraction
-   - Auto-discovers available package managers
-   - Executes detectors in isolation with error handling
-   - Aggregates results into unified JSON output
-
-#### Directory Structure
-
-```plain
-dependency_resolver/
-├── __main__.py                       # CLI entry point
-├── core/                             # Orchestration and interfaces
-├── executors/                        # Environment execution adapters
-└── detectors/                        # Package manager detection implementations
-```
-
-#### Detection Strategy
-
-- **Pre-Requirements Check**: Each detector first checks if its requirements are met (OS compatibility, etc.)
-- **Auto-Discovery**: Available detectors check if their package manager exists in the environment
-- **Error Isolation**: Failed detectors don't affect others (catch all exceptions)
-- **Priority Order**: System packages → Language-specific → Container orchestration
-- **Working Directory**: All detectors respect `--working-dir` parameter
-
-The detection process follows this sequence:
-
-1. Check pre-requirements via `meets_requirements(executor)`
-2. If requirements are met, check availability via `is_available(executor)`
-3. If available, extract dependencies via `get_dependencies(executor, working_dir)`
+For implementation details, see [docs/ADDING_NEW_DETECTORS.md](docs/ADDING_NEW_DETECTORS.md) and Architecture Decision Records in [docs/adr/](docs/adr/).
 
 ### JSON Output Schema
 
@@ -206,9 +151,7 @@ The `location` field is only present when `scope` is `"project"`, providing the 
 
 #### Hash Field
 
-- **Individual package hashes**: Included when retrievable from package manager (e.g., dpkg md5sums, Docker image hashes)
-- **Location-based hashes**: Generated for project scope installations to detect directory changes
-- **System scope**: No location-based hashes (individual package hashes only where available)
+Hashes are included for dependency integrity verification when available from the package manager or generated for project-scoped installations.
 
 #### Container Info Format
 
@@ -238,16 +181,9 @@ For Docker environments, container metadata is automatically included in a simpl
 1. **Read-Only Operations**: See [ADR-0003](docs/adr/0003-read-only-operations.md) for the complete read-only constraint policy
 2. **Unix-Based Systems**: See [ADR-0004](docs/adr/0004-unix-only-support.md) for platform support scope
 
-### Hash Handling Strategy
+### Hash Strategy
 
-The dependency resolver uses a multi-tiered hash generation strategy for change detection and integrity verification. See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the complete rationale and individual detector documentation for implementation details.
-
-**Key Points**:
-
-- Individual package hashes only if retrievable from package manager
-- Location-based hashes for package manager installations
-- APT MD5 extraction approach (see [docs/detectors/dpkg_detector.md](docs/detectors/dpkg_detector.md))
-- SHA256 format using full 64-character hashes
+Hashes are used for dependency change detection and integrity verification. See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the complete multi-tiered strategy.
 
 ### Logging Strategy
 
