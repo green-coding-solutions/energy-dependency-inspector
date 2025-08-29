@@ -1,0 +1,1764 @@
+{
+  "_container-info": {
+    "name": "tfb-django",
+    "image": "tfb.test.django:latest",
+    "hash": "sha256:6c994ea3e3d9c1ca37c3cfcf0b01bbf4c867f90cf551ae5c1baf5285b6ed3eaa"
+  },
+  "dpkg": {
+    "scope": "system",
+    "dependencies": {
+      "adduser": {
+        "version": "3.118+deb11u1 all",
+        "hash": "570e27651a5f1022bb809f3a36b9a720cc7d59054f918fa4241f610760b0d4bc"
+      },
+      "apt": {
+        "version": "2.2.4 amd64",
+        "hash": "f4780a43823f1aacdb194558d246223b4c97667697e8c3c691326322e99f6f49"
+      },
+      "autoconf": {
+        "version": "2.69-14 all",
+        "hash": "2193134b23e386fd23a954f09edd280eb99cc0fc0848da58c08d58d8546a96cb"
+      },
+      "automake": {
+        "version": "1:1.16.3-2 all",
+        "hash": "b8e95d701aac0051c6d0eeb1b2b5ea4a8a0c861e769fe7e6910cde8911a7be41"
+      },
+      "autotools-dev": {
+        "version": "20180224.1+nmu1 all",
+        "hash": "a19fd9822b58292fa18303ca4442c7ff983aabc410ee94fb90dca83c89988b52"
+      },
+      "base-files": {
+        "version": "11.1+deb11u11 amd64",
+        "hash": "089e5d3e8328dfa837f60bd4ffa0fa5d336c48c6fc69a44694d30bb9d514a458"
+      },
+      "base-passwd": {
+        "version": "3.5.51 amd64",
+        "hash": "316dfa65172225fc5798fc77627e540581855ca39b4be43571e820371ef69197"
+      },
+      "bash": {
+        "version": "5.1-2+deb11u1 amd64",
+        "hash": "c05f8639dbe6b2b4dcd99dcd8e3651e5e45ed8542213c56a70dc712513097807"
+      },
+      "binutils": {
+        "version": "2.35.2-2 amd64",
+        "hash": "0f4e61025180914845ddd2410668b1aca6afdafc66ec6223b4180e8c8d37f08b"
+      },
+      "binutils-common": {
+        "version": "2.35.2-2 amd64",
+        "hash": "59d50f977680bb2a06f9a61261744e794c10f71af8d75f1109968fc732dc0800"
+      },
+      "binutils-x86-64-linux-gnu": {
+        "version": "2.35.2-2 amd64",
+        "hash": "548d47e44adc1804b27a7aff647f72ef4809fbaf7f628a8aebc087e469ad3666"
+      },
+      "bsdutils": {
+        "version": "1:2.36.1-8+deb11u2 amd64",
+        "hash": "792373582535782f9980a5dd9718cf98ed6cfb3b9478ce37a5054e9ffeeb47aa"
+      },
+      "bzip2": {
+        "version": "1.0.8-4 amd64",
+        "hash": "cd01c6cebe5eea7244ba9adbf866ae26b43588b646b71b6ae3eb6a643ffa6783"
+      },
+      "ca-certificates": {
+        "version": "20210119 all",
+        "hash": "0adb98855e19dc16953320386e890cbef0fd854938722ea41e73da4cb65c0a19"
+      },
+      "comerr-dev": {
+        "version": "2.1-1.46.2-2+deb11u1 amd64",
+        "hash": "3f5cb6b326c3c2959d4cdeda6eb63f663d0332ad77846314b756e7cc1e7b1d46"
+      },
+      "coreutils": {
+        "version": "8.32-4+b1 amd64",
+        "hash": "9a9d25e06c215ea3796d3048a6a8e61484ab5638f4e7022b74a0d803c0074b2e"
+      },
+      "cpp": {
+        "version": "4:10.2.1-1 amd64",
+        "hash": "f76bc351dad703d88743e7b15d6e7579b8df5f887b11c86e89b702d5b4b90b9b"
+      },
+      "cpp-10": {
+        "version": "10.2.1-6 amd64",
+        "hash": "d1b9bead1e839cba937d8324554bc2485bb37a6318545d0c490a1969a1b1ad90"
+      },
+      "curl": {
+        "version": "7.74.0-1.3+deb11u15 amd64",
+        "hash": "ad3e16561cf2ef965382e779f7dae5dfafdf439606f1fd49e0c6000794e2a850"
+      },
+      "dash": {
+        "version": "0.5.11+git20200708+dd9ef66-5 amd64",
+        "hash": "96ed7e5c98fc16a37a6a87e71947ed3666fee6e8553e6e47154f72efb89c5d97"
+      },
+      "debconf": {
+        "version": "1.5.77 all",
+        "hash": "2b271f43cefea5b94911df8bd76f13227febe5b22fa74c0826daab720c284e3e"
+      },
+      "debian-archive-keyring": {
+        "version": "2021.1.1+deb11u1 all",
+        "hash": "00760a25e881fed46a355dbd5174194dfe021899c6cbdff590b39c82520664e6"
+      },
+      "debianutils": {
+        "version": "4.11.2 amd64",
+        "hash": "92a8d5b1d82c2f77f9b213fc2cf4ff1a7a80ea1de933d08a095bbcceb5b79cb6"
+      },
+      "default-libmysqlclient-dev": {
+        "version": "1.0.7 amd64",
+        "hash": "d6d1ec52aa9da04bd47da459722be721099a1d0b4ecfb65517da4c3222f404a7"
+      },
+      "diffutils": {
+        "version": "1:3.7-5 amd64",
+        "hash": "2dd7868077d5a866a53199b1885245143fdad7cc558cbf9a2194209c2a036dc5"
+      },
+      "dirmngr": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "f07b01746f5f2acf77527f4265df06df93d1202cc87ad127fdc92ee47d904066"
+      },
+      "dpkg": {
+        "version": "1.20.13 amd64",
+        "hash": "56dd78827450baa73cec37d429d68282cd33dc930065e1caf09fd255dbc23cb4"
+      },
+      "dpkg-dev": {
+        "version": "1.20.13 all",
+        "hash": "b55a858bbcaeafcedddc76bf5cb83db865704c256360e57e5bffe48c2a22176a"
+      },
+      "e2fsprogs": {
+        "version": "1.46.2-2+deb11u1 amd64",
+        "hash": "243be0fabb1e6a127f9bae4c20a8cea66b5872f415e1f44c4d217d8dabaf62a5"
+      },
+      "file": {
+        "version": "1:5.39-3+deb11u1 amd64",
+        "hash": "164c478f2ce8efd93c8c198e9422eee4e6378b527ba79d6ad17a56dffed68be2"
+      },
+      "findutils": {
+        "version": "4.8.0-1 amd64",
+        "hash": "2bea612430f9c3148ff61a7e6dad8e9d193a7cefae86f5b66202c1dccf3da383"
+      },
+      "fontconfig": {
+        "version": "2.13.1-4.2 amd64",
+        "hash": "32b6c90fd21add7cc64d6d878c8dd40cc0fc0552084923fae57b3aa5756239e5"
+      },
+      "fontconfig-config": {
+        "version": "2.13.1-4.2 all",
+        "hash": "c0bcf7b3bfc7e82b689ccf18447aabbb4e4de8ff072ef62220f1b8d6b1681029"
+      },
+      "fonts-dejavu-core": {
+        "version": "2.37-2 all",
+        "hash": "54c563478007e65e5e4ff195a4ccf9d678f82e11fac793a4574c027c658bfc4e"
+      },
+      "g++": {
+        "version": "4:10.2.1-1 amd64",
+        "hash": "146067e6aca7d7da9a6d97c06df61a11dfb623f14777536dc02a9fa85d8dcffc"
+      },
+      "g++-10": {
+        "version": "10.2.1-6 amd64",
+        "hash": "27a01c7938f4cb051150e44f79ff74fee58a50f06d613f74823ef467b4476c0c"
+      },
+      "gcc": {
+        "version": "4:10.2.1-1 amd64",
+        "hash": "7f1f47a0cd26f7b6264048fc3740a42305730730a86e03cca5ed9df695b23ad9"
+      },
+      "gcc-10": {
+        "version": "10.2.1-6 amd64",
+        "hash": "9a54dcde04412d79e33b955dfe52a1b6109c3e343af309985874653969984ad3"
+      },
+      "gcc-10-base": {
+        "version": "10.2.1-6 amd64",
+        "hash": "d20b4b48f5ce86de9b01be68f7b8c0d587f9db5e33871f02af1cbb9d783f0797"
+      },
+      "gcc-9-base": {
+        "version": "9.3.0-22 amd64",
+        "hash": "5d2f7c7568142d1abba6bcb0360f67f325a12cc8c8ce7f86b63afb49fa26455f"
+      },
+      "gir1.2-freedesktop": {
+        "version": "1.66.1-1+b1 amd64",
+        "hash": "a830806bf6278449ad6c9d7dd47ec179c63cc4431558e83d7acc4f0427072d5b"
+      },
+      "gir1.2-gdkpixbuf-2.0": {
+        "version": "2.42.2+dfsg-1+deb11u3 amd64",
+        "hash": "43ecd5ee7d12cc45a30f9e0a6b622442130cf77e1069fdc7caec95f328e57d9b"
+      },
+      "gir1.2-glib-2.0": {
+        "version": "1.66.1-1+b1 amd64",
+        "hash": "4ef579a532ff318c50635baf3b991b7cc3d11787d7680465e9ef02bfd1125b3c"
+      },
+      "gir1.2-rsvg-2.0": {
+        "version": "2.50.3+dfsg-1+deb11u1 amd64",
+        "hash": "042ea45af1871ae24a26dccd22e93127b8453e2cd8b3961ffcbd2f385e1c3fa9"
+      },
+      "git": {
+        "version": "1:2.30.2-1+deb11u4 amd64",
+        "hash": "5543f37a1f158514328919ca0e03bc2603cdaffb86f5c7c0e373fcaf7e311ff7"
+      },
+      "git-man": {
+        "version": "1:2.30.2-1+deb11u4 all",
+        "hash": "77bd78b71eb6ab3c627277069e0d009bdb75f9fb1d18a75d05c89a9a832da99b"
+      },
+      "gnupg": {
+        "version": "2.2.27-2+deb11u2 all",
+        "hash": "5b98ce422ae6e2c218e40257ca863e8fdda5e1d7193e478d48f37d60fae5a475"
+      },
+      "gnupg-l10n": {
+        "version": "2.2.27-2+deb11u2 all",
+        "hash": "0584a1cd69cdd75315faaf0ead1264025649e9005165e44a9ec1bb44ede84682"
+      },
+      "gnupg-utils": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "5047a6e179951156b7ba1d2f2bdcd8a7d45baa2bb29fd7aa4bac20459541f2c4"
+      },
+      "gpg": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "7c612639b5444420a7caf9a670e329c658e4b8a0663e7c356120280d7e9c9093"
+      },
+      "gpg-agent": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "f957694357e7378f5b61b3d1053a4168c02854c5d3b66b861ce4efb303b10e09"
+      },
+      "gpg-wks-client": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "2cc0481a0b3c009f48890ae9c773546adeba2836a3deae151e97ecbaa126f2e1"
+      },
+      "gpg-wks-server": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "e716a4e28c83079fce7e0df14d3cda665ec156cf3bec84a2c25d1e6e660fe500"
+      },
+      "gpgconf": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "2ee587c2cfd7969abcb0d457aa5ba16da7662dc3115b70a05c1fc1d36e4d46e9"
+      },
+      "gpgsm": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "5778af7b464ffcce78b2de103a7a4e53181401eee10fa80ceb523cfe62f7df31"
+      },
+      "gpgv": {
+        "version": "2.2.27-2+deb11u2 amd64",
+        "hash": "8be0aae1df2fac072315765fe0960fe5cde94a0cfd054d869cd74b3753ba1922"
+      },
+      "grep": {
+        "version": "3.6-1+deb11u1 amd64",
+        "hash": "c38a9c6a00ec941a8aff42254401354788632a3985c91faf1e05fa26f4ae4f48"
+      },
+      "gzip": {
+        "version": "1.10-4+deb11u1 amd64",
+        "hash": "604f5a89ec6aeea0782a2f7d87079becaecaba3a7ee086dde7364862dcdeb8d6"
+      },
+      "hicolor-icon-theme": {
+        "version": "0.17-2 all",
+        "hash": "7f305fdd4f9785f3b2180ff1a43bb05d69d44bf971bf2726d5588a5c1884e17b"
+      },
+      "hostname": {
+        "version": "3.23 amd64",
+        "hash": "56b23d68ebac83ff4ba319f91d2265520f324db1527671e14ad4be59f1ec5441"
+      },
+      "icu-devtools": {
+        "version": "67.1-7+deb11u1 amd64",
+        "hash": "eec9c2cd3f76606d1f8f31a04fb8fb638536e47dd69e97e23b2411083b99c196"
+      },
+      "imagemagick": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "dd9a569675e89af9cbc444cbb6a69e492307311a7950cfc2713e11c76b659d12"
+      },
+      "imagemagick-6-common": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 all",
+        "hash": "3e46c6aad280e347d27fb7b2263e7738a3834d313a6e985694e1eafc22717e29"
+      },
+      "imagemagick-6.q16": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "f105ed9208784a5d8e8e6f399315b9b2662c65fef89fcadef08e079823ea2d11"
+      },
+      "init-system-helpers": {
+        "version": "1.60 all",
+        "hash": "76dea8d5c2517fea02419efe4bf000c8a1beb1c819684ed8757704b2b70b2f78"
+      },
+      "krb5-multidev": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "8e8ccb9396c209fb0fbe2924cdcc2ed0564c21211001d3d9541538c040e34126"
+      },
+      "libacl1": {
+        "version": "2.2.53-10 amd64",
+        "hash": "107a6075a6a07db0f151a5a9de50f0a6e2af387688c56b4f879ea5e58e55e673"
+      },
+      "libaom0": {
+        "version": "1.0.0.errata1-3+deb11u2 amd64",
+        "hash": "4ce99075f4da6080a7c8b89e1939a70331a657842de1d3e79c99f53b6c34010d"
+      },
+      "libapr1": {
+        "version": "1.7.0-6+deb11u2 amd64",
+        "hash": "5139cd692f84b3b77742309c014d44dffe3ed4883833c3ec4a8f7a74136b3c31"
+      },
+      "libaprutil1": {
+        "version": "1.6.1-5+deb11u1 amd64",
+        "hash": "4d2f905ae3f9f116fb41192826c0118f7687de502d9ce8f247129b3938713d2d"
+      },
+      "libapt-pkg6.0": {
+        "version": "2.2.4 amd64",
+        "hash": "706df54f4a9538cce0fcdbc6843d286698e7264cd964b20fa3a931b4b99932d9"
+      },
+      "libasan6": {
+        "version": "10.2.1-6 amd64",
+        "hash": "f85431198980bd32911a0208b6a57e4dcab25d8b66cafe4904a5375b7797f043"
+      },
+      "libassuan0": {
+        "version": "2.5.3-7.1 amd64",
+        "hash": "89b93092790fa9ae9f1b5bb4dad9dcb98a6d53d544ebd128d1cbf5d4bbd2cf78"
+      },
+      "libatomic1": {
+        "version": "10.2.1-6 amd64",
+        "hash": "cbee556b57e11c756c8be2b3fe573995982035e261ea3bf1088014323520631c"
+      },
+      "libattr1": {
+        "version": "1:2.4.48-6 amd64",
+        "hash": "a76099f40837c6eb802ff4664b09b013a740be5d4c30a82753725464af6be467"
+      },
+      "libaudit-common": {
+        "version": "1:3.0-2 all",
+        "hash": "2cad89081f35742e3c2312d9adfbba5d03313c029895e54541f6aa55f715df8c"
+      },
+      "libaudit1": {
+        "version": "1:3.0-2 amd64",
+        "hash": "839396916c17c3aa10f7e6f245776c5b6fa838f3448560c7293c6fad6f26301e"
+      },
+      "libbinutils": {
+        "version": "2.35.2-2 amd64",
+        "hash": "11f8d592050d72aac2f04d742e3fc68181f5a91364bcdf912002290d05cdf394"
+      },
+      "libblkid-dev": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "a55e17e590696bcf5c193ce585eb1647c5287cbaebfa648f57237ba623360d65"
+      },
+      "libblkid1": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "08cae995ade31fe021415298a287ec96f7c030f8588bb6951f231f9a590a409f"
+      },
+      "libbluetooth-dev": {
+        "version": "5.55-3.1+deb11u2 amd64",
+        "hash": "97dbfe5e9c647655625254dbdeb6a3ef306bd3c0d98407441ae73b701db42ac9"
+      },
+      "libbluetooth3": {
+        "version": "5.55-3.1+deb11u2 amd64",
+        "hash": "01914b57995cf03a1088d3daedede89cab43bc4807d6290d0281baacf5e48d8e"
+      },
+      "libbrotli-dev": {
+        "version": "1.0.9-2+b2 amd64",
+        "hash": "2adca1e2216bd56f15f149e08e347d4f90eba08974ebea02377ddce965b2ad15"
+      },
+      "libbrotli1": {
+        "version": "1.0.9-2+b2 amd64",
+        "hash": "cb328cdecbe2aa49890d9430e72bf2c32ff27accdf46bb17bbfe05e9e2f01440"
+      },
+      "libbsd0": {
+        "version": "0.11.3-1+deb11u1 amd64",
+        "hash": "849decbd91209f49e6b1c0c687aa914455c9cd48d79dfe30f9023119c798f0de"
+      },
+      "libbz2-1.0": {
+        "version": "1.0.8-4 amd64",
+        "hash": "d1d21f02b3a03cd91fc77c76123ea15b3f6113b21b6f35a243cf312420dd4e27"
+      },
+      "libbz2-dev": {
+        "version": "1.0.8-4 amd64",
+        "hash": "48b726959b27d6ba2722a2e79b73c92e994ce3a9c8fd0ff70a40f1329c986c3f"
+      },
+      "libc-bin": {
+        "version": "2.31-13+deb11u13 amd64",
+        "hash": "10824897196c3db553a5b5cebc092148b92aab8a9d1f180917eafb9e85f4b72c"
+      },
+      "libc-dev-bin": {
+        "version": "2.31-13+deb11u13 amd64",
+        "hash": "401889d67fc2dec46051d8c41d65a4b69c21b36699e5d3e6a39db0cf5cb07c0d"
+      },
+      "libc6": {
+        "version": "2.31-13+deb11u13 amd64",
+        "hash": "4e3593cc3e42b106da1e5b080f3106b99f6b8db65c70a03edd5938149831e935"
+      },
+      "libc6-dev": {
+        "version": "2.31-13+deb11u13 amd64",
+        "hash": "7383643dc728c0809a304836f03bc952c5c14fe91e3753bb70178a518208fc8d"
+      },
+      "libcairo-gobject2": {
+        "version": "1.16.0-5 amd64",
+        "hash": "0412e02cb7a4f8bafee852311b64365bfe00d5d5b4619fc03cefc47a78100808"
+      },
+      "libcairo-script-interpreter2": {
+        "version": "1.16.0-5 amd64",
+        "hash": "d35991d44c701d75b6ff141b33ab50e9aadb33137db97cd7f69c2bc08970c65b"
+      },
+      "libcairo2": {
+        "version": "1.16.0-5 amd64",
+        "hash": "2385647f45148f40d884c8a866746d8b300afeb039619c926d5765c7b6a95ab7"
+      },
+      "libcairo2-dev": {
+        "version": "1.16.0-5 amd64",
+        "hash": "f9d2bbadc67d8565b209af3478709b38a13fe9a55efbebab80c61beafde3b443"
+      },
+      "libcap-ng0": {
+        "version": "0.7.9-2.2+b1 amd64",
+        "hash": "bc148cae8a003848d03de4ad72888d755f8735926eb82446fc6acf1dbbe5cb88"
+      },
+      "libcbor0": {
+        "version": "0.5.0+dfsg-2 amd64",
+        "hash": "97a1277da1c1d0571175f856c0a25ce363d64c118fbe924c4ba02d048875fe7e"
+      },
+      "libcc1-0": {
+        "version": "10.2.1-6 amd64",
+        "hash": "02e1edcf796bdeb736fb402cce8d2b60b1f8a02b3773fb660ccbd10d1c85cc37"
+      },
+      "libcom-err2": {
+        "version": "1.46.2-2+deb11u1 amd64",
+        "hash": "8f6ac530aa86444260dc3c143f2b9c57c9ad9dad59ade0041b4c69bf3d91d11f"
+      },
+      "libcrypt-dev": {
+        "version": "1:4.4.18-4 amd64",
+        "hash": "f88fedbd3f680098cb1c7a551edb7492cc4bd12390c5cd435ec4083aab1eb94c"
+      },
+      "libcrypt1": {
+        "version": "1:4.4.18-4 amd64",
+        "hash": "6c8c84ec4f27b81c7ce6deec3ea3476b613c11b8f418814dc98335807ec8e72c"
+      },
+      "libctf-nobfd0": {
+        "version": "2.35.2-2 amd64",
+        "hash": "7d04ab8bdae8676b2d5cdc5f371d689397193dc2bb496acc65a63edd7af70f8d"
+      },
+      "libctf0": {
+        "version": "2.35.2-2 amd64",
+        "hash": "53c5a66e63342e0bd596afb6271771e9b10c038dfe6be8875cdb2dad8cdbb910"
+      },
+      "libcurl3-gnutls": {
+        "version": "7.74.0-1.3+deb11u15 amd64",
+        "hash": "9c3359927f68eb8bd3ad5a30986611dce1fa811ce5bfeef018ddc84b0584143b"
+      },
+      "libcurl4": {
+        "version": "7.74.0-1.3+deb11u15 amd64",
+        "hash": "3858268f04a38dc105036805b4f31aa567714b375077acff05edfbc00f2cc988"
+      },
+      "libcurl4-openssl-dev": {
+        "version": "7.74.0-1.3+deb11u15 amd64",
+        "hash": "81747b7a1d8147899111b6492d5347f6ea0f8be4a3190271587c470b50d42f0a"
+      },
+      "libdatrie1": {
+        "version": "0.2.13-1 amd64",
+        "hash": "e5df55a9e18b52f572211ab936fc1b81d8784dfe77e6176fd8cecde179810df8"
+      },
+      "libdav1d4": {
+        "version": "0.7.1-3+deb11u1 amd64",
+        "hash": "6af94aed6cef87a31e2d00ad2ea0cc22b4ca7549cb28599cd94f128b704763d6"
+      },
+      "libdb-dev": {
+        "version": "5.3.1+nmu1 amd64",
+        "hash": "96a660209976ba8e7b0b3f6aed630edec77fdc2c668161a8058197c918c8a0bc"
+      },
+      "libdb5.3": {
+        "version": "5.3.28+dfsg1-0.8 amd64",
+        "hash": "301d7580d1e9f3f9680d8f54f6e9913aba8bef2407a7d4c25a6e2b91da0e70f9"
+      },
+      "libdb5.3-dev": {
+        "version": "5.3.28+dfsg1-0.8 amd64",
+        "hash": "9751b6020435fbc165256857ee874c4220e29fd413e7d62270cccc2728b9c595"
+      },
+      "libde265-0": {
+        "version": "1.0.11-0+deb11u3 amd64",
+        "hash": "3b74c924c7a0c5e273be79105262abb78b8810d40de172cb699dcd58815f5132"
+      },
+      "libdebconfclient0": {
+        "version": "0.260 amd64",
+        "hash": "a81089a4bf6fe5241d7bd9bc21265509fdb5b104285d7e8f18964340a4d2ffd5"
+      },
+      "libdeflate-dev": {
+        "version": "1.7-1 amd64",
+        "hash": "85711b46253de5fb1d2805f1ae9ce677775101eabb6c279c582e720db5c8656d"
+      },
+      "libdeflate0": {
+        "version": "1.7-1 amd64",
+        "hash": "5f16c8b7d4e5fb8cb38c8cc2e7ec42acf0c0e2f380813e1201eccf17e6da7aa2"
+      },
+      "libdjvulibre-dev": {
+        "version": "3.5.28-2.2~deb11u1 amd64",
+        "hash": "f88bef738e438a304dd29fa5b679cdfb184723df3f77e39264ccff0967491fe3"
+      },
+      "libdjvulibre-text": {
+        "version": "3.5.28-2.2~deb11u1 all",
+        "hash": "a118352124da40dd2c8f799a5dc1afb2097cf99a3d906d625548d84eb20c0a50"
+      },
+      "libdjvulibre21": {
+        "version": "3.5.28-2.2~deb11u1 amd64",
+        "hash": "687744a83c2c60d2139104171036229725032c8797d3a5e02340da7115dfdebd"
+      },
+      "libdpkg-perl": {
+        "version": "1.20.13 all",
+        "hash": "b4957597e88c9c3a8fd1b9b6ebbe68218b1ff11af19a3c597d82e704d4c73ee6"
+      },
+      "libedit2": {
+        "version": "3.1-20191231-2+b1 amd64",
+        "hash": "25ab9b5b85bc065e86f0d111184b712428508c77cd8f4a922a3e2fa72f29000b"
+      },
+      "libelf1": {
+        "version": "0.183-1 amd64",
+        "hash": "6537b23987e2c3b75975c19606fea64408d94aa57a8be2d1207ccc2649c17083"
+      },
+      "liberror-perl": {
+        "version": "0.17029-1 all",
+        "hash": "2f6ee54846606dd4254cd86ffeb1d5cacab82bd4dcd42ec7f1a9db9e343d663d"
+      },
+      "libevent-2.1-7": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "96ff9b5a3ea714625c7342c6223b077cda9b0cfa0ab70c1cfe807c5bafe2ddda"
+      },
+      "libevent-core-2.1-7": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "05d5416c4c06d2e4cf54a7ed8609f3c1a2a8d830130a78fde5b5800d89e5bfdc"
+      },
+      "libevent-dev": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "3ec6cc9f2cdd2f4a1d35b6a64aaef04b3b277ba3470c13bafc957a20ada75a28"
+      },
+      "libevent-extra-2.1-7": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "f9902f4f66fb217f16b287a4de9f87549d994a14a10dadec0c603c023d553fda"
+      },
+      "libevent-openssl-2.1-7": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "d8a44f7d473ab69b83648b9107d6c949fb7c497908dcb530ccf8eb197e704b9b"
+      },
+      "libevent-pthreads-2.1-7": {
+        "version": "2.1.12-stable-1 amd64",
+        "hash": "36afc34197613961800d6d308cbe2df0863d352543d311215a26934b5ba47607"
+      },
+      "libexif-dev": {
+        "version": "0.6.22-3 amd64",
+        "hash": "4fb132ab745ad7696ab881456d90d013f8d674c346906daa77431805742ff234"
+      },
+      "libexif12": {
+        "version": "0.6.22-3 amd64",
+        "hash": "fb4ea31a48c6972d437a94d5ed483e3d7457217f87738960fccac5c8af2cbc39"
+      },
+      "libexpat1": {
+        "version": "2.2.10-2+deb11u7 amd64",
+        "hash": "3212a859ed78ca1ce772be18c2a642bfb1af3bed7d7cdb1c46b40031b15fa8b4"
+      },
+      "libexpat1-dev": {
+        "version": "2.2.10-2+deb11u7 amd64",
+        "hash": "0cee60bcf98886d47116f790b82ff8b5f2911520977f0e2aff368bc1bc8a179d"
+      },
+      "libext2fs2": {
+        "version": "1.46.2-2+deb11u1 amd64",
+        "hash": "99d0f55fd33265183c9590fa95a49b1dfee838997f62d3000e6b8d88216d56da"
+      },
+      "libffi-dev": {
+        "version": "3.3-6 amd64",
+        "hash": "0ec942d614831391086a4c2e036ed85b95bce667921ef9e09c092fa4e67c0d35"
+      },
+      "libffi7": {
+        "version": "3.3-6 amd64",
+        "hash": "8bd56bc0a1b6d53a4d0a8ff658490b591193741c65fe46cdca6e34dc37a10a44"
+      },
+      "libfftw3-double3": {
+        "version": "3.3.8-2 amd64",
+        "hash": "b5bc3ea255ca9c66f351bceb5a901731ca53bb067f2127dd3c5f4ab49d06c8a1"
+      },
+      "libfido2-1": {
+        "version": "1.6.0-2 amd64",
+        "hash": "b0accb7036c06ada4fccef90484ada74d3e42a71f03ec6260603c4309d40c92d"
+      },
+      "libfontconfig-dev": {
+        "version": "2.13.1-4.2 amd64",
+        "hash": "c999713f762931d4eedc501462b86efb68600669af6ef8c377a2f6d7ae97a813"
+      },
+      "libfontconfig1": {
+        "version": "2.13.1-4.2 amd64",
+        "hash": "3b92aa14074747014651859c7aebb1deaca5361bf037502fd368bedca115772c"
+      },
+      "libfontconfig1-dev": {
+        "version": "2.13.1-4.2 amd64",
+        "hash": "f6f0d05fb316483e5c984db2abe63f9105830b61e66f83d733fb75d0f23ab720"
+      },
+      "libfreetype-dev": {
+        "version": "2.10.4+dfsg-1+deb11u2 amd64",
+        "hash": "40c8993e7887c6222d0982ce432cfed5925fec910a9fb0c588bc956b437b0193"
+      },
+      "libfreetype6": {
+        "version": "2.10.4+dfsg-1+deb11u2 amd64",
+        "hash": "0669e0b88a7f6f11dbdf670eff6ac415388e919073f62259e383e374f3b51cbc"
+      },
+      "libfreetype6-dev": {
+        "version": "2.10.4+dfsg-1+deb11u2 amd64",
+        "hash": "7689586530c65bef357630ede2ed3379c871470b6c7efe7d24bbd46dcbc83c1b"
+      },
+      "libfribidi0": {
+        "version": "1.0.8-2+deb11u1 amd64",
+        "hash": "13ba68f7eb612e2ed43dcdb6a2a8c8e7ebfb8c2213ba1a6f088a6b0ba394411a"
+      },
+      "libgcc-10-dev": {
+        "version": "10.2.1-6 amd64",
+        "hash": "7b2101fb1e6fa8ec0f373c1f46d241ffbaaa993539dce64869798d79a09b93b4"
+      },
+      "libgcc-s1": {
+        "version": "10.2.1-6 amd64",
+        "hash": "d46c643a66684b004dbf627ff15f0661b0529b308c6a44497b0df2460e14d219"
+      },
+      "libgcrypt20": {
+        "version": "1.8.7-6 amd64",
+        "hash": "b976ec196621560fdc7d8a212ac7008542a87f44c6076558b79f79d506295e4c"
+      },
+      "libgdbm-compat4": {
+        "version": "1.19-2 amd64",
+        "hash": "0e63a0a38f7563dafce572035988b4e4ce4beb2776a4e1423ec853bccd4b4c5c"
+      },
+      "libgdbm-dev": {
+        "version": "1.19-2 amd64",
+        "hash": "f46f9b03f5c9e4b9a04a0cfaf09f5903516717d9447a7accaf692d23e1bca463"
+      },
+      "libgdbm6": {
+        "version": "1.19-2 amd64",
+        "hash": "4c31b4d5db2ff24215173f4cab740614186ac5baaaa6e132240af7010a3ada4a"
+      },
+      "libgdk-pixbuf-2.0-0": {
+        "version": "2.42.2+dfsg-1+deb11u3 amd64",
+        "hash": "9ba047a2bf187ca2525495b98978544b21c0df0ef90bbfedf61d8498dac1ddb1"
+      },
+      "libgdk-pixbuf-2.0-dev": {
+        "version": "2.42.2+dfsg-1+deb11u3 amd64",
+        "hash": "28b794f398b6af6f516eff6677951c6c352f7af45deccb8cc7b4cca4f33c5419"
+      },
+      "libgdk-pixbuf2.0-bin": {
+        "version": "2.42.2+dfsg-1+deb11u3 amd64",
+        "hash": "3d3eff46877c1ca08b45788f4960866ec91b9f5366d73867568b8916e3c74115"
+      },
+      "libgdk-pixbuf2.0-common": {
+        "version": "2.42.2+dfsg-1+deb11u3 all",
+        "hash": "a703d778adc539ba45470a1c14844bb872796adedbcd7d90497e8eeda3c21fee"
+      },
+      "libgirepository-1.0-1": {
+        "version": "1.66.1-1+b1 amd64",
+        "hash": "7909afe3aa5f14514fd333e19f9288c03769eccc363a331bc8486504bc8b375f"
+      },
+      "libglib2.0-0": {
+        "version": "2.66.8-1+deb11u6 amd64",
+        "hash": "3c949b8cff913d2f809ec4a686b4b0e92afe89e480b5abe33000845f9fe8a206"
+      },
+      "libglib2.0-bin": {
+        "version": "2.66.8-1+deb11u6 amd64",
+        "hash": "4ea9f9eb72eb62d10d77af03dc8ee6388ea2893f921c111fdf59d51fa71dac09"
+      },
+      "libglib2.0-data": {
+        "version": "2.66.8-1+deb11u6 all",
+        "hash": "28bcc08b164acbc6a86015e885c6f2cff7d887d86538ee566a92efecaf188056"
+      },
+      "libglib2.0-dev": {
+        "version": "2.66.8-1+deb11u6 amd64",
+        "hash": "d55b6a72d64b9e5b9c8f7cb62d623302508dd3471dba738e7f7b1ab133b001ef"
+      },
+      "libglib2.0-dev-bin": {
+        "version": "2.66.8-1+deb11u6 amd64",
+        "hash": "07841d0f79073c182e1e5788d5eb29c0f40d98756b95f9752151b8a98470341d"
+      },
+      "libgmp-dev": {
+        "version": "2:6.2.1+dfsg-1+deb11u1 amd64",
+        "hash": "0c520abf63640d67d16fbba28f588dfac66bd511c56948038956f08822483632"
+      },
+      "libgmp10": {
+        "version": "2:6.2.1+dfsg-1+deb11u1 amd64",
+        "hash": "7722c71220165cc3b3e4f0ec5daaa4f85be005ef91058d5cb78ed8043097266d"
+      },
+      "libgmpxx4ldbl": {
+        "version": "2:6.2.1+dfsg-1+deb11u1 amd64",
+        "hash": "b72b6bd463ac640faf3ab1b96015b56fdaf146367a825fbb7d25e9f1eb3a9570"
+      },
+      "libgnutls30": {
+        "version": "3.7.1-5+deb11u7 amd64",
+        "hash": "7bea5313d548fe807bd520d82282fb6c01423a5f252e6b537686469fb8282d7f"
+      },
+      "libgomp1": {
+        "version": "10.2.1-6 amd64",
+        "hash": "0a2cba5d19664b99f7cbceafc5cdbb47262b5ba725a94756cfe8ca0f0c2f4861"
+      },
+      "libgpg-error0": {
+        "version": "1.38-2 amd64",
+        "hash": "e4ddcc3a6fcb0599751cdf2df0b49b3d61c9dea6000e7616e11561b62e9f03ab"
+      },
+      "libgraphite2-3": {
+        "version": "1.3.14-1 amd64",
+        "hash": "9ee047e7f79b2da81715b9eab3c777a782628c0cb9a9f3d42185e60c5303be44"
+      },
+      "libgssapi-krb5-2": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "cb8f58469608d4ed80c378a3c2095de94b6049f3fd10d3068fd4e7a7d891a30c"
+      },
+      "libgssrpc4": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "9d6bf11d1b39b3f689a7b744d839e8da312d0abe773a466963f5cc434fccd60d"
+      },
+      "libharfbuzz0b": {
+        "version": "2.7.4-1 amd64",
+        "hash": "4f985dafd9b8c399f7bb12277ece78831669db6ee77f714b69258f7d3a2d0726"
+      },
+      "libheif1": {
+        "version": "1.11.0-1+deb11u2 amd64",
+        "hash": "a3a28901fc1c13afd21c0e5ddbb848f0870f04c2ba553f7ecc1d6ee971369c8d"
+      },
+      "libhogweed6": {
+        "version": "3.7.3-1 amd64",
+        "hash": "9178e3cd60f126b0df2630d0d98c4cf9ecd6f96e46367987bde8f8f2eb1ca8ab"
+      },
+      "libice-dev": {
+        "version": "2:1.0.10-1 amd64",
+        "hash": "44c34beb9345f039ea4b92158adb9c1b2b8c9ef40b13d855459b6c2789306c48"
+      },
+      "libice6": {
+        "version": "2:1.0.10-1 amd64",
+        "hash": "21fc921e4f9a0199b9aeed3abdb2b3a88ba3ef9e5cbe0586dfb2952b66dd4633"
+      },
+      "libicu-dev": {
+        "version": "67.1-7+deb11u1 amd64",
+        "hash": "18f89681ca99ba25a2fd979f51e3fc728a6e66742749894d9c3542cc9fda92f5"
+      },
+      "libicu67": {
+        "version": "67.1-7+deb11u1 amd64",
+        "hash": "8a4f4c0e52dee22bd186e406b8e32ab4bed4cca604d5b79fdf1127cd334f57dd"
+      },
+      "libidn2-0": {
+        "version": "2.3.0-5 amd64",
+        "hash": "9dddaa8192e7eb0dcdf8a8be309defe86c658de7bbd14e3cb796b87687261926"
+      },
+      "libilmbase-dev": {
+        "version": "2.5.4-1 amd64",
+        "hash": "91094dcc6ca989be48cfcee118c12a7cdaf63c4d5a83161cf2e4755e140889e7"
+      },
+      "libilmbase25": {
+        "version": "2.5.4-1 amd64",
+        "hash": "afe19937af368152dcbd888a4942cd5b61de0996affbde930e6a8ac3613c617e"
+      },
+      "libisl23": {
+        "version": "0.23-1 amd64",
+        "hash": "ab87a5a9fd5c609b91a97182bb177be6948beda596c9c14f12087b5d9256733d"
+      },
+      "libitm1": {
+        "version": "10.2.1-6 amd64",
+        "hash": "2115bd17474697d2e7db44179f65d181b5a204f7863d5b4533394e35a313a4bd"
+      },
+      "libjbig-dev": {
+        "version": "2.1-3.1+b2 amd64",
+        "hash": "1d797b45108aef83e71754f01785a4e5fdbf41f5f331f378de40437b24532e2a"
+      },
+      "libjbig0": {
+        "version": "2.1-3.1+b2 amd64",
+        "hash": "2f530f57cb95ab3b01ce8cf444010bc860fab71f4e5b87842ca1f2e06594cf67"
+      },
+      "libjpeg-dev": {
+        "version": "1:2.0.6-4 amd64",
+        "hash": "5aed1cfde17022d0cb94dd9c6428d308d1774401366c43ebc2c5aee7a010a17e"
+      },
+      "libjpeg62-turbo": {
+        "version": "1:2.0.6-4 amd64",
+        "hash": "02548f193dc167502ad2347117bf99ad594d731ce821134c079e6f4187eb1f6f"
+      },
+      "libjpeg62-turbo-dev": {
+        "version": "1:2.0.6-4 amd64",
+        "hash": "fd53fbd2d9933dcc5ace1d11967ffcea09b3799e77bd534bb3e77c6ab9cd6e04"
+      },
+      "libk5crypto3": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "87c5dc0ceb0efb8e36df84d4afe474c6451ff0d2a15ffc2e8c9706985f82380a"
+      },
+      "libkadm5clnt-mit12": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "d8e464e8f33a7433180f67525127e01d10d59a62210593ed9a5d61bfe7d2e93a"
+      },
+      "libkadm5srv-mit12": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "1ec8752171cc0490f18d9c18c4e37841cffde6414ad3e74695a7f47c0cf36e80"
+      },
+      "libkdb5-10": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "8c2d9b3514871838bcf387cf7d030f4fc79e4cd7dc5be80de4484d978974d4df"
+      },
+      "libkeyutils1": {
+        "version": "1.6.1-2 amd64",
+        "hash": "7fc92ec640730dc129da104336d5d6fc1a9411012fb75ecaf0fc8644c1e0a5fb"
+      },
+      "libkrb5-3": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "4f6f2c67df26e79483297656dd1038eae3d18162a73dc7d0dc8f8dd8b6bccc9e"
+      },
+      "libkrb5-dev": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "a3f0f18432141195e1fc98ca531bbe46b0dc19841f89d4527ece45e1b343f4c6"
+      },
+      "libkrb5support0": {
+        "version": "1.18.3-6+deb11u7 amd64",
+        "hash": "8bfc675e5f81e7cfd635c39d519a5baf6ac3ca3b7f83f29054d35a75d7566d21"
+      },
+      "libksba8": {
+        "version": "1.5.0-3+deb11u2 amd64",
+        "hash": "28125f4c83c73a54dbf6e1e1bf5c571a31c30ebec409cbd5b91587a4a99eee88"
+      },
+      "liblcms2-2": {
+        "version": "2.12~rc1-2 amd64",
+        "hash": "af7a958e4c3c16d6ec7fd2d87e84976dc87f9833a625319b5ab31234daad86ed"
+      },
+      "liblcms2-dev": {
+        "version": "2.12~rc1-2 amd64",
+        "hash": "0fa96e49f3d4477e7b25e7563beb562ba123911db78a47d52fd5fe420622933f"
+      },
+      "libldap-2.4-2": {
+        "version": "2.4.57+dfsg-3+deb11u1 amd64",
+        "hash": "2275822a231849917cbc4d01bdcfa2ebe472d82a1e34575835b2dd929358348d"
+      },
+      "liblqr-1-0": {
+        "version": "0.4.2-2.1 amd64",
+        "hash": "777ca1aa032d2404688bd4e553c05792240e17e990c97f9b8a96f4bcb80c93d6"
+      },
+      "liblqr-1-0-dev": {
+        "version": "0.4.2-2.1 amd64",
+        "hash": "4e83d7666bf06cf7d3c32ec7481a846d3ebfad5ea70007b0cf8a7b3b87c8cda8"
+      },
+      "liblsan0": {
+        "version": "10.2.1-6 amd64",
+        "hash": "83ce7444a39b7d9a3d36e5d7f90ad0f03b1892f39f352e4e61048e8f6b539173"
+      },
+      "libltdl-dev": {
+        "version": "2.4.6-15 amd64",
+        "hash": "c388329ac724d13bdd5fa689d99fa16a7fcbd282a3cd6e2d1f6416a241fafd68"
+      },
+      "libltdl7": {
+        "version": "2.4.6-15 amd64",
+        "hash": "e94019664430e93d17f60312cdf8c97691f19428c84b4ac2d53cc5a8713bdeb0"
+      },
+      "liblz4-1": {
+        "version": "1.9.3-2 amd64",
+        "hash": "27fac5e97e136787b510e47d7298f3603d68a080d87ec02a2157c5b9218d896d"
+      },
+      "liblzma-dev": {
+        "version": "5.2.5-2.1~deb11u1 amd64",
+        "hash": "8793bc871d362d324c74f5f71a047f0889d6c0ca9230dd3f538159c962fa189e"
+      },
+      "liblzma5": {
+        "version": "5.2.5-2.1~deb11u1 amd64",
+        "hash": "a18d511a5886b6c927f280c54c40d123ced88e34f5b4206e72114cd4ae1abcb1"
+      },
+      "liblzo2-2": {
+        "version": "2.10-2 amd64",
+        "hash": "8af7e4f4562943a2d414e83ad7ac9e5d8c7537575eeaa766b7ae4e4c987849d9"
+      },
+      "libmagic-mgc": {
+        "version": "1:5.39-3+deb11u1 amd64",
+        "hash": "84f9adf08546075f62b48c4f011349fab2a31d338c1bb9b928348b3bcfff5280"
+      },
+      "libmagic1": {
+        "version": "1:5.39-3+deb11u1 amd64",
+        "hash": "62f089b030d01a5b43df4460a3a5c0a45be255d7c660fceef66cbad7d797a25c"
+      },
+      "libmagickcore-6-arch-config": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "a2eee10449716fd7d0dbb4ef30c8074ca21dee8af63bcc2448584bc4af1c87ea"
+      },
+      "libmagickcore-6-headers": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 all",
+        "hash": "59547a7585c3fe2a664119a28f392adfef70cd236f1e4fc79ff3f60357dca536"
+      },
+      "libmagickcore-6.q16-6": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "2c9695416d9c5f4ff21513e55d02462772c5dcb8f2c3a72d9b66893c281e3f76"
+      },
+      "libmagickcore-6.q16-6-extra": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "c85dacfed249487bf26207092c1df816dabb94538880e1589a4f71b70da94f8d"
+      },
+      "libmagickcore-6.q16-dev": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "1fb92873c2a62033f2ccdb6c952a47e121f421cdd85a8a7629632f981826a047"
+      },
+      "libmagickcore-dev": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 all"
+      },
+      "libmagickwand-6-headers": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 all",
+        "hash": "a085695029bf7499af3597ebfe68e8079bfed3b6fcfe8ceefcf1e43a48163a72"
+      },
+      "libmagickwand-6.q16-6": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "eb131416f38ef74421eebed81ea04ccef993cd7847bfa0221174c3ab5c141034"
+      },
+      "libmagickwand-6.q16-dev": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 amd64",
+        "hash": "b6b5ba83d4f13a4e267255165f5574094ddda22ce72cdb6fb4ab38d4866e1dba"
+      },
+      "libmagickwand-dev": {
+        "version": "8:6.9.11.60+dfsg-1.3+deb11u5 all"
+      },
+      "libmariadb-dev": {
+        "version": "1:10.5.29-0+deb11u1 amd64",
+        "hash": "2912d25f21306cd52826e9149eb50ce9f2e53d275fe422825270e5f084ca171c"
+      },
+      "libmariadb-dev-compat": {
+        "version": "1:10.5.29-0+deb11u1 amd64",
+        "hash": "040c437fe7f8d44a384f474397bfb1848e8ed5a6a49c02a61ea6f2d4cbede582"
+      },
+      "libmariadb3": {
+        "version": "1:10.5.29-0+deb11u1 amd64",
+        "hash": "417e0a795a0cfe24cbe3ad119e60801d595c992762b902cdb120cc6525044522"
+      },
+      "libmaxminddb-dev": {
+        "version": "1.5.2-1 amd64",
+        "hash": "d129b1b227189d081a13fbf7d54d602ee3f529d637f53d2c925f9a9d061d6273"
+      },
+      "libmaxminddb0": {
+        "version": "1.5.2-1 amd64",
+        "hash": "c6f1e4d98aefa5fa5cb6af4e3945bd9925db0ed967f33c42d1cb7297295c3369"
+      },
+      "libmd0": {
+        "version": "1.0.3-3 amd64",
+        "hash": "af9d212875b0783db18dd77f3be4bb30635a93af491b79d91ed96a45a12a2a92"
+      },
+      "libmount-dev": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "cc480f6353e9674af4ac5a6621b8dfc0b84e152029155839d8f1fbae03f3d36d"
+      },
+      "libmount1": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "6dffa3638afcd91e57e84494f484ba85ce0e15acc9a5edf56ed0f76b4b6ca5f6"
+      },
+      "libmpc3": {
+        "version": "1.2.0-1 amd64",
+        "hash": "ddb665747fd8071f926edc91d2b1c3aeee99bcb8d266eeeb31f96a78195e7d43"
+      },
+      "libmpdec3": {
+        "version": "2.5.1-1 amd64",
+        "hash": "a2eb8e2d2c8c1145ad55406157cad3403a70b738ce17c348b37a5c08bd80963f"
+      },
+      "libmpfr6": {
+        "version": "4.1.0-3 amd64",
+        "hash": "df4ead03fbde4bfe0ed7a473faa92a7a86044eb287c43b3bd80508095f190b7f"
+      },
+      "libncurses-dev": {
+        "version": "6.2+20201114-2+deb11u2 amd64",
+        "hash": "00ea027b1528bb00030add0f50cc4f176a9801f6730f796b3c61e56682332deb"
+      },
+      "libncurses5-dev": {
+        "version": "6.2+20201114-2+deb11u2 amd64"
+      },
+      "libncurses6": {
+        "version": "6.2+20201114-2+deb11u2 amd64",
+        "hash": "bacc306a364e49e397df62f8024596c9f1c6e441f3155b1b2492fcadf07098a2"
+      },
+      "libncursesw5-dev": {
+        "version": "6.2+20201114-2+deb11u2 amd64"
+      },
+      "libncursesw6": {
+        "version": "6.2+20201114-2+deb11u2 amd64",
+        "hash": "225dd13c06a76a9049570e12dbfce328c896bb75ec15087cef5aef1e06a91fab"
+      },
+      "libnettle8": {
+        "version": "3.7.3-1 amd64",
+        "hash": "668b9382d53a5ecca7626b7e01f5a60d1b84b7372fdf84a096d5453e374c85d4"
+      },
+      "libnghttp2-14": {
+        "version": "1.43.0-1+deb11u2 amd64",
+        "hash": "fa98c8c94a50ec51ca35e095d4c61490273de4a90227bca620ab2f9370b056a6"
+      },
+      "libnpth0": {
+        "version": "1.6-3 amd64",
+        "hash": "017e376e8461cd830d22c1ddc9efc0a8c1173c550b86512fe4606e73f1ac1a2f"
+      },
+      "libnsl-dev": {
+        "version": "1.3.0-2 amd64",
+        "hash": "bec57e59f8d8a5352f44bca51804de9be9c3de6b5d581912fc67b4199a96b7c3"
+      },
+      "libnsl2": {
+        "version": "1.3.0-2 amd64",
+        "hash": "733cda23ffb0247c530ef2a9a436da7f76bed288506b9d9c7cf01413d84bdc30"
+      },
+      "libnuma1": {
+        "version": "2.0.12-1+b1 amd64",
+        "hash": "6161828b54990d8622b9a2b54280cf8e8d1a803d543f96c870e6fd8459bd6a78"
+      },
+      "libopenexr-dev": {
+        "version": "2.5.4-2+deb11u1 amd64",
+        "hash": "79f3c71aa91f000349132d3d484d692dc415ff6e6ed5876d6c8b9ff3ae825b42"
+      },
+      "libopenexr25": {
+        "version": "2.5.4-2+deb11u1 amd64",
+        "hash": "08644e9e018ebf8cc6513257279bc3cf324676d9f25d8a07407e3ff7cb3d5f33"
+      },
+      "libopenjp2-7": {
+        "version": "2.4.0-3+deb11u1 amd64",
+        "hash": "81bc23fa57395dd814a55542f55ccd7453b51c1b1aa556ade5d0f736eb09c24f"
+      },
+      "libopenjp2-7-dev": {
+        "version": "2.4.0-3+deb11u1 amd64",
+        "hash": "18dbde9c6b5fd00c26120e340ed1768ce300418c1712d991e97b1710197d20fe"
+      },
+      "libp11-kit0": {
+        "version": "0.23.22-1 amd64",
+        "hash": "e7cb4f29532c4bd7e8862a7f07bfffd31be38044c266891a653e54867aa1d11d"
+      },
+      "libpam-modules": {
+        "version": "1.4.0-9+deb11u1 amd64",
+        "hash": "8b9dd37668271d254e108f59ca4e097bbcc356254648205ba9cb25812cfdcf40"
+      },
+      "libpam-modules-bin": {
+        "version": "1.4.0-9+deb11u1 amd64",
+        "hash": "7f39d660a3e8afca44569f2869a6125518b2a841833831ff8407c4e6f908ab2c"
+      },
+      "libpam-runtime": {
+        "version": "1.4.0-9+deb11u1 all",
+        "hash": "39e5ac92f5f434a5bf50e83c6f94fb2c18d61b80f73bc402559c37cedfed7cd5"
+      },
+      "libpam0g": {
+        "version": "1.4.0-9+deb11u1 amd64",
+        "hash": "26b6a818577b0f791be781215da98760be6023fb18553808b632ce2c71a4d650"
+      },
+      "libpango-1.0-0": {
+        "version": "1.46.2-3 amd64",
+        "hash": "84887633a2a205cc5933fa22156ed49ea3261e23edfc022846e2b377156b65a7"
+      },
+      "libpangocairo-1.0-0": {
+        "version": "1.46.2-3 amd64",
+        "hash": "b20f7a81d19686cd6bcc6f81341ff03355e5cc6064d7696ee04ab6e5e019b7fb"
+      },
+      "libpangoft2-1.0-0": {
+        "version": "1.46.2-3 amd64",
+        "hash": "396f8a3d783dd1b04511a47c71f05c5a0dfcc6a1da82d14ea2834c9453d80d8c"
+      },
+      "libpcre16-3": {
+        "version": "2:8.39-13 amd64",
+        "hash": "9572433003f1301bb5e3239de13beb63ea1411d4e6b9e70c96a8bce19e9ab6aa"
+      },
+      "libpcre2-16-0": {
+        "version": "10.36-2+deb11u1 amd64",
+        "hash": "3b02948e3731788a7d01737238ba09836dc729e67d92a7f6de32101c687dddea"
+      },
+      "libpcre2-32-0": {
+        "version": "10.36-2+deb11u1 amd64",
+        "hash": "2c2317b6e3a8aa3e1ffedadca859030ccab425ec39e3611ae26f2a35ec9369a5"
+      },
+      "libpcre2-8-0": {
+        "version": "10.36-2+deb11u1 amd64",
+        "hash": "f10d746b380cb265576b86cdf5dcb8e94c9b871cfb607e21f53442971c1c0267"
+      },
+      "libpcre2-dev": {
+        "version": "10.36-2+deb11u1 amd64",
+        "hash": "3671eab1458d100de1f4b0bc309f1fe899dd261c07a8c1e2607b20b742a992cf"
+      },
+      "libpcre2-posix2": {
+        "version": "10.36-2+deb11u1 amd64",
+        "hash": "08d6c87d4205e95b14f430921fd3b6f6e73fd466d9e4ba2d210507cf12e107f3"
+      },
+      "libpcre3": {
+        "version": "2:8.39-13 amd64",
+        "hash": "0e84a86011a8ef7dd1f336c515946ed74143d8a3621c792c085ae215bab1d21b"
+      },
+      "libpcre3-dev": {
+        "version": "2:8.39-13 amd64",
+        "hash": "a76f067729cbfe1a413d498637148805fc93a573eb164d7d07d61cc75b7afae0"
+      },
+      "libpcre32-3": {
+        "version": "2:8.39-13 amd64",
+        "hash": "8e2b616e3e3dc8d1fbdafb9000ac564fef8b0b28e724e794c12d4ac674fab475"
+      },
+      "libpcrecpp0v5": {
+        "version": "2:8.39-13 amd64",
+        "hash": "2f7ea2ff2828806c22fe3a1f8d4e1be278963f6497fc2235572f60f9aaede327"
+      },
+      "libperl5.32": {
+        "version": "5.32.1-4+deb11u4 amd64",
+        "hash": "6d344354526689d9d74d6b34d342e89976abe898da30d592144755db171c9f98"
+      },
+      "libpixman-1-0": {
+        "version": "0.40.0-1.1~deb11u1 amd64",
+        "hash": "47f74cca83421da147bf3d1f6a5d78e14b39efaa11b38f7752b6a57f9523e525"
+      },
+      "libpixman-1-dev": {
+        "version": "0.40.0-1.1~deb11u1 amd64",
+        "hash": "6c44a12861fd6a2e66d70b957f152a02ee8d57c13abbcfb730352d4f2219e4da"
+      },
+      "libpng-dev": {
+        "version": "1.6.37-3 amd64",
+        "hash": "cc8da10a16bea282ec275c454b99f4041234fa7b1925f5dc5aacb4786360caaf"
+      },
+      "libpng16-16": {
+        "version": "1.6.37-3 amd64",
+        "hash": "481c36f67406638f44f38521c9709450e1199d6b623cb8dda01021cde698e8f8"
+      },
+      "libpq-dev": {
+        "version": "13.21-0+deb11u1 amd64",
+        "hash": "1907862b034d6f1122b578bfb1329113e48d25df649fb27c483cf99e2acce423"
+      },
+      "libpq5": {
+        "version": "13.21-0+deb11u1 amd64",
+        "hash": "4bab1a4d7528baec16a8930b9f20db254a7915c2dd267bf3609d8269e10112e8"
+      },
+      "libprocps8": {
+        "version": "2:3.3.17-5 amd64",
+        "hash": "4bcf226ededf9c947aa0456c3380349ca176b63f295df97ac22eb0fe7bc30159"
+      },
+      "libpsl5": {
+        "version": "0.21.0-1.2 amd64",
+        "hash": "f250aff1a56c9e07744140aad3527861dea508c7bb0eb9480676b0fee00beced"
+      },
+      "libpthread-stubs0-dev": {
+        "version": "0.4-1 amd64",
+        "hash": "bf701750e03120588e3398fd2fd869f5c75bbc7d46f39bf1ad09105c93b90eb0"
+      },
+      "libpython3-stdlib": {
+        "version": "3.9.2-3 amd64",
+        "hash": "a325888461e819ad1a0f0c4e3397b2b124da2bb2210f628d96485ed8f08f81dc"
+      },
+      "libpython3.9-minimal": {
+        "version": "3.9.2-1+deb11u3 amd64",
+        "hash": "413781ff9760a4178404498c43d6dfba275000007ea65787c18d450a4dda0bd4"
+      },
+      "libpython3.9-stdlib": {
+        "version": "3.9.2-1+deb11u3 amd64",
+        "hash": "d5ac91c1923e600bb7ef58029ef6bbaf749fea4a25461a7a09732861485bafac"
+      },
+      "libquadmath0": {
+        "version": "10.2.1-6 amd64",
+        "hash": "bd5e5809ae7610c77a3a05827994e061f5c2b77d679cfce79293a320460cf39d"
+      },
+      "libreadline-dev": {
+        "version": "8.1-1 amd64",
+        "hash": "28c12e6dc0879d34fe5286139b71b5793b2142792187bf95ed6c2395d47426dc"
+      },
+      "libreadline8": {
+        "version": "8.1-1 amd64",
+        "hash": "7ddc5d62f3d172f18a2d50937c1cf44f9339ce0ee68055dc15eae690586f55e9"
+      },
+      "librsvg2-2": {
+        "version": "2.50.3+dfsg-1+deb11u1 amd64",
+        "hash": "3b7db68ec432d31436b2d1fbaf340670843e24b65efe6f1fa180add1f08b1d0b"
+      },
+      "librsvg2-common": {
+        "version": "2.50.3+dfsg-1+deb11u1 amd64",
+        "hash": "89b24040706b3a6fd603a93ef9a0c9dfa7f6ba0d640f8381b29cd92ff003fa77"
+      },
+      "librsvg2-dev": {
+        "version": "2.50.3+dfsg-1+deb11u1 amd64",
+        "hash": "08b5bd120bebd29a0970d0ca049e915cd11d2114dbcf0d0902b074b64c3dc210"
+      },
+      "librtmp1": {
+        "version": "2.4+20151223.gitfa8646d.1-2+b2 amd64",
+        "hash": "c943abd5eb3656ae9c9b5c34792ebe665864aeb7d211d0ae6da8b4ca0e279f2c"
+      },
+      "libsasl2-2": {
+        "version": "2.1.27+dfsg-2.1+deb11u1 amd64",
+        "hash": "4311fd4757a01c41a497a58495af6b3d9e8984e4cdd7f767a5805b703a81a1bb"
+      },
+      "libsasl2-modules-db": {
+        "version": "2.1.27+dfsg-2.1+deb11u1 amd64",
+        "hash": "5a4d8db419d5320f070ae4744b3e3ce3c806491bf0490b898910abc6345c89e1"
+      },
+      "libseccomp2": {
+        "version": "2.5.1-1+deb11u1 amd64",
+        "hash": "aab8dfd631ad98749ba4246145704b269ec46f628ba2da108e44b14e344e366a"
+      },
+      "libselinux1": {
+        "version": "3.1-3 amd64",
+        "hash": "c35aaacc4f38cc67afe24e7f59e54aa874553622e771ecde447de1f4e55c04e6"
+      },
+      "libselinux1-dev": {
+        "version": "3.1-3 amd64",
+        "hash": "2ccb1b9b4b674996caf782a0ab3094668f33457f7d6d9ccc952215adefad62a7"
+      },
+      "libsemanage-common": {
+        "version": "3.1-1 all",
+        "hash": "3603c9f02313d213cd23857a64928ba8e0db625d6df93bb317efa466cd1e440e"
+      },
+      "libsemanage1": {
+        "version": "3.1-1+b2 amd64",
+        "hash": "466b7267ed1d90f882286bddda00e314d1ac38e07904d42e951c871cf8fd0431"
+      },
+      "libsepol1": {
+        "version": "3.1-1+deb11u1 amd64",
+        "hash": "b7e2ed7388b4972c8ad0c9a33c82b960a01d7d7629d4b3ec247da43f2659d29e"
+      },
+      "libsepol1-dev": {
+        "version": "3.1-1+deb11u1 amd64",
+        "hash": "d38913e2428b5d3b7e4208d80c9cb2b3c167778010cacbec74eb43b19b1fc1f3"
+      },
+      "libserf-1-1": {
+        "version": "1.3.9-10 amd64",
+        "hash": "857824b20e3b3587feb6aedd3dcf68ad21dd3c24cafcffe9dec01c31726f3f03"
+      },
+      "libsigsegv2": {
+        "version": "2.13-1 amd64",
+        "hash": "5754f8801d33cc39ac69697b75f8684f00e8e65c6ab8f6042107fcb6d65615b8"
+      },
+      "libsm-dev": {
+        "version": "2:1.2.3-1 amd64",
+        "hash": "40ae806ed1c9df13cceb480fb35c4fdeb198b8d6cf3d9c7dbc833e6638a9e630"
+      },
+      "libsm6": {
+        "version": "2:1.2.3-1 amd64",
+        "hash": "a8b3240a97678d9aaa19483be7f2918420b2dda8b48789e99eb202cbc86627e2"
+      },
+      "libsmartcols1": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "4a406f17c20f2ba4391bdc4ee39ee3c888b228fbee19110c48acc7b8bff44263"
+      },
+      "libsqlite3-0": {
+        "version": "3.34.1-3+deb11u1 amd64",
+        "hash": "8f73ca2bb00d40995af427c726a6627e61d31662cbcd5746ce56d93e907bfd5f"
+      },
+      "libsqlite3-dev": {
+        "version": "3.34.1-3+deb11u1 amd64",
+        "hash": "917b8dc5200bd945b3b66bc448627f99a659ba4fea0ff75980c0138145e5663b"
+      },
+      "libss2": {
+        "version": "1.46.2-2+deb11u1 amd64",
+        "hash": "1b6736d7bd03742850d68557d30f5c404eedc243866afe5415e2cdd8972e2921"
+      },
+      "libssh2-1": {
+        "version": "1.9.0-2+deb11u1 amd64",
+        "hash": "7310e9a3e05397b16f5a12c684fa51c9b26ab9f9b83595b70a371e458d219be9"
+      },
+      "libssl-dev": {
+        "version": "1.1.1w-0+deb11u3 amd64",
+        "hash": "9f5b06e1a41b58528d3f9c5975410556945fa7d6d79fc5c32ef347cc2b39611a"
+      },
+      "libssl1.1": {
+        "version": "1.1.1w-0+deb11u3 amd64",
+        "hash": "b7d21050231abe270e01c90669c26d7a5b30643f7e0eab9d368dd437d9cf5f75"
+      },
+      "libstdc++-10-dev": {
+        "version": "10.2.1-6 amd64",
+        "hash": "57cdd06a3e04cbe2eff4ac9d28fbf29eea4f1b2238757f40b82ff271d1308a76"
+      },
+      "libstdc++6": {
+        "version": "10.2.1-6 amd64",
+        "hash": "a90dc1f677310bb01d8a183334f694fb471863e5d92b41247de9c6b57cdaff57"
+      },
+      "libsvn1": {
+        "version": "1.14.1-3+deb11u2 amd64",
+        "hash": "7748e1deacbd80ac1ec7ec36f2b93eaca653b3b417b5b680ed159e813b1ea664"
+      },
+      "libsystemd0": {
+        "version": "247.3-7+deb11u6 amd64",
+        "hash": "17b4144ca75fdbdf458a965a9202c5ae0a5ce6d798e5526ddad0b1bac5aa98f1"
+      },
+      "libtasn1-6": {
+        "version": "4.16.0-2+deb11u2 amd64",
+        "hash": "58647affb13f13e45591e90fa41b36cf4840e4e8f6f24d0f82619fcfd9b7b9c6"
+      },
+      "libtcl8.6": {
+        "version": "8.6.11+dfsg-1 amd64",
+        "hash": "8b8e097009b7255e8ddd1d14b6106d33b47030cac22e94208f2ef5c6aaaa3bd1"
+      },
+      "libthai-data": {
+        "version": "0.1.28-3 all",
+        "hash": "bc3841b47aef9d5ff07b225d2ae01f86e9815462f3b3d5ec2f1460ecb165b730"
+      },
+      "libthai0": {
+        "version": "0.1.28-3 amd64",
+        "hash": "ea3d6153a3512414892c40cb28bafeb5998b5a0ce2f62b4e83900a817fa41b08"
+      },
+      "libtiff-dev": {
+        "version": "4.2.0-1+deb11u6 amd64",
+        "hash": "a2b7df73c6412051a51428d67b604d099fa05a3aec671cf535599412855b0d84"
+      },
+      "libtiff5": {
+        "version": "4.2.0-1+deb11u6 amd64",
+        "hash": "d13ae75e9c85af56758f1bdf698ce855ad57fc931621c588884bbc4cc5e1a979"
+      },
+      "libtiffxx5": {
+        "version": "4.2.0-1+deb11u6 amd64",
+        "hash": "65e5a889a92297a895c6a62b88fc3b13c84a86a0f9fc388b5c20900f9460e327"
+      },
+      "libtinfo6": {
+        "version": "6.2+20201114-2+deb11u2 amd64",
+        "hash": "e91fb52ae8ff695a88677237130bed90950d22ad511ae15ccaae08d148135b8d"
+      },
+      "libtirpc-common": {
+        "version": "1.3.1-1+deb11u1 all",
+        "hash": "7b78608db65ff031aa78941b92b46a38f34a7630557ec35b5061b71596fe1d3b"
+      },
+      "libtirpc-dev": {
+        "version": "1.3.1-1+deb11u1 amd64",
+        "hash": "25938f6922e77e40a4a37fbbef05f725d2656ed3ae706e171905f5617f30c988"
+      },
+      "libtirpc3": {
+        "version": "1.3.1-1+deb11u1 amd64",
+        "hash": "0247e976e6a3892cca90d963139d9b6f27cfca8643e57c702e4e794bd04021b5"
+      },
+      "libtk8.6": {
+        "version": "8.6.11-2 amd64",
+        "hash": "f52e84e6c51a7e4e4d034d54e53e9b37526b00067b8700305276347f19d3aca6"
+      },
+      "libtool": {
+        "version": "2.4.6-15 all",
+        "hash": "bc42fe4c5599eaa9e02c5d43b307a444b78d186a96f611a3af864964fcb78f83"
+      },
+      "libtsan0": {
+        "version": "10.2.1-6 amd64",
+        "hash": "c65cccb742a95acb50c1a9d901d40cbcb740a0fafde202e4c9a47342caefffd4"
+      },
+      "libubsan1": {
+        "version": "10.2.1-6 amd64",
+        "hash": "8edf359865677e1f3eba530e7acbb377eb09056592977714671d61291ad6cd75"
+      },
+      "libudev1": {
+        "version": "247.3-7+deb11u6 amd64",
+        "hash": "2cbfb0d12a6e2136717f1462d8c0bd7810163a2563f5cbe850f6fbaf6c977ac2"
+      },
+      "libunistring2": {
+        "version": "0.9.10-4 amd64",
+        "hash": "4286911af58f84082d0fb2b9523acfcb5c1eb665ed7602445ee3f2c14fb3e8a9"
+      },
+      "libutf8proc2": {
+        "version": "2.5.0-1 amd64",
+        "hash": "50836a1a425258fab7ab08513584fd84e1e4502c418c3722ac9e62b83bac44a6"
+      },
+      "libuuid1": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "a4e8e1ecf812a7116c3eb9c88e273859813ed7f191f235e3e13a3ebaa4671a7c"
+      },
+      "libwebp-dev": {
+        "version": "0.6.1-2.1+deb11u2 amd64",
+        "hash": "03bd0e0d4b95a240c7dc62d9e64e70dfcfb83145d9f4b2a17f0a570d34d1546d"
+      },
+      "libwebp6": {
+        "version": "0.6.1-2.1+deb11u2 amd64",
+        "hash": "7a809233b8f60fcf2944a1e04ab375f2add215f81389aa39fc811cfc9e7a1242"
+      },
+      "libwebpdemux2": {
+        "version": "0.6.1-2.1+deb11u2 amd64",
+        "hash": "7c052e574e4a9572e7fe6d4b91155c1e3db0c723f2ad3b5fcbb86a2beb795569"
+      },
+      "libwebpmux3": {
+        "version": "0.6.1-2.1+deb11u2 amd64",
+        "hash": "dfd2daec4cdedb2e1ce8590cc48a64f94f41bc3843a0b40b888c7bcc6bfa7614"
+      },
+      "libwmf-dev": {
+        "version": "0.2.8.4-17 amd64",
+        "hash": "b3f267790a3a5afba4ff78e4bda4c83af41f9d5cf545b77ed3c10ee3e449eab7"
+      },
+      "libwmf0.2-7": {
+        "version": "0.2.8.4-17 amd64",
+        "hash": "71acfdae342e91678c99351ef0334d21dc672bcf701612a188fc5f97e7ea2a7d"
+      },
+      "libx11-6": {
+        "version": "2:1.7.2-1+deb11u2 amd64",
+        "hash": "32e2e31ae231d9e53639e0069c12fce058046bf85b055711372b5731478931b9"
+      },
+      "libx11-data": {
+        "version": "2:1.7.2-1+deb11u2 all",
+        "hash": "72229d852f39ba474d5d96acfabbcb26d53d19d5183f484a983ea2b7952fde62"
+      },
+      "libx11-dev": {
+        "version": "2:1.7.2-1+deb11u2 amd64",
+        "hash": "8c16c2018cd023a232375eef01b9b938a676effc8f754f48b16d6e461e1f837c"
+      },
+      "libx265-192": {
+        "version": "3.4-2 amd64",
+        "hash": "bf0e1ee519ff6c13617e6edb3ccb3e6ba5c9d8e8cf76057044e7a7866de159df"
+      },
+      "libxau-dev": {
+        "version": "1:1.0.9-1 amd64",
+        "hash": "332c1cd33c3c46b4b85aede81be309930a82ef205154962c658b8845bb7a5357"
+      },
+      "libxau6": {
+        "version": "1:1.0.9-1 amd64",
+        "hash": "cac5c8dfc59cc479a827c01542cb94af0f522117278b4428824002ff4bf9ba9a"
+      },
+      "libxcb-render0": {
+        "version": "1.14-3 amd64",
+        "hash": "d58544bb519a68deb49f1745b03f12c79d2be17eda3656404d823e836b04816d"
+      },
+      "libxcb-render0-dev": {
+        "version": "1.14-3 amd64",
+        "hash": "1ae2af52f0705545991ff2d317ab644ab9f8e590f64e36b34f7f0dcfd1cdf2c9"
+      },
+      "libxcb-shm0": {
+        "version": "1.14-3 amd64",
+        "hash": "625d0ead49e564b7b9fdc85c0e88c3aabffdcec53edd155affb09626642bb030"
+      },
+      "libxcb-shm0-dev": {
+        "version": "1.14-3 amd64",
+        "hash": "4d46b64cc5cd0fc9c7cbaa05786e8f5d6816f0f2358f2a098f94ef684e12c244"
+      },
+      "libxcb1": {
+        "version": "1.14-3 amd64",
+        "hash": "897914623aa91d461d256b7997fd3d3650414638f47ab59d3cb217ef638b501d"
+      },
+      "libxcb1-dev": {
+        "version": "1.14-3 amd64",
+        "hash": "85645184f98ee77e20171a50b6192b4f843e039e567d2bd238c6d18ca66b0d28"
+      },
+      "libxdmcp-dev": {
+        "version": "1:1.1.2-3 amd64",
+        "hash": "24d889b4deccf41216a0765f9f2a447c5291c03309940ba9235e42ff3fc723b1"
+      },
+      "libxdmcp6": {
+        "version": "1:1.1.2-3 amd64",
+        "hash": "f17e0d2b68273de0ca1725a03f57f410dd067f222157d44fec046bc653546abd"
+      },
+      "libxext-dev": {
+        "version": "2:1.3.3-1.1 amd64",
+        "hash": "117a0d2b927b951f9c4ed2b58e27d00ad36dfeb73c28ab724bb588a9ecfeba07"
+      },
+      "libxext6": {
+        "version": "2:1.3.3-1.1 amd64",
+        "hash": "edb859789f89bd2c0cf98556f499e39f9cda26d2a83f83e5b6ec5738575c8a35"
+      },
+      "libxft-dev": {
+        "version": "2.3.2-2 amd64",
+        "hash": "92179c037d169764fc57d4aecc8198f3a00ab3911078fd8946badab508e2ace9"
+      },
+      "libxft2": {
+        "version": "2.3.2-2 amd64",
+        "hash": "11de21d2a3c4eeb12565ace300107f8dc04cca19bcce38caf064bbf7cd8f07aa"
+      },
+      "libxml2": {
+        "version": "2.9.10+dfsg-6.7+deb11u7 amd64",
+        "hash": "c09ce1f56f6b53a9f9222cf74b27704cba403e7fd17feebd70d923d50edb51e6"
+      },
+      "libxml2-dev": {
+        "version": "2.9.10+dfsg-6.7+deb11u7 amd64",
+        "hash": "17dc40a0dfa565f846662fe603e992fd669d667b849cb01654127973a59127f6"
+      },
+      "libxrender-dev": {
+        "version": "1:0.9.10-1 amd64",
+        "hash": "30185efbb82d4068fca1b035becb110b2418c7be144de32d5317b0535bb528d8"
+      },
+      "libxrender1": {
+        "version": "1:0.9.10-1 amd64",
+        "hash": "4c29aae322f38e39bbc9f0c4ffcccf16e4eaf4d7512fdb3cda71fbaf375bb7e4"
+      },
+      "libxslt1-dev": {
+        "version": "1.1.34-4+deb11u2 amd64",
+        "hash": "c3f0bc46e5c07c548bcf12b5a737efe228e1ccc2effafcf7b55e06e95e652f3a"
+      },
+      "libxslt1.1": {
+        "version": "1.1.34-4+deb11u2 amd64",
+        "hash": "6a3bae0373de97542e357e5a69794af995dd3a282ea5312317abd9e3c39e5949"
+      },
+      "libxss-dev": {
+        "version": "1:1.2.3-1 amd64",
+        "hash": "650611d721b7dc74697a905aa556de5b2f73d6ad5b5868a315e57ac6ff147149"
+      },
+      "libxss1": {
+        "version": "1:1.2.3-1 amd64",
+        "hash": "c9b75f1f173c7dbaec262e078e1e54f91652d12018f736a2098c718efb599dde"
+      },
+      "libxt-dev": {
+        "version": "1:1.2.0-1 amd64",
+        "hash": "149af3aa07e4a3e723e356f2fd9cc6bd701e5b678701c5993321a59aa4aef1f8"
+      },
+      "libxt6": {
+        "version": "1:1.2.0-1 amd64",
+        "hash": "a1429a027c9bbd2714edb2ffb90dc4db63cba1431bc7a33ecd38ce87f354b672"
+      },
+      "libxxhash0": {
+        "version": "0.8.0-2 amd64",
+        "hash": "ba209fb36387b43ece4b095dd5771e68651bfb17e5e4821c890db3b84387389d"
+      },
+      "libyaml-0-2": {
+        "version": "0.2.2-1 amd64",
+        "hash": "6a2ba7a7c20062686b9fb4df919ccd9c94e9c8ec4c351ab97dbcbb378426b607"
+      },
+      "libyaml-dev": {
+        "version": "0.2.2-1 amd64",
+        "hash": "99419ad1264475d0f7576dfab610a09bd7a91e760f0ea4763a700b9c05e319cc"
+      },
+      "libzstd1": {
+        "version": "1.4.8+dfsg-2.1 amd64",
+        "hash": "81d67400ed74572eba15286834f7c36400fde00fed6f3ba776f2209794d06df3"
+      },
+      "linux-libc-dev": {
+        "version": "5.10.237-1 amd64",
+        "hash": "1417d613b5e507769dc413e1c7be574526dc6c2b61f6a4c0676917e87f3cf386"
+      },
+      "login": {
+        "version": "1:4.8.1-1+deb11u1 amd64",
+        "hash": "219062da80f5caae44d94aa4d38b7e979f432939d494b0e8fefbcc581fba4562"
+      },
+      "logsave": {
+        "version": "1.46.2-2+deb11u1 amd64",
+        "hash": "fb1fab0af6a03d69e966a7176e05fd2f89e706de937fa918017cbb4d1cb7f7bc"
+      },
+      "lsb-base": {
+        "version": "11.1.0 all",
+        "hash": "6f234a1cb952f89bbf226e8e7d2bd2f85d344ca4cae47f541a997509b8a29866"
+      },
+      "m4": {
+        "version": "1.4.18-5 amd64",
+        "hash": "dfbaeb46da53ab0f430fb72d8d535ac2e5ea2d7b207db44bdfb2083d476196fe"
+      },
+      "make": {
+        "version": "4.3-4.1 amd64",
+        "hash": "127cfcf42bc2ee34716d1844fb882be49739bfd01a92b76568907811dd86cbe8"
+      },
+      "mariadb-common": {
+        "version": "1:10.5.29-0+deb11u1 all",
+        "hash": "040c437fe7f8d44a384f474397bfb1848e8ed5a6a49c02a61ea6f2d4cbede582"
+      },
+      "mawk": {
+        "version": "1.3.4.20200120-2 amd64",
+        "hash": "3c26425cfefa8efdf619fb276f0405546040748f99f99c7c28d2e297aeaee648"
+      },
+      "media-types": {
+        "version": "4.0.0 all",
+        "hash": "f493f9ec7a8901c998312424b7514e864b8ba4e0e496ceb1969dc1945656ee65"
+      },
+      "mercurial": {
+        "version": "5.6.1-4+deb11u1 amd64",
+        "hash": "0c07cc0ac23c36153bd9767b741a646cac362753f4eb686f1292a590ae8433bb"
+      },
+      "mercurial-common": {
+        "version": "5.6.1-4+deb11u1 all",
+        "hash": "8e3a21b72b37a0afb1b34cda8da610ec519ef1bab5f2dd697f23244ae3435252"
+      },
+      "mount": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "dcd5340bc4b1f73394f3f58e928bcb52f70fcbd16033c75e4b1550ff1a70967b"
+      },
+      "mysql-common": {
+        "version": "5.8+1.0.7 all",
+        "hash": "0dbf0ef049071a24c749048577ef255f6c45da4547408592587f38345e64fb2c"
+      },
+      "ncurses-base": {
+        "version": "6.2+20201114-2+deb11u2 all",
+        "hash": "e476e9de139c4bd63819c3b62a8c123f8b6e71669e71e75ef9188127be811297"
+      },
+      "ncurses-bin": {
+        "version": "6.2+20201114-2+deb11u2 amd64",
+        "hash": "039caee0e51c0d0d8744c26e2e12b45dded3ff6d7e17b3c722fbd4cd53381e22"
+      },
+      "netbase": {
+        "version": "6.3 all",
+        "hash": "fc846be909786319e044abaacdc9815526cb0922dc1250773987db8f7f18eee9"
+      },
+      "openssh-client": {
+        "version": "1:8.4p1-5+deb11u5 amd64",
+        "hash": "eea67a7fcaee86a8be5945658a47afe8dd28dc131dedc6d7bdbf99c52e28e489"
+      },
+      "openssl": {
+        "version": "1.1.1w-0+deb11u3 amd64",
+        "hash": "aac19ea7914d41d3fb51848865ccdeb1a080f2a4234ea562c1dbb89590713d69"
+      },
+      "passwd": {
+        "version": "1:4.8.1-1+deb11u1 amd64",
+        "hash": "784aaea8e9164d6465c16ab69dc520de3be6a8c7807883b2cd7deda548ac3c38"
+      },
+      "patch": {
+        "version": "2.7.6-7 amd64",
+        "hash": "fa54b4ca791e82cc06b929ac2cc982e45380d5a3f519828e80dba718bdb92189"
+      },
+      "perl": {
+        "version": "5.32.1-4+deb11u4 amd64",
+        "hash": "2a4435faf1f9337690364633981dc82ec80c97514383e094bf3a660c588bb1c2"
+      },
+      "perl-base": {
+        "version": "5.32.1-4+deb11u4 amd64",
+        "hash": "13c64725e0eeddda881a19d77d47cb89a1a8db0c223ad16f18997cb75b689e4e"
+      },
+      "perl-modules-5.32": {
+        "version": "5.32.1-4+deb11u4 all",
+        "hash": "89712f6bc75c290b05974cdc13c6c0de7fb0fec20abd9ce90d6d5a34596cc535"
+      },
+      "pinentry-curses": {
+        "version": "1.1.0-4 amd64",
+        "hash": "306cfaa77c099011dbc28ff653056a56cf840cca773e5630fb6eaddc22e4c432"
+      },
+      "pkg-config": {
+        "version": "0.29.2-1 amd64",
+        "hash": "172cdac82113837725f274dc25cf1cc60fab2547105510c249aba0bf79e687eb"
+      },
+      "procps": {
+        "version": "2:3.3.17-5 amd64",
+        "hash": "26e19918d9ab40fded063dcaf4158e1bbfdfc8cba6b51429d92f0e47b01ab7a5"
+      },
+      "python3": {
+        "version": "3.9.2-3 amd64",
+        "hash": "4a2b1c705260a9aeff32bd8ef6f9c61e7629dbfc2fb6ecd53c668d0b06099ec5"
+      },
+      "python3-distutils": {
+        "version": "3.9.2-1 all",
+        "hash": "aabc558cbf908966ee149b23f5e1711b020f2f096aace9ddad6e794fb5ff10cb"
+      },
+      "python3-lib2to3": {
+        "version": "3.9.2-1 all",
+        "hash": "009b072542afdff7802ead19808c34b26916fcbba08c58710cc143eefb4ad204"
+      },
+      "python3-minimal": {
+        "version": "3.9.2-3 amd64",
+        "hash": "2511481983e9f6806282171231c98aaa639f525341812904c1d6a1ff113ef48c"
+      },
+      "python3.9": {
+        "version": "3.9.2-1+deb11u3 amd64",
+        "hash": "93df4dc64d91f4771bd4ce2a2913a0be80557cd220d640ca05d3c3246b51e5e9"
+      },
+      "python3.9-minimal": {
+        "version": "3.9.2-1+deb11u3 amd64",
+        "hash": "a1981c73aca6cf4e6a7a68321f2997b29a37ef8706a7fb0a1b9bfb010b3425bd"
+      },
+      "readline-common": {
+        "version": "8.1-1 all",
+        "hash": "ef2b6afa70d631e03af5b2f7c8930e2e33cd90d82f55e38492ef8c3ee5a41f61"
+      },
+      "sed": {
+        "version": "4.7-1 amd64",
+        "hash": "cf0e06ea57d4c564c32e65aa0139437145fef0b7170166cb571c04d4ff7284cb"
+      },
+      "sensible-utils": {
+        "version": "0.0.14 all",
+        "hash": "11d2b00554609d9d8368895739ae3283aef08f431f12e14ca86dde71d112bef6"
+      },
+      "shared-mime-info": {
+        "version": "2.0-1 amd64",
+        "hash": "482902e617855f10bbeeed08bc1182369fb1daa7e3f758afdef792ef86d4d13c"
+      },
+      "subversion": {
+        "version": "1.14.1-3+deb11u2 amd64",
+        "hash": "6dffbf2d748f0c3a3d4643e9e682a2849162fb5a2b96956c465a830bd1c1e9ca"
+      },
+      "sysvinit-utils": {
+        "version": "2.96-7+deb11u1 amd64",
+        "hash": "f1646b9e0be40a111ffd845907acacff135784070b1d47a1c85d40e2f69c9ca7"
+      },
+      "tar": {
+        "version": "1.34+dfsg-1+deb11u1 amd64",
+        "hash": "353cde6d76c9409e362b5e7560bf044ead964c3d3beae6a93ef65868bbc3b5af"
+      },
+      "tcl": {
+        "version": "8.6.11+1 amd64",
+        "hash": "e5264a15b7b84873dcc8af7673665161f3e57ae92e7e2dd08dd38ae3c5010123"
+      },
+      "tcl-dev": {
+        "version": "8.6.11+1 amd64",
+        "hash": "abbfdaa5eaec5a62a24f8291f46e1d43f2cbe8005da9588911aed90f05c24523"
+      },
+      "tcl8.6": {
+        "version": "8.6.11+dfsg-1 amd64",
+        "hash": "26fc5e1eb44a2081b1aea7c76db4add696a9569051e4c20c963f0a7405e10209"
+      },
+      "tcl8.6-dev": {
+        "version": "8.6.11+dfsg-1 amd64",
+        "hash": "5e3bcf744b22d0a992fa51873b8265049155aa19657651a9fadc01ec2656c91c"
+      },
+      "tk": {
+        "version": "8.6.11+1 amd64",
+        "hash": "e5264a15b7b84873dcc8af7673665161f3e57ae92e7e2dd08dd38ae3c5010123"
+      },
+      "tk-dev": {
+        "version": "8.6.11+1 amd64",
+        "hash": "e5264a15b7b84873dcc8af7673665161f3e57ae92e7e2dd08dd38ae3c5010123"
+      },
+      "tk8.6": {
+        "version": "8.6.11-2 amd64",
+        "hash": "22e4980072fc1081a4b84ab0eef41da2a76f49e639d20233863ed71178e54545"
+      },
+      "tk8.6-dev": {
+        "version": "8.6.11-2 amd64",
+        "hash": "00e5a7caa3fb1e5704c8a90659fcadeb2412eeade261a2961b227f51d394448e"
+      },
+      "tzdata": {
+        "version": "2025b-0+deb11u1 all",
+        "hash": "a6d47be896f274bd1b43e01a47d530a726bd445494f9611519037efaf4b07e3e"
+      },
+      "ucf": {
+        "version": "3.0043+deb11u2 all",
+        "hash": "2566f87ec8f431af81174e311f4de2ba7e42afc87042b1f61af12ea0a36fdbbf"
+      },
+      "unzip": {
+        "version": "6.0-26+deb11u1 amd64",
+        "hash": "d8bd7ed03822d22c6871fe98cc8f3f9d0175eed2e9d5ca66751d6eaa779128da"
+      },
+      "util-linux": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "8e2b800c2ad0b0986b03af85ce2d812aab42bf07ea048570711cb52e5365b326"
+      },
+      "uuid-dev": {
+        "version": "2.36.1-8+deb11u2 amd64",
+        "hash": "79cc2e2984dd5dd70036640e9c6a62b3ebda6497dbabb52c1c1479d1033d8639"
+      },
+      "wget": {
+        "version": "1.21-1+deb11u2 amd64",
+        "hash": "f5a5556f9b6f19cba0cc5fc32f14b750a7410309a7b859f1b6189cd5f522a34f"
+      },
+      "x11-common": {
+        "version": "1:7.7+22 all",
+        "hash": "f0f689dc878f61d7e5aeaada932b1a70dd9c42044f9951b8f6cff6d63e77d425"
+      },
+      "x11proto-dev": {
+        "version": "2020.1-1 all",
+        "hash": "af6db5c1108ef2674f3e1e9969f530266544e8dfd79f60dddb227c8a91b40352"
+      },
+      "x11proto-scrnsaver-dev": {
+        "version": "2020.1-1 all",
+        "hash": "72b684014a8953d08c12caa62077301c9a9e5997e789979cd77dc9093b16c41c"
+      },
+      "x11proto-xext-dev": {
+        "version": "2020.1-1 all",
+        "hash": "72b684014a8953d08c12caa62077301c9a9e5997e789979cd77dc9093b16c41c"
+      },
+      "xorg-sgml-doctools": {
+        "version": "1:1.11-1.1 all",
+        "hash": "7e4bdce7c3abebf6c34db081b0dbe5a9929d128a7208b8741ae4f309ed465d46"
+      },
+      "xtrans-dev": {
+        "version": "1.4.0-1 all",
+        "hash": "8fdb53f891926c668c17f1992309ad00637a26fe1cf3b4e0c7b5a6f7e37e8496"
+      },
+      "xz-utils": {
+        "version": "5.2.5-2.1~deb11u1 amd64",
+        "hash": "6c836fdfba541659dcb122cab29fceb0e0aa3acf30164123396c9ff3f4caf0c2"
+      },
+      "zlib1g": {
+        "version": "1:1.2.11.dfsg-2+deb11u2 amd64",
+        "hash": "8c2ddf33ed21928ad1045a00655ead2c71fa9e86762c858a50b718c29e3b1612"
+      },
+      "zlib1g-dev": {
+        "version": "1:1.2.11.dfsg-2+deb11u2 amd64",
+        "hash": "6468bf5d5e6a3ae179162bdedb5aac74ecf7340cd63783a82d62b893954e5018"
+      }
+    }
+  },
+  "pip": {
+    "scope": "project",
+    "location": "/usr/local/lib/python3.12/site-packages",
+    "hash": "be0f057bb44b95869b4695b3392c8f75cce09ebfb89b2ef4fdf246a8d1712278",
+    "dependencies": {
+      "asgiref": {
+        "version": "3.9.1"
+      },
+      "Django": {
+        "version": "3.2.25"
+      },
+      "gevent": {
+        "version": "24.10.2"
+      },
+      "greenlet": {
+        "version": "3.1.1"
+      },
+      "gunicorn": {
+        "version": "21.2.0"
+      },
+      "mysqlclient": {
+        "version": "2.2.6"
+      },
+      "packaging": {
+        "version": "25.0"
+      },
+      "pip": {
+        "version": "25.0.1"
+      },
+      "psycopg2": {
+        "version": "2.9.9"
+      },
+      "pytz": {
+        "version": "2023.2"
+      },
+      "setuptools": {
+        "version": "80.9.0"
+      },
+      "sqlparse": {
+        "version": "0.5.3"
+      },
+      "ujson": {
+        "version": "5.8.0"
+      },
+      "zope.event": {
+        "version": "5.1.1"
+      },
+      "zope.interface": {
+        "version": "7.2"
+      }
+    }
+  }
+}

@@ -1,0 +1,633 @@
+{
+  "_container-info": {
+    "name": "python.django.gunicorn",
+    "image": "python.django.gunicorn:latest",
+    "hash": "sha256:bc367aa8174e13add7361aca7a0b78b0eb91587bffb4bdb6e69e27533eb5601f"
+  },
+  "dpkg": {
+    "scope": "system",
+    "dependencies": {
+      "adduser": {
+        "version": "3.152 all",
+        "hash": "dab8af11919ddbbd643630c7194a1d56ed45a6b85d1c520e6bd049769b6174a7"
+      },
+      "apt": {
+        "version": "3.0.3 amd64",
+        "hash": "f2d367ee53b8e2f9758cbfbb0fbc9be138c165ac9b4bc471920da51b8be69fcd"
+      },
+      "base-files": {
+        "version": "13.8 amd64",
+        "hash": "a4a8761283722a37724d89b2beb65323495bf6a727eeec63372151d0d027e781"
+      },
+      "base-passwd": {
+        "version": "3.6.7 amd64",
+        "hash": "57250bbdcf6041fae5a6ea51b2c5a05533389f69d6772687e21a2af09235fd1c"
+      },
+      "bash": {
+        "version": "5.2.37-2+b5 amd64",
+        "hash": "bd17cfcd76388087939174850e1fd26ff1368b6070288b296e44b013ef56a3bb"
+      },
+      "binutils": {
+        "version": "2.44-3 amd64",
+        "hash": "5535855a7ec74025621cb5ac798ff5890a13e08478b5b38cb8c8277da5222d40"
+      },
+      "binutils-common": {
+        "version": "2.44-3 amd64",
+        "hash": "8bbfbb0cca40a970eeda5fd013896b0dd8e9061da2c9fc0a27ec858e0e8154ab"
+      },
+      "binutils-x86-64-linux-gnu": {
+        "version": "2.44-3 amd64",
+        "hash": "0d2e79a9981a9bd9e8c7805a8655eaf37ac490e05787a5b3b9431a2214c1db5f"
+      },
+      "bsdutils": {
+        "version": "1:2.41-5 amd64",
+        "hash": "2680f1b2d66c4c50c4c36c89b19f5db576caacd8489cbd544bc76d6e1c11640d"
+      },
+      "build-essential": {
+        "version": "12.12 amd64",
+        "hash": "2b2925e265dcadfa4e73219adb35f1f6877e1cde0cd68f73d06158ae89e07262"
+      },
+      "bzip2": {
+        "version": "1.0.8-6 amd64",
+        "hash": "1fef0a69f24522aae51af1bb1f81944668277bbf04af92bc725cd6f539e83a70"
+      },
+      "ca-certificates": {
+        "version": "20250419 all",
+        "hash": "21d2d34292a1809791db509dcbc71b8ab0e1a98803172cc9df5592cf22822d0c"
+      },
+      "coreutils": {
+        "version": "9.7-3 amd64",
+        "hash": "2cec343c08f93ac8221a3751ebc0cbfb1b75db504c178dbc8b4aec1defae06f2"
+      },
+      "cpp": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "27ba428cec376363a9bf23a01dccdca6b234653308762fab0969dd6e39e7488d"
+      },
+      "cpp-14": {
+        "version": "14.2.0-19 amd64",
+        "hash": "f166265b136f9b55aee1eac7afd3aec92629a410c6bb35ab640a8b5e57dbcb35"
+      },
+      "cpp-14-x86-64-linux-gnu": {
+        "version": "14.2.0-19 amd64",
+        "hash": "1b69af9ea415682bceada23e60e9f62d401bdfe4cd0f0a19710c7afd8c8e8dad"
+      },
+      "cpp-x86-64-linux-gnu": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "22abd8b3407568e5dcb9b1a7b257aaef619f2083051c8c6833f7df1e417f74ec"
+      },
+      "dash": {
+        "version": "0.5.12-12 amd64",
+        "hash": "f1e4c09ed70c6dd9c5193bdf7f3c61dcaa48e05ce7688576de5e8caae75501ae"
+      },
+      "debconf": {
+        "version": "1.5.91 all",
+        "hash": "08b5a647bdfe8d5d5bb5876bc109d1dd3e8f690c84ae52e598f24acbeef28e99"
+      },
+      "debian-archive-keyring": {
+        "version": "2025.1 all",
+        "hash": "5fc553ff45d250020a8e3e8b359fff165d237f578459b5d95f6b6a56d835cf41"
+      },
+      "debianutils": {
+        "version": "5.23.2 amd64",
+        "hash": "41b404279d6b85a8935138fe3c50c598af5c1a8151afd77d67fc40e0ed2c0dae"
+      },
+      "diffutils": {
+        "version": "1:3.10-4 amd64",
+        "hash": "9510a8deac13a3747aa45ed7334f19b54f28c0c9d7fc2bcce09118064bd731f3"
+      },
+      "dpkg": {
+        "version": "1.22.21 amd64",
+        "hash": "a12807423335f98b7f895257f5bc191633f214c25c9d785c399beccfd1dbc265"
+      },
+      "dpkg-dev": {
+        "version": "1.22.21 all",
+        "hash": "6ddbd8d461048f11f0f37df8158de2295167a8793d9f4f5f49887c169a04c456"
+      },
+      "fakeroot": {
+        "version": "1.37.1.1-1 amd64",
+        "hash": "27fc6230d3697b8d48946eaef46a4a3982c44e8da29c16d7113a6782110a04d5"
+      },
+      "findutils": {
+        "version": "4.10.0-3 amd64",
+        "hash": "3c5871c751428fd37e2c4d8f785a1871a749961924cb5290d49964c527de45b6"
+      },
+      "g++": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "146067e6aca7d7da9a6d97c06df61a11dfb623f14777536dc02a9fa85d8dcffc"
+      },
+      "g++-14": {
+        "version": "14.2.0-19 amd64",
+        "hash": "4cbc645468066ea17ad5024bbe2277fbca1e07b20c9251c74de68534389b0392"
+      },
+      "g++-14-x86-64-linux-gnu": {
+        "version": "14.2.0-19 amd64",
+        "hash": "ad0489c9994264848252aed0440a884a87c9ebc3666458788883f6eb563acc88"
+      },
+      "g++-x86-64-linux-gnu": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "84f13797fac4b9ec88ff7b168ed75cf6b7de09554b28dd16acc242cb0af2a793"
+      },
+      "gcc": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "c1ef48e04ccac91f1425124cc11f35956795e4f348592e0268f4becc0d6333ff"
+      },
+      "gcc-14": {
+        "version": "14.2.0-19 amd64",
+        "hash": "6fced6b2d935316d1b9c5ace1443dbe1b817aa693f52908bb4d42cf804e968ac"
+      },
+      "gcc-14-base": {
+        "version": "14.2.0-19 amd64",
+        "hash": "a9c72c8c255e227b3f6d5b2cd68d33eefb503d0bc5c94e4c58bd4d9497449231"
+      },
+      "gcc-14-x86-64-linux-gnu": {
+        "version": "14.2.0-19 amd64",
+        "hash": "e4864223003dd0aaacf68749f05667e93d39d5be58e98cd4b6c778e3096d6f17"
+      },
+      "gcc-x86-64-linux-gnu": {
+        "version": "4:14.2.0-1 amd64",
+        "hash": "cf644648eadd2f4ef10d764bce91c342bd0ef24bf0eef17f2d26f5932113a70a"
+      },
+      "grep": {
+        "version": "3.11-4 amd64",
+        "hash": "22253428e32223438b07a4d6b25cead2c14208953b8882bfc7ef90f1eb58521a"
+      },
+      "gzip": {
+        "version": "1.13-1 amd64",
+        "hash": "22d326581f10fa793ae0f961afaa5803922b7c28bcd37f4e170afb740e9276d5"
+      },
+      "hostname": {
+        "version": "3.25 amd64",
+        "hash": "ff0ebf84c2b0d76b691e1c8badd35bb6a88f4871ec39379d22226fd6b844b873"
+      },
+      "init-system-helpers": {
+        "version": "1.68 all",
+        "hash": "22650cdf71d6dc19d0708f7b64bdcf34309fc1bbbda916d5d4fe54e18312b1f1"
+      },
+      "libacl1": {
+        "version": "2.3.2-2+b1 amd64",
+        "hash": "84e87fc421141881484ecf61ce1bf22943bdfefa8a28d073490d3d84d52d17e2"
+      },
+      "libalgorithm-diff-perl": {
+        "version": "1.201-1 all",
+        "hash": "c4a090b7a4ee1434c9a03ddffaead78c51aa4b4583c8f9d9ed063c24319b02d9"
+      },
+      "libalgorithm-diff-xs-perl": {
+        "version": "0.04-9 amd64",
+        "hash": "c85745a475766573b3824141662e147f22931934f14ba4aed679c4d564961c8a"
+      },
+      "libalgorithm-merge-perl": {
+        "version": "0.08-5 all",
+        "hash": "6e5cf4ace7f18d5db84f9b09b8a3bdaaa1ab4d9a0d41cc035dabc3991c028c1e"
+      },
+      "libapt-pkg7.0": {
+        "version": "3.0.3 amd64",
+        "hash": "3485819fd3071b7e12649ffcb5eb9a6e37215d314f21c56aa214e462161e5c4b"
+      },
+      "libasan8": {
+        "version": "14.2.0-19 amd64",
+        "hash": "652f5ad33a758673f6d860721c8c5cc71562b5392c871f9095cf0f17bb6cb208"
+      },
+      "libatomic1": {
+        "version": "14.2.0-19 amd64",
+        "hash": "4deb34513c1c682049b68daf71a2321817f4263f95eddb7fd8bed13509bf981d"
+      },
+      "libattr1": {
+        "version": "1:2.5.2-3 amd64",
+        "hash": "bcb4224a596145c56a1d29654958be232326f028cdd2d0f42c721d790a59f74a"
+      },
+      "libaudit-common": {
+        "version": "1:4.0.2-2 all",
+        "hash": "8e001939003464d51dec2ed29943dde606b47f3cef8d7eef1e67d9351697c858"
+      },
+      "libaudit1": {
+        "version": "1:4.0.2-2+b2 amd64",
+        "hash": "831e5bf1b32a38f7aaa25f56fc151f662c5f6dac036432d41978e443331761ec"
+      },
+      "libbinutils": {
+        "version": "2.44-3 amd64",
+        "hash": "dc7ebbb4ce344133d1d39d023fc9ef03cbdf40b2ae447b60662bf2f52c20f87a"
+      },
+      "libblkid1": {
+        "version": "2.41-5 amd64",
+        "hash": "8adfa601fc8589c56ed4aeb729b573efc546a7e47657d9056f28fa16b08c8364"
+      },
+      "libbsd0": {
+        "version": "0.12.2-2 amd64",
+        "hash": "e72905385f671b16b05c7e55741822953afb5af7bd6009b8a7f3023009dcf401"
+      },
+      "libbz2-1.0": {
+        "version": "1.0.8-6 amd64",
+        "hash": "0ef440a363cd53c705a94ad5ea2eca6aec7c80ae1df0f3d4d8468d5cd6e852ce"
+      },
+      "libc-bin": {
+        "version": "2.41-12 amd64",
+        "hash": "8d6ad7d2cc05269cd336d618f3be131c5517a5c291c4ada562574cb07200c561"
+      },
+      "libc-dev-bin": {
+        "version": "2.41-12 amd64",
+        "hash": "c8098813c7cf8b01794d8cb03704c6fd5d7dccbdb6cca21a3a8f746cc7d7d5ea"
+      },
+      "libc6": {
+        "version": "2.41-12 amd64",
+        "hash": "b70fcfae09f1bce3ed8725384517cf8ed39e5a73e1bb3754e309deaac74eca16"
+      },
+      "libc6-dev": {
+        "version": "2.41-12 amd64",
+        "hash": "d4f464487a644f80e6acbd4b582b6f710922efe1c1fba6966f7908761a2fd451"
+      },
+      "libcap-ng0": {
+        "version": "0.8.5-4+b1 amd64",
+        "hash": "33bcb55ac393dbb9a73dd29a1d25fd7adab5b7135ef160ee90bc932d08d19c59"
+      },
+      "libcap2": {
+        "version": "1:2.75-10+b1 amd64",
+        "hash": "b053c50710e40ab409f47a4ed5e872bbe2ebda4fef25c6479c708c48bca725b2"
+      },
+      "libcc1-0": {
+        "version": "14.2.0-19 amd64",
+        "hash": "a1c5030370f12c227ec5a71e0fb2fd0d1d80a14a97b0eeabc58454c2dbdd24dd"
+      },
+      "libcrypt-dev": {
+        "version": "1:4.4.38-1 amd64",
+        "hash": "c308aa391b54a4f3ae08fcab4edba0d8844f26d8295f2ecfea2af2b6fb4bad28"
+      },
+      "libcrypt1": {
+        "version": "1:4.4.38-1 amd64",
+        "hash": "39d2eb3ff2cbdfa4c0429f22f7ba0378605b8d36ba2575ddc135db2544f15eba"
+      },
+      "libctf-nobfd0": {
+        "version": "2.44-3 amd64",
+        "hash": "584f1f25a6cb56f2da0e202d6088760645b6df99fe50f360b424268602470cd5"
+      },
+      "libctf0": {
+        "version": "2.44-3 amd64",
+        "hash": "49817b5b98c69cbf7203a92549130855571e0a050edfd926ed813a8665b64469"
+      },
+      "libdb5.3t64": {
+        "version": "5.3.28+dfsg2-9 amd64",
+        "hash": "543ee0e3535053455c70ff58c694fc4413b3cd9ca80ecbac58f80aea67fedff8"
+      },
+      "libdebconfclient0": {
+        "version": "0.280 amd64",
+        "hash": "8ecf0b8fd4d7133dcc0c66967b21c62306e9dc5c953e88d43c82ce9e3d89c2a4"
+      },
+      "libdpkg-perl": {
+        "version": "1.22.21 all",
+        "hash": "ed572c2242badc179a6d00305b5213d47bfdd7ace2d474c58485a4a8ef643f24"
+      },
+      "libfakeroot": {
+        "version": "1.37.1.1-1 amd64",
+        "hash": "8a635f56d0ec447448397d943c1aa8c0cf84acf40e46e01e364e68fab7443c6f"
+      },
+      "libffi8": {
+        "version": "3.4.8-2 amd64",
+        "hash": "1b0a61abd24c4724afa46499d3b2d0f70e45ae007aaa4f25d0d4e4c50fd953d0"
+      },
+      "libfile-fcntllock-perl": {
+        "version": "0.22-4+b4 amd64",
+        "hash": "b778c808bb7eadfe4daba7fee2d9a4e9725f77758f9f26a6704935300bf0c5c7"
+      },
+      "libgcc-14-dev": {
+        "version": "14.2.0-19 amd64",
+        "hash": "b4d6480c78d0584d0c1dafe6889cb6b9ae7aeb4f7db08575301e3c61d4fb11b4"
+      },
+      "libgcc-s1": {
+        "version": "14.2.0-19 amd64",
+        "hash": "1ae2806b8bb0d5f1a1ea7c8d8adea2295b7dca1ca92650b298e86c3b727667f4"
+      },
+      "libgdbm-compat4t64": {
+        "version": "1.24-2 amd64",
+        "hash": "c3a13069c128222ec45d1bb4e1f06f3e406d127ea7c0898bb858c594fcba780e"
+      },
+      "libgdbm6t64": {
+        "version": "1.24-2 amd64",
+        "hash": "22a2acbda54081a702bb61fdcc86da8f33ce431664faab63d7310ccfa9b26744"
+      },
+      "libgmp10": {
+        "version": "2:6.3.0+dfsg-3 amd64",
+        "hash": "b59ffaa8962e3bd37f5e8df41d63e17821c88c60607854c50a787833217e544a"
+      },
+      "libgomp1": {
+        "version": "14.2.0-19 amd64",
+        "hash": "eafd4822bc4656ff629021c077d9ecc4f267665840c8693600f5e5546af9de60"
+      },
+      "libgprofng0": {
+        "version": "2.44-3 amd64",
+        "hash": "c43fee72579e0f20e34c7380d8bf551d9966c6f681c3ebfeb4ff3e3c38ba43da"
+      },
+      "libhogweed6t64": {
+        "version": "3.10.1-1 amd64",
+        "hash": "3bd225fb74ccf42826fe3a4586882e4c746f48930c04065de9078902ed04f25b"
+      },
+      "libhwasan0": {
+        "version": "14.2.0-19 amd64",
+        "hash": "42806101d20f10f4db4e690237c4872fff739f65dc1a37610a727e1f1db37d4c"
+      },
+      "libisl23": {
+        "version": "0.27-1 amd64",
+        "hash": "4aae02880afe7c9f4ad5a2e9e5b75b78676601c6251ba18245368f5abc9855d1"
+      },
+      "libitm1": {
+        "version": "14.2.0-19 amd64",
+        "hash": "1da96d623404026e0ed53fb392f72461274acc57b277943f9820a15a38b46b5b"
+      },
+      "libjansson4": {
+        "version": "2.14-2+b3 amd64",
+        "hash": "8235a4b8f33e9ec11d3f66eb030774040787154c337ff73129629affeefa4b12"
+      },
+      "liblastlog2-2": {
+        "version": "2.41-5 amd64",
+        "hash": "8d4b10a6a838653aa795508e6dee8e1371c98ba6c1d88e036822a7eeee2b2d42"
+      },
+      "liblocale-gettext-perl": {
+        "version": "1.07-7+b1 amd64",
+        "hash": "4559d738f99bd347040f9d1ebf0bf1e637dd9b202c85529f1675e18b3d106bb8"
+      },
+      "liblsan0": {
+        "version": "14.2.0-19 amd64",
+        "hash": "ed93736fc828bd454cdb2de6b1609a2910dd9e3c0737a8660acef14d046b2f57"
+      },
+      "liblz4-1": {
+        "version": "1.10.0-4 amd64",
+        "hash": "0f42fcdd2110684171d831f7d7f46d034e06ed4faf92360c39aa7698ff868967"
+      },
+      "liblzma5": {
+        "version": "5.8.1-1 amd64",
+        "hash": "003694d4683cf866495a7711630d3334b86377ba702b257b9e3450629305e513"
+      },
+      "libmd0": {
+        "version": "1.1.0-2+b1 amd64",
+        "hash": "59e9c37a49e7673e9c0aa4b3f7a7182f252810b51f85d8bd0ee7fb1c5d2f1325"
+      },
+      "libmount1": {
+        "version": "2.41-5 amd64",
+        "hash": "422c95513011f016fab78bd86a449044a7c69c8050669cf6519a365c92d3c5b3"
+      },
+      "libmpc3": {
+        "version": "1.3.1-1+b3 amd64",
+        "hash": "f944e537d05232f9d9fa39236dc818cca2cab57c99ed8ba41a46842772698f11"
+      },
+      "libmpfr6": {
+        "version": "4.2.2-1 amd64",
+        "hash": "a9ce411120139ba2d17bf6ca07b20c658fe3e4cc2f5ba4f5cb8e93dbe99e85db"
+      },
+      "libncursesw6": {
+        "version": "6.5+20250216-2 amd64",
+        "hash": "9d339ce4340e13d1aab779e2291ba9796a39a126a0297a9148660d80b71cf56c"
+      },
+      "libnettle8t64": {
+        "version": "3.10.1-1 amd64",
+        "hash": "83936995331c1d9289f4ed99b7650d66f1066cd3f518819d3893952ca878608f"
+      },
+      "libpam-modules": {
+        "version": "1.7.0-5 amd64",
+        "hash": "032a47628e48a06369dda491f9c05508ceeeff8884ede131db7b00a180667d4a"
+      },
+      "libpam-modules-bin": {
+        "version": "1.7.0-5 amd64",
+        "hash": "8e15b1a4aca6d54cfec1c4589fc835a74d041a21f7ac58b9dcec7b0c8462d7d8"
+      },
+      "libpam-runtime": {
+        "version": "1.7.0-5 all",
+        "hash": "fdecbe23ff3ef6b49490d22df2c926f58c0961f6dd9e2b184c8be6d18e8b6c0f"
+      },
+      "libpam0g": {
+        "version": "1.7.0-5 amd64",
+        "hash": "0b41e1e49a9e6e9a0fa1b7298e099ff72697f33f7628a1358cd78d3630992351"
+      },
+      "libpcre2-8-0": {
+        "version": "10.45-1 amd64",
+        "hash": "9d4b62b91714692b08c3a21f8741c59636926bd9593f0409cf87c08221920544"
+      },
+      "libperl5.40": {
+        "version": "5.40.1-6 amd64",
+        "hash": "57627a79e6481a90ce94c4025b33f3b226089223961d5dba63b40c7879de3b90"
+      },
+      "libquadmath0": {
+        "version": "14.2.0-19 amd64",
+        "hash": "ff6efe3097b8c1bd9f24d844f91ba53a59c293589937f47605ec361c669ef030"
+      },
+      "libreadline8t64": {
+        "version": "8.2-6 amd64",
+        "hash": "ac501344a5554278fdbe5ee2a937bb95751908f6e479f3f9f6a7340d31523260"
+      },
+      "libseccomp2": {
+        "version": "2.6.0-2 amd64",
+        "hash": "10c3ce7d836c6e5301affc482201a7156de27b8fd485cfc423648aa731eb99c6"
+      },
+      "libselinux1": {
+        "version": "3.8.1-1 amd64",
+        "hash": "ffffba71cdc5557f0b2c434fd436063dc532c84610472b04e5b021b62501d16b"
+      },
+      "libsemanage-common": {
+        "version": "3.8.1-1 all",
+        "hash": "1eb6c68bfc4cf9aa479174cc8be99d647dc89f560a49004efbe1d2d4a9930eec"
+      },
+      "libsemanage2": {
+        "version": "3.8.1-1 amd64",
+        "hash": "c0352b98aa053ea0d6d6f79d883dcc695d186aac764ec413aac636623ec84411"
+      },
+      "libsepol2": {
+        "version": "3.8.1-1 amd64",
+        "hash": "476f8e845e394657c563de4b3f2ea6d093436d693f0ba478dea8b88503fb395c"
+      },
+      "libsframe1": {
+        "version": "2.44-3 amd64",
+        "hash": "82e7b17e3ad0bba7c29e81f3c0c88d479e159ae222ae0b59e3154ebbf3f24013"
+      },
+      "libsmartcols1": {
+        "version": "2.41-5 amd64",
+        "hash": "6729a12f5ed762d312bfad2e41285df2f448988e320e46f29ae6d344cbe61ee4"
+      },
+      "libsqlite3-0": {
+        "version": "3.46.1-7 amd64",
+        "hash": "24026159a3ce6e9299a958c31bba7848da4cca10ff42602ff54ab92027b820aa"
+      },
+      "libssl3t64": {
+        "version": "3.5.1-1 amd64",
+        "hash": "cdd4f8d1f6a9b9ce5f0e45eb68d6a3344bfc3fd0bf2d23566598ba1520220cc9"
+      },
+      "libstdc++-14-dev": {
+        "version": "14.2.0-19 amd64",
+        "hash": "efceeb626e2ad15463c439b4009f09c5feea0902c5cc481f19838b4b930fe68d"
+      },
+      "libstdc++6": {
+        "version": "14.2.0-19 amd64",
+        "hash": "f83283d9c1ac7dd7041e1314786c54dca28d47724014234a422fa6d8249d0f58"
+      },
+      "libsystemd0": {
+        "version": "257.7-1 amd64",
+        "hash": "843e1a60225af15b0765d2ace1900d861a2e29bf92be2047f9f281969903055c"
+      },
+      "libtinfo6": {
+        "version": "6.5+20250216-2 amd64",
+        "hash": "f850a332fa0b76ee7936d57f72bc1d04881b105fc74ff04a235f5f7b2ce4f160"
+      },
+      "libtsan2": {
+        "version": "14.2.0-19 amd64",
+        "hash": "7aed8389a01acd13ceb606d3520b4e2a16db631d1bcc968e4149c5d5283257cd"
+      },
+      "libubsan1": {
+        "version": "14.2.0-19 amd64",
+        "hash": "f286b1ca18e51e6b1a653de1759a723e20b26e2cd081f81287244ad4d1d07e9e"
+      },
+      "libudev1": {
+        "version": "257.7-1 amd64",
+        "hash": "e6e28757285ca525630249b8cb4358bdbdd9e2d398257db65fd8dc6e0e10e5e0"
+      },
+      "libuuid1": {
+        "version": "2.41-5 amd64",
+        "hash": "2fbadce2af5f4a1644157f0f563e964c9821e7e0fe6feea3bb3cda8801d2b86b"
+      },
+      "libxxhash0": {
+        "version": "0.8.3-2 amd64",
+        "hash": "3462571ce27f483f526de5df30f7ce1a387554d8840ae0622425677a99e4dd53"
+      },
+      "libzstd1": {
+        "version": "1.5.7+dfsg-1 amd64",
+        "hash": "5bdcf66b165836624a6ec6a6e7a2ba0755396d9697a1b07c4ee056ed59a07f52"
+      },
+      "linux-libc-dev": {
+        "version": "6.12.41-1 all",
+        "hash": "cf9ae0b5390239ac891e6ac053a3b635574284c5c9a510bdd8fd591881e4b80f"
+      },
+      "login": {
+        "version": "1:4.16.0-2+really2.41-5 amd64",
+        "hash": "ba2cf1b305ac965622d5a926ea1f6ea12935bc68ad589d997240abed6080d63d"
+      },
+      "login.defs": {
+        "version": "1:4.17.4-2 all",
+        "hash": "19be7d66db3aa3934870466281de57b106b331665c4543c899eb2312e0f3cb2b"
+      },
+      "make": {
+        "version": "4.4.1-2 amd64",
+        "hash": "3fb0ed505db15aaebc2a4cd74a8c7043001680e698afb3771b86c8c47e29e56f"
+      },
+      "manpages": {
+        "version": "6.9.1-1 all",
+        "hash": "b842bb560fdca5de6c73b99692d09ca318a2221507a3990d37fa5fddc2039972"
+      },
+      "manpages-dev": {
+        "version": "6.9.1-1 all",
+        "hash": "11e8d112a1438301f6b0e821ff9bc0e200e0f27430956ec987648c1b02cbfe6e"
+      },
+      "mawk": {
+        "version": "1.3.4.20250131-1 amd64",
+        "hash": "c33b150a65abe18b571c0cb76076bb23a99de588b58546f5a84184a63362114f"
+      },
+      "mount": {
+        "version": "2.41-5 amd64",
+        "hash": "4ac7f17e6f1fc79042ad67ec61895490a0903033d9ecdb240530b991abfbd1c0"
+      },
+      "ncurses-base": {
+        "version": "6.5+20250216-2 all",
+        "hash": "b030dbb21927aa3a264763fcd067742c7f7e503baa5d1dcd442ac45752e51bdb"
+      },
+      "ncurses-bin": {
+        "version": "6.5+20250216-2 amd64",
+        "hash": "d7b20c99ffb4177fe1f0fee27598a98425d019eaee2552a84507595463d40cea"
+      },
+      "netbase": {
+        "version": "6.5 all",
+        "hash": "119efc6f8da46ed8ade98e92d9effb06830c83a9865279f551171a37c0979582"
+      },
+      "openssl": {
+        "version": "3.5.1-1 amd64",
+        "hash": "5d9d09adec5be0b01cf72957efd050255f1f0b02fc38d51b579d842ab768e47e"
+      },
+      "openssl-provider-legacy": {
+        "version": "3.5.1-1 amd64",
+        "hash": "8298960bddc1b9e48ea6b7e04ef63453e25b5957574e00b3839a8e49f3e4da72"
+      },
+      "passwd": {
+        "version": "1:4.17.4-2 amd64",
+        "hash": "277ed2d24d10ae75fcb9be92f2f89e877390f577291653196170685f7c566382"
+      },
+      "patch": {
+        "version": "2.8-2 amd64",
+        "hash": "d0159524c001a6f9097a62b7fec44aec6e292d360fa7fde18025b2d9fd83184d"
+      },
+      "perl": {
+        "version": "5.40.1-6 amd64",
+        "hash": "a6d62d928167fffd7b1fc9c2aebad2000fe69d62ac3fa944438fd85c65f828a7"
+      },
+      "perl-base": {
+        "version": "5.40.1-6 amd64",
+        "hash": "97a9ce8688a82a42ede1f935385a06e791e2b95d46ac76300aabf47f1bc0148f"
+      },
+      "perl-modules-5.40": {
+        "version": "5.40.1-6 all",
+        "hash": "21128e3901f25763ce184afeb4072cc77a6f69b952cb3c4fcf2dcc099f2c1207"
+      },
+      "readline-common": {
+        "version": "8.2-6 all",
+        "hash": "27d9ff6b75a6000494ad0ec605303751c44a3b2b8d8b609d0474181cb5722461"
+      },
+      "rpcsvc-proto": {
+        "version": "1.4.3-1 amd64",
+        "hash": "4d6a7ff70396a9928d44651403c86ef51f83e1b7fd0ed1ce55133b0d0e44d5ea"
+      },
+      "sed": {
+        "version": "4.9-2 amd64",
+        "hash": "91eac91ef165eb49e9daa55d9f59dfe7ba8a66a97ced73ed32b6ee6351ef7256"
+      },
+      "sq": {
+        "version": "1.3.1-2+b1 amd64",
+        "hash": "a3bb38d44a04bb10b0b98acab47e7ed0dfd64e7f046a7183a9a11211104f5e89"
+      },
+      "sqv": {
+        "version": "1.3.0-3 amd64",
+        "hash": "20ce1c48d5faf67fb4e0e71958003aae46a1b89dae0c8a5598624be5463ee610"
+      },
+      "sysvinit-utils": {
+        "version": "3.14-4 amd64",
+        "hash": "6da2b8c0a7ad1462bb975e3b7e6f8723c4096e12fb3035cb91c2f97e5c3c18f3"
+      },
+      "tar": {
+        "version": "1.35+dfsg-3.1 amd64",
+        "hash": "f2d6b7b064869e164915e7c87fbb704f33ecd11563b5b7a16c4dc88c05c6a20b"
+      },
+      "tzdata": {
+        "version": "2025b-4 all",
+        "hash": "89040bd06fcb89a0daa58150a9816a5c34b91eceefcb727e1add9643ab4a96b0"
+      },
+      "util-linux": {
+        "version": "2.41-5 amd64",
+        "hash": "82441950f40a2bb583262452f5556952b084a0cae7dc75cd405a0f3c51be0f9a"
+      },
+      "xz-utils": {
+        "version": "5.8.1-1 amd64",
+        "hash": "bc6963ca302a2e53fa1d4cd37b1d6027d6d9ecf2e5789efc8dc991366b4d6584"
+      },
+      "zlib1g": {
+        "version": "1:1.3.dfsg+really1.3.1-1+b1 amd64",
+        "hash": "1e9d7f79936e3af3b7e5d857645f552f35ed9024e8caad38ce7323abc05f0e75"
+      }
+    }
+  },
+  "pip": {
+    "scope": "project",
+    "location": "/usr/local/lib/python3.12/site-packages",
+    "hash": "4c993ea3a3f4afb696b9e6a7774d44e49910433182289c08ac0c4324d06a9926",
+    "dependencies": {
+      "asgiref": {
+        "version": "3.9.1"
+      },
+      "Django": {
+        "version": "5.0.14"
+      },
+      "gunicorn": {
+        "version": "23.0.0"
+      },
+      "packaging": {
+        "version": "25.0"
+      },
+      "pip": {
+        "version": "25.0.1"
+      },
+      "sqlparse": {
+        "version": "0.5.3"
+      }
+    }
+  }
+}

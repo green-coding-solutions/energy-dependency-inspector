@@ -1,0 +1,32 @@
+{
+  "_container-info": {
+    "name": "python.django.gunicorn",
+    "image": "python.django.gunicorn:latest",
+    "hash": "sha256:bc367aa8174e13add7361aca7a0b78b0eb91587bffb4bdb6e69e27533eb5601f"
+  },
+  "pip": {
+    "scope": "project",
+    "location": "/usr/local/lib/python3.12/site-packages",
+    "hash": "4c993ea3a3f4afb696b9e6a7774d44e49910433182289c08ac0c4324d06a9926",
+    "dependencies": {
+      "asgiref": {
+        "version": "3.9.1"
+      },
+      "Django": {
+        "version": "5.0.14"
+      },
+      "gunicorn": {
+        "version": "23.0.0"
+      },
+      "packaging": {
+        "version": "25.0"
+      },
+      "pip": {
+        "version": "25.0.1"
+      },
+      "sqlparse": {
+        "version": "0.5.3"
+      }
+    }
+  }
+}

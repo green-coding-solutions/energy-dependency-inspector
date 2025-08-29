@@ -1,0 +1,59 @@
+{
+  "_container-info": {
+    "name": "tfb-django",
+    "image": "tfb.test.django:latest",
+    "hash": "sha256:6c994ea3e3d9c1ca37c3cfcf0b01bbf4c867f90cf551ae5c1baf5285b6ed3eaa"
+  },
+  "pip": {
+    "scope": "project",
+    "location": "/usr/local/lib/python3.12/site-packages",
+    "hash": "be0f057bb44b95869b4695b3392c8f75cce09ebfb89b2ef4fdf246a8d1712278",
+    "dependencies": {
+      "asgiref": {
+        "version": "3.9.1"
+      },
+      "Django": {
+        "version": "3.2.25"
+      },
+      "gevent": {
+        "version": "24.10.2"
+      },
+      "greenlet": {
+        "version": "3.1.1"
+      },
+      "gunicorn": {
+        "version": "21.2.0"
+      },
+      "mysqlclient": {
+        "version": "2.2.6"
+      },
+      "packaging": {
+        "version": "25.0"
+      },
+      "pip": {
+        "version": "25.0.1"
+      },
+      "psycopg2": {
+        "version": "2.9.9"
+      },
+      "pytz": {
+        "version": "2023.2"
+      },
+      "setuptools": {
+        "version": "80.9.0"
+      },
+      "sqlparse": {
+        "version": "0.5.3"
+      },
+      "ujson": {
+        "version": "5.8.0"
+      },
+      "zope.event": {
+        "version": "5.1.1"
+      },
+      "zope.interface": {
+        "version": "7.2"
+      }
+    }
+  }
+}

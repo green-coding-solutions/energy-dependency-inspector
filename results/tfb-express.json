@@ -1,0 +1,50 @@
+{
+  "_container-info": {
+    "name": "tfb-express",
+    "image": "tfb.test.express:latest",
+    "hash": "sha256:81624dda5c0e5da2f146b16925ee4669cfc0f6ffdc2db01ee159363939db6f95"
+  },
+  "npm": {
+    "scope": "project",
+    "location": "/",
+    "hash": "a9c25d83e9cd7721a5b2633ac046fcf50784390e041959fb06343558dcefba64",
+    "dependencies": {
+      "body-parser": {
+        "version": "1.20.3"
+      },
+      "dateformat": {
+        "version": "3.0.3"
+      },
+      "escape-html": {
+        "version": "1.0.3"
+      },
+      "express": {
+        "version": "4.18.2"
+      },
+      "mongoose": {
+        "version": "8.9.5"
+      },
+      "mysql2": {
+        "version": "3.9.8"
+      },
+      "pg-promise": {
+        "version": "11.5.5"
+      },
+      "pg": {
+        "version": "8.5.0"
+      },
+      "postgres": {
+        "version": "3.4.7"
+      },
+      "pug": {
+        "version": "3.0.3"
+      },
+      "sequelize": {
+        "version": "6.29.0"
+      },
+      "slow-json-stringify": {
+        "version": "2.0.1"
+      }
+    }
+  }
+}

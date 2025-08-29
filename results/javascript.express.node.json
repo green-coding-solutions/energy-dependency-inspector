@@ -1,0 +1,17 @@
+{
+  "_container-info": {
+    "name": "javascript.express.node",
+    "image": "javascript.express.node:latest",
+    "hash": "sha256:73d95b1a08a67180b7c63945f23904eb643f83396e7df5d36a5ea1a139c5ade9"
+  },
+  "npm": {
+    "scope": "project",
+    "location": "/usr/src/app",
+    "hash": "21ba907deb83a0adac913edb84d4be1db1caa40f3bf1dc43f5768f55d31337fb",
+    "dependencies": {
+      "express": {
+        "version": "4.18.3"
+      }
+    }
+  }
+}
