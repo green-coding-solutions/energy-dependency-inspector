@@ -7,6 +7,13 @@ Usage: python -m dependency_resolver [environment_type] [environment_identifier]
 
 import sys
 import argparse
+
+
+# Check venv before importing modules that might have missing dependencies
+from .core.venv_checker import check_venv
+
+check_venv()
+
 from .executors import HostExecutor, DockerExecutor
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator

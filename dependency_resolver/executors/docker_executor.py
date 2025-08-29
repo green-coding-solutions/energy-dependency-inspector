@@ -1,9 +1,12 @@
 import shlex
-
-import docker
+from typing import Optional
 
 from ..core.interfaces import EnvironmentExecutor
-from typing import Optional
+
+try:
+    import docker
+except ImportError:
+    docker = None  # type: ignore
 
 
 class DockerExecutor(EnvironmentExecutor):
@@ -15,6 +18,10 @@ class DockerExecutor(EnvironmentExecutor):
 
     def __init__(self, container_identifier: str):
         """Initialize Docker executor."""
+        if docker is None:
+            raise ImportError(
+                "Docker package is required for Docker functionality. Please install it with: pip install docker"
+            )
 
         try:
             self.client = docker.from_env()
