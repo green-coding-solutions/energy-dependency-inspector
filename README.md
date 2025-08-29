@@ -34,6 +34,7 @@ python3 -m dependency_resolver -h
 - **apk** - System packages of Alpine
 - **pip** - Python packages
 - **npm** - Node.js packages
+- **maven** - Java packages
 
 Also captures **Docker container metadata** when analyzing containers.
 

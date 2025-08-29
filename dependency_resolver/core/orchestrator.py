@@ -5,6 +5,7 @@ from ..detectors.npm_detector import NpmDetector
 from ..detectors.dpkg_detector import DpkgDetector
 from ..detectors.apk_detector import ApkDetector
 from ..detectors.docker_info_detector import DockerInfoDetector
+from ..detectors.maven_detector import MavenDetector
 
 
 class Orchestrator:
@@ -24,6 +25,7 @@ class Orchestrator:
             DockerInfoDetector(),
             DpkgDetector(),
             ApkDetector(),
+            MavenDetector(debug=debug),
             PipDetector(venv_path=venv_path, debug=debug),
             NpmDetector(debug=debug),
         ]
