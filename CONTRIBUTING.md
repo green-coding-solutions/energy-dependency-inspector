@@ -131,7 +131,7 @@ Please refer to the [CLAUDE.md](./CLAUDE.md) file for detailed development guide
 
 ## Adding New Package Manager Detectors
 
-To add support for a new package manager, follow the comprehensive guide in [docs/ADDING_NEW_DETECTORS.md](./docs/ADDING_NEW_DETECTORS.md). This guide covers:
+To add support for a new package manager, follow the comprehensive guide in [docs/technical/adding-new-detectors.md](./docs/technical/adding-new-detectors.md). This guide covers:
 
 - Implementation patterns and interface requirements
 - Testing strategies with Docker environments
@@ -143,7 +143,8 @@ To add support for a new package manager, follow the comprehensive guide in [doc
 If you have questions or need help:
 
 - Check the [SPECIFICATION.md](./SPECIFICATION.md) for project requirements and design approaches
-- Review [docs/ADDING_NEW_DETECTORS.md](./docs/ADDING_NEW_DETECTORS.md) for detector implementation guidance
+- Review [docs/technical/adding-new-detectors.md](./docs/technical/adding-new-detectors.md) for detector implementation guidance
+- Check [docs/technical/](./docs/technical/) for architecture documentation and ADRs
 - Review existing code for patterns and conventions
 - Open an issue for discussion if you're unsure about an approach
 

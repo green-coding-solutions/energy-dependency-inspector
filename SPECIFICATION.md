@@ -31,11 +31,11 @@ The [Green Metrics Tool](https://github.com/green-coding-solutions/green-metrics
 
 ### Architecture Decisions
 
-**Runtime Snapshot vs. Source File Parsing**: See [ADR-0001](docs/adr/0001-runtime-snapshot-approach.md) for the decision to analyze running environments rather than parsing source files.
+**Runtime Snapshot vs. Source File Parsing**: See [ADR-0001](docs/technical/architecture/adr/0001-runtime-snapshot-approach.md) for the decision to analyze running environments rather than parsing source files.
 
-**Modular Architecture**: See [ADR-0002](docs/adr/0002-modular-detector-architecture.md) for the modular detector architecture with abstract base classes and auto-discovery.
+**Modular Architecture**: See [ADR-0002](docs/technical/architecture/adr/0002-modular-detector-architecture.md) for the modular detector architecture with abstract base classes and auto-discovery.
 
-**Dependency Hash Strategy**: See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the multi-tiered approach to change detection and integrity verification.
+**Dependency Hash Strategy**: See [ADR-0005](docs/technical/architecture/adr/0005-dependency-hash-strategy.md) for the multi-tiered approach to change detection and integrity verification.
 
 ### Command Interface
 
@@ -43,147 +43,52 @@ The [Green Metrics Tool](https://github.com/green-coding-solutions/green-metrics
 python3 -m dependency_resolver <environment_type> <environment_identifier> <options>
 ```
 
-- **environment_type**: The type of environment you want to inspect. Supported environments: `host`, `docker` (additional ones in the future: `podman`)
-- **environment_identifier**: An identifier of the environment. For `docker` and `podman` the container run id (short or full) and the container name are allowed. For `host` no identifier is required.
-- **options**: Possibility to provide multiple options parameter (see below)
+Basic usage:
 
-All parameters are optional. If no `environment_type` and `environment_identifier` is provided, the host system will be analyzed.
-If a container should be analyzed, all the checks will be executed inside the container and container metadata will be included.
-Available options:
+- **Host system**: `python3 -m dependency_resolver`
+- **Docker container**: `python3 -m dependency_resolver docker nginx`
 
-- `--working-dir <working-dir>`: uses the path as the working directory in the target environment and executes all checks from there
-- `--debug`: prints debug statements
-- `--skip-system-scope`: skips system scope package managers (system packages or globally installed Python packages)
-- `--venv-path <venv-path>`: explicit virtual environment path for pip detector
-- `--only-container-info`: for docker environment, only analyze container metadata (skip dependency detection)
+Supported environments: `host`, `docker` (future: `podman`)
 
-Examples:
-
-- `python3 -m dependency_resolver` (host system, no parameters)
-- `python3 -m dependency_resolver docker a1b2c3d4e5f6` (Docker container by id)
-- `python3 -m dependency_resolver docker nginx` (Docker container by name)
-- `python3 -m dependency_resolver docker nginx --only-container-info` (Docker container metadata only)
-- `python3 -m dependency_resolver --working-dir /tmp/repo` (sets the working directory on the target environment, here the host system)
+For complete CLI usage, options, and examples, see [docs/usage/cli-guide.md](docs/usage/cli-guide.md).
 
 ### Architecture Overview
 
-The system uses a modular architecture with these core components:
+The system uses a modular architecture with detector-based package manager detection, environment-agnostic executors, and coordinated orchestration.
 
-- **Detectors**: Implement package manager-specific logic (pip, npm, dpkg, apk, docker-info)
-- **Executors**: Handle command execution in different environments (host, docker)
-- **Orchestrator**: Coordinates detection and aggregates results
-
-**Detection Strategy:**
-
-- Auto-discovery of available package managers
-- Error isolation (failed detectors don't affect others)
-- Configurable scope filtering (system vs project packages)
-- Multi-tier hash generation for dependency integrity
-
-For implementation details, see [docs/ADDING_NEW_DETECTORS.md](docs/ADDING_NEW_DETECTORS.md) and Architecture Decision Records in [docs/adr/](docs/adr/).
+For complete architecture documentation, see [docs/technical/architecture/overview.md](docs/technical/architecture/overview.md) and [docs/technical/adding-new-detectors.md](docs/technical/adding-new-detectors.md).
 
 ### JSON Output Schema
 
-Schema with example values (incomplete):
+The tool outputs structured JSON with detected package managers and their dependencies:
 
 ```json
 {
-  "_container-info": {
-    "name": "nginx-container",
-    "image": "nginx:latest",
-    "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
-  },
-  "dpkg": {
-    "scope": "system",
-    "dependencies": {
-      "zip": {
-        "version": "3.0-13ubuntu0.2 amd64",
-        "hash": "das7892234890sad890fa0s98903284092"
-       },
-       "curl": {
-        "version": "7.81.0-1ubuntu1.18 amd64"
-       },
-       // ...
-    }
-  },
-  "pip": {
-      "scope": "project",
-      "location": "/home/user/venv/lib/python3.12/site-packages",
-      "hash": "a1b2c3d4e5f6789012345678901234ab",
-      "dependencies": {
-      "numpy": {
-          "version": "1.3.3"
-      }
-    },
-    // ...
-  },
-  "npm": {
-    "scope": "project",
-    "location": "/app/frontend",
-    "hash": "b2c3d4e5f67890123456789012345bcd",
-    "dependencies": {
-      "react": {
-        "version": "18.2.0"
-      },
-      "lodash": {
-        "version": "4.17.21"
-      }
-    },
-    // ...
-  },
-  // ...
+  "_container-info": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
+  "dpkg": { "scope": "system", "dependencies": { "curl": { "version": "7.81.0-1ubuntu1.18 amd64" } } },
+  "pip": { "scope": "project", "location": "/app/venv/lib/python3.12/site-packages", "dependencies": { "numpy": { "version": "1.3.3" } } }
 }
 ```
 
-### Schema Field Definitions
+For complete JSON schema documentation, field definitions, and examples, see [docs/usage/output-format.md](docs/usage/output-format.md).
 
-#### Scope Field
+### Key Schema Concepts
 
-All package manager outputs include a `scope` field indicating the installation scope:
-
-- **`"system"`**: System-wide packages (apt/dpkg, apk, globally installed pip/npm)
-- **`"project"`**: Project-specific packages (virtual environments, local node_modules)
-- **`"container"`**: Individual container metadata (transformed to `_container-info` format in output)
-
-#### Location Field
-
-The `location` field is only present when `scope` is `"project"`, providing the specific path to the project-local installation directory.
-
-#### Hash Field
-
-Hashes are included for dependency integrity verification when available from the package manager or generated for project-scoped installations.
-
-#### Container Info Format
-
-For Docker environments, container metadata is automatically included in a simplified format:
-
-```json
-{
-  "_container-info": {
-    "name": "container-name",
-    "image": "nginx:latest",
-    "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
-  }
-}
-```
-
-**Key characteristics:**
-
-- **Always included**: Container info is present by default in Docker analysis
-- **Simplified format**: Uses flattened structure, not standard detector format
-- **Underscore prefix**: `_container-info` distinguishes it from package managers
-- **Container-only mode**: Use `--only-container-info` for metadata-only extraction
+- **Scope**: `"system"` (system-wide packages) or `"project"` (project-specific packages)
+- **Location**: Path to project-local installations (project scope only)
+- **Hash**: Dependency integrity verification when available
+- **Container Info**: Docker metadata included as `_container-info`
 
 ## Implementation Constraints
 
 ### Technical Constraints
 
-1. **Read-Only Operations**: See [ADR-0003](docs/adr/0003-read-only-operations.md) for the complete read-only constraint policy
-2. **Unix-Based Systems**: See [ADR-0004](docs/adr/0004-unix-only-support.md) for platform support scope
+1. **Read-Only Operations**: See [ADR-0003](docs/technical/architecture/adr/0003-read-only-operations.md) for the complete read-only constraint policy
+2. **Unix-Based Systems**: See [ADR-0004](docs/technical/architecture/adr/0004-unix-only-support.md) for platform support scope
 
 ### Hash Strategy
 
-Hashes are used for dependency change detection and integrity verification. See [ADR-0005](docs/adr/0005-dependency-hash-strategy.md) for the complete multi-tiered strategy.
+Hashes are used for dependency change detection and integrity verification. See [ADR-0005](docs/technical/architecture/adr/0005-dependency-hash-strategy.md) for the complete multi-tiered strategy.
 
 ### Logging Strategy
 

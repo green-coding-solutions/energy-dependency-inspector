@@ -121,7 +121,7 @@ Add to `/dependency_resolver/detectors/__init__.py` if needed.
 
 ### 3.1 Detector Documentation
 
-Create `/docs/detectors/{package_manager}_detector.md` with the following structure:
+Create `/docs/technical/detectors/{package_manager}_detector.md` with the following structure:
 
 **Required Sections:**
 

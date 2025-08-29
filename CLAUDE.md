@@ -70,10 +70,15 @@ python3 -c "from dependency_resolver.detectors.dpkg_detector import DpkgDetector
 - `dependency_resolver/executors/` - Environment execution adapters
 - `dependency_resolver/core/` - Base interfaces and orchestrator
 - `tests/` - Test suites organized by component (detectors, executors, integration, specialized)
-- `docs/adr/` - Architecture decision records
-- `docs/detectors/` - Individual detector documentation
+- `docs/guides/` - User guides (quick start, troubleshooting)
+- `docs/usage/` - Detailed usage documentation (CLI, API, output format)
+- `docs/technical/` - Technical documentation including:
+  - `docs/technical/architecture/adr/` - Architecture decision records
+  - `docs/technical/detectors/` - Individual detector documentation
+  - `docs/technical/architecture/` - System architecture documentation
+  - `docs/technical/adding-new-detectors.md` - Guide for implementing new package manager detectors
 
 ## Project Files
 
+- [README.md](./README.md) - Overview with links to detailed docs
 - [SPECIFICATION.md](./SPECIFICATION.md) - Requirements and constraints
-- [README.md](./README.md) - Update after adding features

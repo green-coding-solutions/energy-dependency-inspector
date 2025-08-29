@@ -26,7 +26,7 @@ class PipDetector(PackageManagerDetector):
         """Extract pip dependencies with versions.
 
         Uses 'pip list --format=freeze' for clean package==version format.
-        See docs/detectors/pip_detector.md
+        See docs/technical/detectors/pip_detector.md
         """
         # If working_dir is specified but no venv exists there, return empty dependencies
         if working_dir:
@@ -201,7 +201,7 @@ class PipDetector(PackageManagerDetector):
         """Generate a hash based on the contents of the location directory.
 
         Implements package manager location hashing as part of multi-tiered hash strategy.
-        See docs/detectors/pip_detector.md
+        See docs/technical/detectors/pip_detector.md
         """
         # Use environment-independent sorting for consistent hashes across systems.
         # Two-tier sort strategy: primary by file size (numeric), secondary by path (lexicographic).
