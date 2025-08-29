@@ -101,15 +101,18 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 - **host** - Host system analysis (default)
 - **docker** - Docker container analysis (requires container ID or name)
 
-### Supported Package Managers
+### Supported Detectors
 
-Currently supported:
+**Package Managers:**
 
 - **apt/dpkg** - System packages Ubuntu/Debian
 - **apk** - System packages of Alpine
 - **pip** - Python packages
 - **npm** - Node.js packages
-- **docker-info** - Individual Docker container metadata
+
+**Container Information:**
+
+- **docker-info** - Docker container metadata and base image details
 
 ### Output Format
 

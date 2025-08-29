@@ -129,11 +129,21 @@ Please refer to the [CLAUDE.md](./CLAUDE.md) file for detailed development guide
 5. **Push to your fork** and create a pull request
 6. **Address any feedback** from code review
 
+## Adding New Package Manager Detectors
+
+To add support for a new package manager, follow the comprehensive guide in [docs/ADDING_NEW_DETECTORS.md](./docs/ADDING_NEW_DETECTORS.md). This guide covers:
+
+- Implementation patterns and interface requirements
+- Testing strategies with Docker environments
+- Documentation standards
+- Integration with the orchestrator system
+
 ## Getting Help
 
 If you have questions or need help:
 
 - Check the [SPECIFICATION.md](./SPECIFICATION.md) for project requirements and design approaches
+- Review [docs/ADDING_NEW_DETECTORS.md](./docs/ADDING_NEW_DETECTORS.md) for detector implementation guidance
 - Review existing code for patterns and conventions
 - Open an issue for discussion if you're unsure about an approach
 
