@@ -156,44 +156,10 @@ class TestMavenDockerDetection(DockerTestBase):
         # Create project directory
         executor.execute_command("mkdir -p /tmp/test-maven-project")
 
-        # Create a sample pom.xml
-        pom_content = """<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.example</groupId>
-    <artifactId>test-project</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <junit.version>5.9.0</junit.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.15.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
-        </dependency>
-    </dependencies>
-</project>"""
+        # Read pom.xml from external file
+        pom_path = os.path.join(os.path.dirname(__file__), "test_data", "simple-project-pom.xml")
+        with open(pom_path, "r", encoding="utf-8") as f:
+            pom_content = f.read()
 
         # Write pom.xml
         executor.execute_command(f"cat > /tmp/test-maven-project/pom.xml << 'EOF'\n{pom_content}\nEOF")
@@ -230,44 +196,10 @@ wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-w
         # Create project directory
         executor.execute_command("mkdir -p /tmp/test-maven-project")
 
-        # Create the same pom.xml as above
-        pom_content = """<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.example</groupId>
-    <artifactId>test-project</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <junit.version>5.9.0</junit.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.15.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
-        </dependency>
-    </dependencies>
-</project>"""
+        # Read pom.xml from external file
+        pom_path = os.path.join(os.path.dirname(__file__), "test_data", "simple-project-pom.xml")
+        with open(pom_path, "r", encoding="utf-8") as f:
+            pom_content = f.read()
 
         # Write pom.xml
         executor.execute_command(f"cat > /tmp/test-maven-project/pom.xml << 'EOF'\n{pom_content}\nEOF")
