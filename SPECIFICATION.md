@@ -66,7 +66,8 @@ The tool outputs structured JSON with detected package managers and their depend
 {
   "_container-info": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
   "dpkg": { "scope": "system", "dependencies": { "curl": { "version": "7.81.0-1ubuntu1.18 amd64" } } },
-  "pip": { "scope": "project", "location": "/app/venv/lib/python3.12/site-packages", "dependencies": { "numpy": { "version": "1.3.3" } } }
+  "pip": { "scope": "project", "location": "/app/venv/lib/python3.12/site-packages", "dependencies": { "numpy": { "version": "1.3.3" } } },
+  "java-runtime": { "type": "runtime", "location": "/app", "artifacts": { "app.jar": { "version": "1.0.0", "size": 12345, "type": "jar" } } }
 }
 ```
 
@@ -74,8 +75,18 @@ For complete JSON schema documentation, field definitions, and examples, see [do
 
 ### Key Schema Concepts
 
+**Two Detection Models**:
+
+- **Dependency Model**: Uses `scope` field with `dependencies` object (package managers)
+- **Runtime Artifact Model**: Uses `type: "runtime"` field with `artifacts` object (deployment files)
+
+**Fields**:
+
 - **Scope**: `"system"` (system-wide packages) or `"project"` (project-specific packages)
-- **Location**: Path to project-local installations (project scope only)
+- **Type**: `"runtime"` for deployment artifacts
+- **Location**: Path to project-local installations or runtime artifacts
+- **Dependencies**: Installed packages (dependency model)
+- **Artifacts**: Runtime deployment files (runtime model)
 - **Hash**: Dependency integrity verification when available
 - **Container Info**: Docker metadata included as `_container-info`
 

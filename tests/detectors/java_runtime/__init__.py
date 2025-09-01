@@ -1,0 +1,1 @@
+# Java Runtime detector tests
