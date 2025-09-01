@@ -6,6 +6,7 @@ from ..detectors.dpkg_detector import DpkgDetector
 from ..detectors.apk_detector import ApkDetector
 from ..detectors.docker_info_detector import DockerInfoDetector
 from ..detectors.maven_detector import MavenDetector
+from ..detectors.java_runtime_detector import JavaRuntimeDetector
 
 
 class Orchestrator:
@@ -25,6 +26,7 @@ class Orchestrator:
             DockerInfoDetector(),
             DpkgDetector(),
             ApkDetector(),
+            JavaRuntimeDetector(debug=debug),
             MavenDetector(debug=debug),
             PipDetector(venv_path=venv_path, debug=debug),
             NpmDetector(debug=debug),
@@ -73,12 +75,19 @@ class Orchestrator:
                             print(f"Found container info for {detector_name}")
                     else:
                         # Standard handling for other detectors
-                        if dependencies.get("dependencies") or self.debug:
+                        # Handle both dependency format and runtime artifact format
+                        has_content = dependencies.get("dependencies") or dependencies.get("artifacts") or self.debug
+                        if has_content:
                             result[detector_name] = dependencies
 
                         if self.debug:
+                            # Count both dependencies and artifacts for debug output
                             dep_count = len(dependencies.get("dependencies", {}))
-                            print(f"Found {dep_count} dependencies for {detector_name}")
+                            artifact_count = len(dependencies.get("artifacts", {}))
+                            if artifact_count > 0:
+                                print(f"Found {artifact_count} artifacts for {detector_name}")
+                            else:
+                                print(f"Found {dep_count} dependencies for {detector_name}")
                 else:
                     if self.debug:
                         print(f"{detector_name} is not available")
