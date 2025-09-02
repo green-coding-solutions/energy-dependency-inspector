@@ -1,0 +1,239 @@
+{
+  "artifacts": [
+    {
+      "id": "dpkg-libc6",
+      "name": "libc6",
+      "version": "2.36-9+deb12u4",
+      "type": "deb",
+      "foundBy": "dpkg_detector",
+      "locations": [
+        {
+          "path": "/var/lib/dpkg/status",
+          "accessPath": "/var/lib/dpkg/status"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "LGPL-2.1",
+          "spdxExpression": "LGPL-2.1-only",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/usr/share/doc/libc6/copyright",
+              "accessPath": "/usr/share/doc/libc6/copyright"
+            }
+          ]
+        }
+      ],
+      "language": "",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:gnu:glibc:2.36:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:deb/debian/libc6@2.36-9+deb12u4?arch=amd64"
+    },
+    {
+      "id": "dpkg-python3",
+      "name": "python3",
+      "version": "3.11.2-1+b1",
+      "type": "deb",
+      "foundBy": "dpkg_detector",
+      "locations": [
+        {
+          "path": "/var/lib/dpkg/status",
+          "accessPath": "/var/lib/dpkg/status"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "PSF-2.0",
+          "spdxExpression": "PSF-2.0",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/usr/share/doc/python3/copyright",
+              "accessPath": "/usr/share/doc/python3/copyright"
+            }
+          ]
+        }
+      ],
+      "language": "",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:python:python:3.11.2:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:deb/debian/python3@3.11.2-1+b1?arch=amd64"
+    },
+    {
+      "id": "pip-flask",
+      "name": "flask",
+      "version": "2.3.3",
+      "type": "python",
+      "foundBy": "pip_detector",
+      "locations": [
+        {
+          "path": "/app/venv/lib/python3.12/site-packages",
+          "accessPath": "/app/venv/lib/python3.12/site-packages"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "BSD-3-Clause",
+          "spdxExpression": "BSD-3-Clause",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/app/venv/lib/python3.12/site-packages/flask-2.3.3.dist-info/LICENSE",
+              "accessPath": "/app/venv/lib/python3.12/site-packages/flask-2.3.3.dist-info/LICENSE"
+            }
+          ]
+        }
+      ],
+      "language": "python",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:palletsprojects:flask:2.3.3:*:*:*:*:python:*:*"
+        }
+      ],
+      "purl": "pkg:pypi/flask@2.3.3"
+    },
+    {
+      "id": "pip-requests",
+      "name": "requests",
+      "version": "2.31.0",
+      "type": "python",
+      "foundBy": "pip_detector",
+      "locations": [
+        {
+          "path": "/app/venv/lib/python3.12/site-packages",
+          "accessPath": "/app/venv/lib/python3.12/site-packages"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "Apache-2.0",
+          "spdxExpression": "Apache-2.0",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/app/venv/lib/python3.12/site-packages/requests-2.31.0.dist-info/LICENSE",
+              "accessPath": "/app/venv/lib/python3.12/site-packages/requests-2.31.0.dist-info/LICENSE"
+            }
+          ]
+        }
+      ],
+      "language": "python",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:python-requests:requests:2.31.0:*:*:*:*:python:*:*"
+        }
+      ],
+      "purl": "pkg:pypi/requests@2.31.0"
+    },
+    {
+      "id": "npm-express",
+      "name": "express",
+      "version": "4.18.2",
+      "type": "npm",
+      "foundBy": "npm_detector",
+      "locations": [
+        {
+          "path": "/app/node_modules",
+          "accessPath": "/app/node_modules"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "MIT",
+          "spdxExpression": "MIT",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/app/node_modules/express/LICENSE",
+              "accessPath": "/app/node_modules/express/LICENSE"
+            }
+          ]
+        }
+      ],
+      "language": "javascript",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:expressjs:express:4.18.2:*:*:*:*:node.js:*:*"
+        }
+      ],
+      "purl": "pkg:npm/express@4.18.2"
+    },
+    {
+      "id": "npm-lodash",
+      "name": "lodash",
+      "version": "4.17.21",
+      "type": "npm",
+      "foundBy": "npm_detector",
+      "locations": [
+        {
+          "path": "/app/node_modules",
+          "accessPath": "/app/node_modules"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "MIT",
+          "spdxExpression": "MIT",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/app/node_modules/lodash/LICENSE",
+              "accessPath": "/app/node_modules/lodash/LICENSE"
+            }
+          ]
+        }
+      ],
+      "language": "javascript",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:lodash:lodash:4.17.21:*:*:*:*:node.js:*:*"
+        }
+      ],
+      "purl": "pkg:npm/lodash@4.17.21"
+    }
+  ],
+  "artifactRelationships": [
+    {
+      "parent": "pip-flask",
+      "child": "pip-requests",
+      "type": "dependency-of"
+    }
+  ],
+  "source": {
+    "id": "web-app-container",
+    "name": "web-app",
+    "version": "latest",
+    "type": "image",
+    "metadata": {
+      "name": "web-app",
+      "image": "python:3.12-slim",
+      "hash": "sha256:a1b2c3d4e5f6..."
+    }
+  },
+  "distro": {
+    "name": "Debian GNU/Linux",
+    "version": "12",
+    "id": "debian"
+  },
+  "descriptor": {
+    "name": "dependency-resolver",
+    "version": "1.0.0"
+  },
+  "schema": {
+    "version": "16.0.39",
+    "url": "https://raw.githubusercontent.com/anchore/syft/main/schema/json/schema-16.0.39.json"
+  }
+}

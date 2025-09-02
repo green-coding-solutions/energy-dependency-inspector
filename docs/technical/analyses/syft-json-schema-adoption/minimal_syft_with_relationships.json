@@ -1,0 +1,103 @@
+{
+  "artifacts": [
+    {
+      "id": "pkg1",
+      "name": "openssl",
+      "version": "3.0.0",
+      "type": "deb",
+      "foundBy": "dpkg-db-cataloger",
+      "locations": [
+        {
+          "path": "/var/lib/dpkg/status",
+          "accessPath": "/var/lib/dpkg/status"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "Apache-2.0",
+          "spdxExpression": "Apache-2.0",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/usr/share/doc/openssl/copyright",
+              "accessPath": "/usr/share/doc/openssl/copyright"
+            }
+          ]
+        }
+      ],
+      "language": "",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:openssl:openssl:3.0.0:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:deb/debian/openssl@3.0.0"
+    },
+    {
+      "id": "pkg2",
+      "name": "libssl3",
+      "version": "3.0.0",
+      "type": "deb",
+      "foundBy": "dpkg-db-cataloger",
+      "locations": [
+        {
+          "path": "/var/lib/dpkg/status",
+          "accessPath": "/var/lib/dpkg/status"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "Apache-2.0",
+          "spdxExpression": "Apache-2.0",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/usr/share/doc/libssl3/copyright",
+              "accessPath": "/usr/share/doc/libssl3/copyright"
+            }
+          ]
+        }
+      ],
+      "language": "",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:openssl:libssl:3.0.0:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:deb/debian/libssl3@3.0.0"
+    }
+  ],
+  "artifactRelationships": [
+    {
+      "parent": "pkg1",
+      "child": "pkg2",
+      "type": "dependency-of"
+    }
+  ],
+  "source": {
+    "id": "debian-container",
+    "name": "debian",
+    "version": "12",
+    "type": "image",
+    "metadata": {
+      "digest": "sha256:abc123",
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json"
+    }
+  },
+  "distro": {
+    "name": "Debian GNU/Linux",
+    "id": "debian",
+    "version": "12",
+    "versionID": "12"
+  },
+  "descriptor": {
+    "name": "syft",
+    "version": "v0.100.0"
+  },
+  "schema": {
+    "version": "16.0.39",
+    "url": "https://raw.githubusercontent.com/anchore/syft/main/schema/json/schema-16.0.39.json"
+  }
+}

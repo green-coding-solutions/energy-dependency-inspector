@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    {
+      "id": "pkg1",
+      "name": "example-package",
+      "version": "1.0.0",
+      "type": "deb",
+      "foundBy": "dpkg-db-cataloger",
+      "locations": [
+        {
+          "path": "/var/lib/dpkg/status",
+          "accessPath": "/var/lib/dpkg/status"
+        }
+      ],
+      "licenses": [
+        {
+          "value": "MIT",
+          "spdxExpression": "MIT",
+          "type": "declared",
+          "urls": [],
+          "locations": [
+            {
+              "path": "/usr/share/doc/example-package/copyright",
+              "accessPath": "/usr/share/doc/example-package/copyright"
+            }
+          ]
+        }
+      ],
+      "language": "",
+      "cpes": [
+        {
+          "cpe": "cpe:2.3:a:example:example-package:1.0.0:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:deb/debian/example-package@1.0.0"
+    }
+  ],
+  "artifactRelationships": [],
+  "source": {
+    "id": "source1",
+    "name": "example-container",
+    "version": "latest",
+    "type": "image",
+    "metadata": {}
+  },
+  "distro": {},
+  "descriptor": {
+    "name": "syft",
+    "version": "v0.100.0"
+  },
+  "schema": {
+    "version": "16.0.39",
+    "url": "https://raw.githubusercontent.com/anchore/syft/main/schema/json/schema-16.0.39.json"
+  }
+}
