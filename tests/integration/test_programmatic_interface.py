@@ -29,12 +29,19 @@ class TestResolveHostDependencies:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"pip": [{"name": "requests", "version": "2.28.0"}]}
+        mock_dependencies = {
+            "source": {"type": "host", "name": "local-host"},
+            "project": {
+                "pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."},
+                "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}],
+            },
+            "system": {"packages": []},
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         mock_formatter_instance = MagicMock()
         mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = '{"pip": [{"name": "requests", "version": "2.28.0"}]}'
+        mock_formatter_instance.format_json.return_value = '{"source": {"type": "host", "name": "local-host"}, "project": {"pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."}, "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}]}, "system": {"packages": []}}'
 
         # Call function
         result = resolve_host_dependencies()
@@ -46,7 +53,10 @@ class TestResolveHostDependencies:
         mock_formatter.assert_called_once_with(debug=False)
         mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
 
-        assert result == '{"pip": [{"name": "requests", "version": "2.28.0"}]}'
+        assert (
+            result
+            == '{"source": {"type": "host", "name": "local-host"}, "project": {"pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."}, "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}]}, "system": {"packages": []}}'
+        )
 
     @patch("dependency_resolver.Orchestrator")
     @patch("dependency_resolver.HostExecutor")
@@ -61,14 +71,19 @@ class TestResolveHostDependencies:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"npm": [{"name": "express", "version": "4.18.0"}]}
+        mock_dependencies = {
+            "source": {"type": "host", "name": "local-host"},
+            "project": {
+                "npm": {"location": "/tmp/test/node_modules", "hash": "sha256:npm456..."},
+                "packages": [{"name": "express", "version": "4.18.0", "type": "npm"}],
+            },
+            "system": {"packages": []},
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         mock_formatter_instance = MagicMock()
         mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = (
-            '{\n  "npm": [\n    {\n      "name": "express",\n      "version": "4.18.0"\n    }\n  ]\n}'
-        )
+        mock_formatter_instance.format_json.return_value = '{\n  "source": {\n    "type": "host",\n    "name": "local-host"\n  },\n  "project": {\n    "npm": {\n      "location": "/tmp/test/node_modules",\n      "hash": "sha256:npm456..."\n    },\n    "packages": [\n      {\n        "name": "express",\n        "version": "4.18.0",\n        "type": "npm"\n      }\n    ]\n  },\n  "system": {\n    "packages": []\n  }\n}'
 
         # Call function with all arguments
         resolve_host_dependencies(
@@ -98,14 +113,25 @@ class TestResolveDockerDependencies:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}
+        mock_dependencies = {
+            "source": {
+                "type": "container",
+                "name": "test-container",
+                "image": "ubuntu:20.04",
+                "hash": "sha256:abc123...",
+            },
+            "project": {"packages": []},
+            "system": {
+                "packages": [
+                    {"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}
+                ]
+            },
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         mock_formatter_instance = MagicMock()
         mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = (
-            '{"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}'
-        )
+        mock_formatter_instance.format_json.return_value = '{"source": {"type": "container", "name": "test-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}, "project": {"packages": []}, "system": {"packages": [{"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}]}}'
 
         # Call function
         result = resolve_docker_dependencies("test-container")
@@ -117,7 +143,10 @@ class TestResolveDockerDependencies:
         mock_formatter.assert_called_once_with(debug=False)
         mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
 
-        assert result == '{"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}'
+        assert (
+            result
+            == '{"source": {"type": "container", "name": "test-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}, "project": {"packages": []}, "system": {"packages": [{"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}]}}'
+        )
 
     @patch("dependency_resolver.Orchestrator")
     @patch("dependency_resolver.DockerExecutor")
@@ -132,14 +161,14 @@ class TestResolveDockerDependencies:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"container_info": {"id": "abc123", "image": "ubuntu:20.04"}}
+        mock_dependencies = {
+            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         mock_formatter_instance = MagicMock()
         mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = (
-            '{\n  "container_info": {\n    "id": "abc123",\n    "image": "ubuntu:20.04"\n  }\n}'
-        )
+        mock_formatter_instance.format_json.return_value = '{\n  "source": {\n    "type": "container",\n    "name": "my-container",\n    "image": "ubuntu:20.04",\n    "hash": "sha256:abc123..."\n  }\n}'
 
         # Call function with all arguments
         resolve_docker_dependencies(
@@ -173,7 +202,14 @@ class TestResolveDependenciesAsDict:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"pip": [{"name": "flask", "version": "2.2.0"}]}
+        mock_dependencies = {
+            "source": {"type": "host", "name": "local-host"},
+            "project": {
+                "pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."},
+                "packages": [{"name": "flask", "version": "2.2.0", "type": "pip"}],
+            },
+            "system": {"packages": []},
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         # Call function
@@ -196,7 +232,18 @@ class TestResolveDependenciesAsDict:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"apk": [{"name": "git", "version": "2.36.2-r0"}]}
+        mock_dependencies = {
+            "source": {
+                "type": "container",
+                "name": "alpine-container",
+                "image": "alpine:3.18",
+                "hash": "sha256:def456...",
+            },
+            "project": {"packages": []},
+            "system": {
+                "packages": [{"name": "git", "version": "2.36.2-r0", "hash": "sha256:ghi789...", "type": "apk"}]
+            },
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         # Call function
@@ -235,7 +282,20 @@ class TestResolveDockerDependenciesAsDict:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}
+        mock_dependencies = {
+            "source": {
+                "type": "container",
+                "name": "test-container",
+                "image": "ubuntu:20.04",
+                "hash": "sha256:abc123...",
+            },
+            "project": {"packages": []},
+            "system": {
+                "packages": [
+                    {"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}
+                ]
+            },
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         # Call function
@@ -261,7 +321,7 @@ class TestResolveDockerDependenciesAsDict:
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
         mock_dependencies = {
-            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "abc123"}
+            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}
         }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
