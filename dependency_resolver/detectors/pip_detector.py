@@ -19,6 +19,7 @@ class PipDetector(PackageManagerDetector):
         self.debug = debug
         self._cached_venv_path: str | None = None
         self._venv_path_searched = False
+        self._cached_pip_command: str | None = None
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if pip is usable in the environment."""
@@ -77,81 +78,125 @@ class PipDetector(PackageManagerDetector):
             return packages, metadata
 
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
-        """Get the location of the pip environment."""
+        """Get the location of the pip environment, properly classifying system vs project scope."""
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} show pip", working_dir)
 
         if exit_code == 0:
             for line in stdout.split("\n"):
                 if line.startswith("Location:"):
-                    return line.split(":", 1)[1].strip()
+                    location = line.split(":", 1)[1].strip()
+
+                    # Check if this is a system location
+                    if location.startswith(("/usr/lib", "/usr/local/lib")):
+                        return "system"
+
+                    return location
 
         return "system"
 
     def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the appropriate pip command, activating venv if available."""
+        if hasattr(self, "_cached_pip_command") and self._cached_pip_command:
+            return self._cached_pip_command
+
         venv_path = self._find_venv_path(executor, working_dir)
         if venv_path:
             venv_pip = f"{venv_path}/bin/pip"
             if executor.path_exists(venv_pip):
+                self._cached_pip_command = venv_pip
                 return venv_pip
+
+        self._cached_pip_command = "pip"
         return "pip"
 
+    def _validate_venv_path(self, executor: EnvironmentExecutor, path: str) -> str | None:
+        """Check if a path contains pyvenv.cfg and return the venv path if valid."""
+        pyvenv_cfg_path = f"{path}/pyvenv.cfg"
+        if executor.path_exists(pyvenv_cfg_path):
+            self._cached_venv_path = path
+            self._venv_path_searched = True
+            return path
+        return None
+
     def _find_venv_path(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str | None:
-        """Find virtual environment using batch search for pyvenv.cfg files."""
+        """Find virtual environment using priority-based search for pyvenv.cfg files."""
         # Return cached result if already searched
         if self._venv_path_searched:
             return self._cached_venv_path
 
-        # Build search paths in priority order
-        search_paths = []
-        search_dir = working_dir or "."
-
-        # 1. Explicit venv path (highest priority)
+        # 1. Explicit venv path (highest priority) - check immediately
         if self.explicit_venv_path:
             stdout, _, exit_code = executor.execute_command(f"echo {self.explicit_venv_path}")
             if exit_code == 0 and stdout.strip():
-                search_paths.append(stdout.strip())
+                venv_path = self._validate_venv_path(executor, stdout.strip())
+                if venv_path:
+                    self._cached_venv_path = venv_path
+                    self._venv_path_searched = True
+                    return venv_path
 
-        # 2. VIRTUAL_ENV environment variable (Docker containers)
+        # 2. VIRTUAL_ENV environment variable (Docker containers) - check immediately
         if not isinstance(executor, HostExecutor):
             stdout, _, exit_code = executor.execute_command("echo $VIRTUAL_ENV", working_dir)
             if exit_code == 0 and stdout.strip():
-                search_paths.append(stdout.strip())
+                venv_path = self._validate_venv_path(executor, stdout.strip())
+                if venv_path:
+                    self._cached_venv_path = venv_path
+                    self._venv_path_searched = True
+                    return venv_path
 
-        # 3. Local project directory and common venv names
-        search_paths.extend(
-            [
-                search_dir,
-                f"{search_dir}/venv",
-                f"{search_dir}/.venv",
-                f"{search_dir}/env",
-                f"{search_dir}/.env",
-                f"{search_dir}/virtualenv",
-            ]
-        )
+        # 3. Extract venv path from pip show pip location (fallback method) - check immediately
+        # Use basic pip command to avoid circular dependency with _get_pip_command
+        stdout, _, exit_code = executor.execute_command("pip show pip", working_dir)
+        if exit_code == 0:
+            for line in stdout.split("\n"):
+                if line.startswith("Location:"):
+                    pip_location = line.split(":", 1)[1].strip()
+                    # Skip system locations
+                    if not pip_location.startswith(("/usr/lib", "/usr/local/lib")) and "/lib/python" in pip_location:
+                        venv_path = pip_location.split("/lib/python")[0]
+                        # Trust this path since pip is installed there - just cache and return
+                        self._cached_venv_path = venv_path
+                        self._venv_path_searched = True
+                        return venv_path
+                    break
 
-        # 4. External venv locations (if working_dir specified)
+        # 4. Batch search for remaining venv locations
+        # Collect all paths and use single find command for efficiency (fewer executor calls)
+        search_paths = []
+        common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
+
+        # Check working directory and its subdirectories (if working_dir specified)
+        if working_dir:
+            search_paths.append(working_dir)  # working_dir itself
+            for venv_name in common_venv_names:
+                search_paths.append(f"{working_dir}/{venv_name}")
+
+        # Check home directory subdirectories (always check)
+        # Resolve home directory explicitly to avoid tilde expansion issues
+        home_stdout, _, home_exit_code = executor.execute_command("echo $HOME")
+        if home_exit_code == 0 and home_stdout.strip():
+            home_dir = home_stdout.strip()
+            for venv_name in common_venv_names:
+                search_paths.append(f"{home_dir}/{venv_name}")
+
+        # External venv locations (project-specific, only if working_dir specified)
         if working_dir:
             resolved_working_dir = self._resolve_absolute_path(executor, working_dir)
             project_name = os.path.basename(resolved_working_dir)
 
-            # Expand external paths
-            external_locations = [
-                f"~/.virtualenvs/{project_name}",
-                f"~/.local/share/virtualenvs/{project_name}",
-                f"~/.cache/pypoetry/virtualenvs/{project_name}",
-                f"~/.pyenv/versions/{project_name}",
-            ]
+            # Use resolved home directory for external locations too
+            if home_exit_code == 0 and home_stdout.strip():
+                home_dir = home_stdout.strip()
+                external_locations = [
+                    f"{home_dir}/.virtualenvs/{project_name}",
+                    f"{home_dir}/.local/share/virtualenvs/{project_name}",
+                    f"{home_dir}/.cache/pypoetry/virtualenvs/{project_name}",
+                    f"{home_dir}/.pyenv/versions/{project_name}",
+                ]
+                search_paths.extend(external_locations)
 
-            for location in external_locations:
-                stdout, _, exit_code = executor.execute_command(f"echo {location}")
-                if exit_code == 0 and stdout.strip():
-                    search_paths.append(stdout.strip())
-
-        # Single batch find command to locate pyvenv.cfg in all search paths
         if search_paths:
-            # Escape paths and create find command
             escaped_paths = [f"'{path}'" for path in search_paths]
             find_cmd = f"find {' '.join(escaped_paths)} -maxdepth 1 -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
 
@@ -169,7 +214,7 @@ class PipDetector(PackageManagerDetector):
                 print("pip_detector performing system-wide pyvenv.cfg search in container environment")
 
             stdout, _, exit_code = executor.execute_command(
-                "find /opt /home /usr/local -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
+                "find /opt /home -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
             )
 
             if exit_code == 0 and stdout.strip():
