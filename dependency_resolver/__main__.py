@@ -97,15 +97,17 @@ def validate_arguments(
         sys.exit(1)
 
 
-def create_executor(environment_type: str, environment_identifier: str | None) -> EnvironmentExecutor:
+def create_executor(
+    environment_type: str, environment_identifier: str | None, debug: bool = False
+) -> EnvironmentExecutor:
     """Create executor based on environment type."""
     if environment_type == "host":
-        return HostExecutor()
+        return HostExecutor(debug=debug)
     elif environment_type == "docker":
         if environment_identifier is None:
             print("Error: Docker environment requires container identifier", file=sys.stderr)
             sys.exit(1)
-        return DockerExecutor(environment_identifier)
+        return DockerExecutor(environment_identifier, debug=debug)
     else:
         print(f"Error: Unsupported environment type: {environment_type}", file=sys.stderr)
         sys.exit(1)
@@ -118,7 +120,7 @@ def main() -> None:
     validate_arguments(args.environment_type, args.environment_identifier, args.only_container_info)
 
     try:
-        executor = create_executor(args.environment_type, args.environment_identifier)
+        executor = create_executor(args.environment_type, args.environment_identifier, debug=args.debug)
         orchestrator = Orchestrator(
             debug=args.debug, skip_system_scope=args.skip_system_scope, venv_path=args.venv_path
         )

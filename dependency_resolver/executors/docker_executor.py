@@ -16,12 +16,14 @@ class DockerExecutor(EnvironmentExecutor):
     preserving original exceptions with 'from' clause for debugging.
     """
 
-    def __init__(self, container_identifier: str):
+    def __init__(self, container_identifier: str, debug: bool = False):
         """Initialize Docker executor."""
         if docker is None:
             raise ImportError(
                 "Docker package is required for Docker functionality. Please install it with: pip install docker"
             )
+
+        self.debug = debug
 
         try:
             self.client = docker.from_env()
@@ -31,6 +33,9 @@ class DockerExecutor(EnvironmentExecutor):
                 raise RuntimeError(
                     f"Container '{container_identifier}' is not running (status: {self.container.status})"
                 )
+
+            if self.debug:
+                print(f"Connected to Docker container: {container_identifier}")
 
         except docker.errors.NotFound as exc:
             raise RuntimeError(f"Container '{container_identifier}' not found") from exc
@@ -42,6 +47,10 @@ class DockerExecutor(EnvironmentExecutor):
 
         Returns actual command exit code on success, or 1 for execution environment failures.
         """
+        if self.debug:
+            workdir_info = f" (workdir: {working_dir})" if working_dir else ""
+            print(f"Executing docker command: sh -c '{command}'{workdir_info}")
+
         try:
             # First, try with sh
             result = self.container.exec_run(
@@ -49,6 +58,9 @@ class DockerExecutor(EnvironmentExecutor):
             )
             stdout = result.output.decode("utf-8") if result.output else ""
             stderr = ""
+
+            if self.debug:
+                print(f"Docker command exit code: {result.exit_code}")
 
             return stdout, stderr, result.exit_code
 
@@ -63,15 +75,25 @@ class DockerExecutor(EnvironmentExecutor):
 
     def _execute_command_direct(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Fallback: execute simple commands directly without shell."""
+        if self.debug:
+            workdir_info = f" (workdir: {working_dir})" if working_dir else ""
+            print(f"Fallback: executing docker command directly: {command}{workdir_info}")
+
         try:
             # Handle only the simple cases we actually use
             cmd_parts = DockerExecutor._parse_simple_command(command)
             if not cmd_parts:
                 return "", f"Command too complex for direct execution (no shell available): {command}", 1
 
+            if self.debug:
+                print(f"Parsed command parts: {cmd_parts}")
+
             result = self.container.exec_run(cmd=cmd_parts, stdout=True, stderr=True, tty=False, workdir=working_dir)
             stdout = result.output.decode("utf-8") if result.output else ""
             stderr = ""
+
+            if self.debug:
+                print(f"Direct execution exit code: {result.exit_code}")
 
             return stdout, stderr, result.exit_code
 

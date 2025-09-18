@@ -28,7 +28,7 @@ def resolve_host_dependencies(
     Returns:
         JSON string containing all discovered dependencies
     """
-    executor = HostExecutor()
+    executor = HostExecutor(debug=debug)
     orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
     dependencies = orchestrator.resolve_dependencies(executor, working_dir)
     formatter = OutputFormatter(debug=debug)
@@ -59,7 +59,7 @@ def resolve_docker_dependencies(
     Returns:
         JSON string containing all discovered dependencies
     """
-    executor = DockerExecutor(container_identifier)
+    executor = DockerExecutor(container_identifier, debug=debug)
     orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
     dependencies = orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
     formatter = OutputFormatter(debug=debug)
@@ -98,7 +98,7 @@ def resolve_docker_dependencies_as_dict(
     if not container_identifier:
         raise ValueError("Container identifier is required")
 
-    executor = DockerExecutor(container_identifier)
+    executor = DockerExecutor(container_identifier, debug=debug)
     orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
     return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
 
@@ -129,11 +129,11 @@ def resolve_dependencies_as_dict(
     """
     executor: EnvironmentExecutor
     if environment_type == "host":
-        executor = HostExecutor()
+        executor = HostExecutor(debug=debug)
     elif environment_type == "docker":
         if not environment_identifier:
             raise ValueError("Docker environment requires container identifier")
-        executor = DockerExecutor(environment_identifier)
+        executor = DockerExecutor(environment_identifier, debug=debug)
     else:
         raise ValueError(f"Unsupported environment type: {environment_type}")
 

@@ -8,6 +8,10 @@ from typing import Optional
 class HostExecutor(EnvironmentExecutor):
     """Executor for running commands on the host system."""
 
+    def __init__(self, debug: bool = False):
+        """Initialize Host executor."""
+        self.debug = debug
+
     def execute_command(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
         """Execute a command on the host system.
 

@@ -164,7 +164,7 @@ class PipDetector(PackageManagerDetector):
         # Fallback: System-wide search (only in container environments)
         if not isinstance(executor, HostExecutor):
             if self.debug:
-                print("DEBUG: pip_detector performing system-wide pyvenv.cfg search in container environment")
+                print("pip_detector performing system-wide pyvenv.cfg search in container environment")
 
             stdout, _, exit_code = executor.execute_command(
                 "find /opt /home /usr/local -name 'pyvenv.cfg' -type f 2>/dev/null | head -1"
@@ -174,12 +174,14 @@ class PipDetector(PackageManagerDetector):
                 pyvenv_cfg_path = stdout.strip()
                 venv_path = os.path.dirname(pyvenv_cfg_path)
                 if self.debug:
-                    print(f"DEBUG: pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_path: {venv_path}")
+                    print(f"pip_detector found pyvenv.cfg at {pyvenv_cfg_path}, venv_path: {venv_path}")
                 self._cached_venv_path = venv_path
                 self._venv_path_searched = True
                 return venv_path
 
         # No venv found
+        if self.debug:
+            print("pip_detector did not found any venv location!")
         self._cached_venv_path = None
         self._venv_path_searched = True
         return None
