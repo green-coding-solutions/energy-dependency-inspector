@@ -32,9 +32,14 @@ class PackageManagerDetector(ABC):
 
     @abstractmethod
     def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract dependencies with versions and hashes.
+
+        Args:
+            executor: Environment executor for running commands
+            working_dir: Working directory to use
+            skip_hash_collection: Skip hash collection for improved performance
 
         Returns:
             tuple: (packages, metadata)

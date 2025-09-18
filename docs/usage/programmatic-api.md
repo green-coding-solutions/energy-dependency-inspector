@@ -27,7 +27,8 @@ deps_json = dependency_resolver.resolve_host_dependencies()
 # Get Python dictionary for further processing
 deps_dict = dependency_resolver.resolve_dependencies_as_dict(
     environment_type="host",
-    skip_system_scope=True
+    skip_system_scope=True,
+    skip_hash_collection=True  # Skip hash collection for improved performance
 )
 ```
 
@@ -46,7 +47,8 @@ docker_deps = dependency_resolver.resolve_docker_dependencies(
 docker_dict = dependency_resolver.resolve_docker_dependencies_as_dict(
     container_identifier="nginx",
     working_dir="/app",
-    skip_system_scope=False
+    skip_system_scope=False,
+    skip_hash_collection=False  # Include hashes in output
 )
 ```
 
@@ -66,7 +68,7 @@ from dependency_resolver import Orchestrator, HostExecutor, DockerExecutor, Outp
 
 # Host system analysis with custom settings
 executor = HostExecutor()
-orchestrator = Orchestrator(debug=True, skip_system_scope=True)
+orchestrator = Orchestrator(debug=True, skip_system_scope=True, skip_hash_collection=True)
 dependencies = orchestrator.resolve_dependencies(executor)
 
 # Format output
@@ -82,7 +84,7 @@ from dependency_resolver import Orchestrator, DockerExecutor, OutputFormatter
 # Docker container analysis
 container_id = "nginx"
 executor = DockerExecutor(container_id)
-orchestrator = Orchestrator(debug=False, skip_system_scope=False)
+orchestrator = Orchestrator(debug=False, skip_system_scope=False, skip_hash_collection=False)
 
 dependencies = orchestrator.resolve_dependencies(executor, working_dir="/app")
 
@@ -116,7 +118,8 @@ for scope, result in dependencies.items():
 orchestrator = Orchestrator(
     debug=True,                    # Enable debug output
     skip_system_scope=False,       # Skip system-wide package managers
-    venv_path="/path/to/venv"      # Specify Python virtual environment path
+    venv_path="/path/to/venv",     # Specify Python virtual environment path
+    skip_hash_collection=False     # Skip hash collection for improved performance
 )
 ```
 
@@ -179,7 +182,8 @@ class DependencyTracker:
             deps = dependency_resolver.resolve_dependencies_as_dict(
                 environment_type="host",
                 working_dir=working_dir,
-                skip_system_scope=True  # Focus on project dependencies
+                skip_system_scope=True,      # Focus on project dependencies
+                skip_hash_collection=True    # Skip hashes for faster fingerprinting
             )
 
             # Create stable fingerprint from dependency versions

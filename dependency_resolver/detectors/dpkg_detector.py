@@ -31,7 +31,7 @@ class DpkgDetector(PackageManagerDetector):
         return dpkg_exit_code == 0
 
     def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract system packages with versions using dpkg-query.
 
@@ -49,8 +49,8 @@ class DpkgDetector(PackageManagerDetector):
         if exit_code != 0:
             return [], {}
 
-        # Collect all package hashes in a single batch operation
-        batch_hashes = self._collect_all_package_hashes(executor)
+        # Collect all package hashes in a single batch operation (unless skipped)
+        batch_hashes = {} if skip_hash_collection else self._collect_all_package_hashes(executor)
 
         packages = []
         for line in stdout.strip().split("\n"):
@@ -65,13 +65,15 @@ class DpkgDetector(PackageManagerDetector):
 
                     package_data = {"name": package_name, "version": full_version, "type": PACKAGE_TYPE_DPKG}
 
-                    # Use batch-collected hash or fallback to individual lookup
-                    package_hash = batch_hashes.get(package_name)
-                    if not package_hash:
-                        package_hash = self._get_package_hash(executor, package_name, architecture)
+                    # Skip hash collection if requested
+                    if not skip_hash_collection:
+                        # Use batch-collected hash or fallback to individual lookup
+                        package_hash = batch_hashes.get(package_name)
+                        if not package_hash:
+                            package_hash = self._get_package_hash(executor, package_name, architecture)
 
-                    if package_hash:
-                        package_data["hash"] = package_hash
+                        if package_hash:
+                            package_data["hash"] = package_hash
 
                     packages.append(package_data)
 

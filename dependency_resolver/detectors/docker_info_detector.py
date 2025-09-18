@@ -14,7 +14,7 @@ class DockerInfoDetector(PackageManagerDetector):
         return isinstance(executor, DockerExecutor)
 
     def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract Docker container metadata.
 
@@ -22,6 +22,7 @@ class DockerInfoDetector(PackageManagerDetector):
         The orchestrator handles this specially.
         """
         _ = working_dir  # Unused parameter, required by interface
+        _ = skip_hash_collection  # Not applicable for docker metadata
         if not isinstance(executor, DockerExecutor):
             return [], {}
 

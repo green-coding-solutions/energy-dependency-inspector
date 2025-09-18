@@ -27,7 +27,7 @@ class PipDetector(PackageManagerDetector):
         return exit_code == 0
 
     def get_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract pip dependencies with versions.
 
@@ -72,8 +72,8 @@ class PipDetector(PackageManagerDetector):
         else:
             # Build metadata for project scope
             metadata = {"location": location}
-            # Generate location-based hash if we have packages
-            if packages:
+            # Generate location-based hash if we have packages (unless skipped)
+            if packages and not skip_hash_collection:
                 metadata["hash"] = self._generate_location_hash(executor, location)
             return packages, metadata
 

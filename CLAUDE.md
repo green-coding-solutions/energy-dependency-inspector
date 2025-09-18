@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 # Run specific detectors for testing
 python3 -m dependency_resolver docker <container_name>
-python3 -m dependency_resolver host --skip-system-scope
+python3 -m dependency_resolver host --skip-system-scope --skip-hash-generation
 
 # Execute linting and formatting
 pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)

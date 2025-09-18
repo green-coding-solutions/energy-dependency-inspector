@@ -170,9 +170,10 @@ npm --version
 **Solutions**:
 
 1. Use `--skip-system-scope` to skip system package managers
-2. Use `--only-container-info` for Docker metadata only
-3. Specify working directory to limit scope
-4. Check if system has many installed packages
+2. Use `--skip-hash-collection` to skip hash generation for packages and locations
+3. Use `--only-container-info` for Docker metadata only
+4. Specify working directory to limit scope
+5. Check if system has many installed packages
 
 ## Getting Help
 

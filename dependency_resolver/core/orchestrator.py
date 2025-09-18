@@ -16,9 +16,11 @@ class Orchestrator:
         debug: bool = False,
         skip_system_scope: bool = False,
         venv_path: str | None = None,
+        skip_hash_collection: bool = False,
     ):
         self.debug = debug
         self.skip_system_scope = skip_system_scope
+        self.skip_hash_collection = skip_hash_collection
 
         # Create detector instances
         self.detectors: list[PackageManagerDetector] = [
@@ -69,7 +71,9 @@ class Orchestrator:
 
                     # Special handling for docker-info detector
                     if detector_name == "docker-info":
-                        packages, metadata = detector.get_dependencies(executor, working_dir)
+                        packages, metadata = detector.get_dependencies(
+                            executor, working_dir, skip_hash_collection=self.skip_hash_collection
+                        )
                         if metadata:  # Only include if we got container info
                             metadata["type"] = "container"
                             result["source"] = metadata
@@ -77,7 +81,9 @@ class Orchestrator:
                             print(f"Found container info for {detector_name}")
                     else:
                         # Standard handling for package detectors
-                        packages, metadata = detector.get_dependencies(executor, working_dir)
+                        packages, metadata = detector.get_dependencies(
+                            executor, working_dir, skip_hash_collection=self.skip_hash_collection
+                        )
 
                         if detector.has_system_scope(executor, working_dir):
                             # System scope packages
