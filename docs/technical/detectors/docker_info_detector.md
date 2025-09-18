@@ -61,7 +61,7 @@ def get_dependencies(self, executor: EnvironmentExecutor, working_dir: str = Non
 ### Image Name Processing
 
 - **Tag selection**: Uses first available image tag
-- **Registry cleanup**: Removes registry prefixes for readability
+- **Full name preservation**: Returns complete image name including repository
 - **Fallback handling**: Defaults to "unknown" for missing tags
 
 ## Hash Generation
@@ -156,24 +156,7 @@ Container info is included alongside package dependencies (dpkg, pip, npm, etc.)
 
 ### Integration with DockerExecutor
 
-Leverages `DockerExecutor.get_container_info()` method:
-
-```python
-def get_container_info(self) -> dict:
-    # Reload container to get latest info
-    self.container.reload()
-
-    # Get image information
-    image = self.container.image
-    image_name = self._extract_image_name(image.tags)
-    image_id = image.id
-
-    return {
-        "name": self.container.name,
-        "image": image_name,
-        "image_hash": image_id
-    }
-```
+Leverages `DockerExecutor.get_container_info()` method to extract container metadata.
 
 ## Error Handling
 
