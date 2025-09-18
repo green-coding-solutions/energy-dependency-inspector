@@ -163,6 +163,9 @@ class TestPipVenvDetection(DockerTestBase):
             _, _, exit_code = executor.execute_command(f"mkdir -p {virtualenvs_dir}")
             assert exit_code == 0, f"Failed to create virtualenvs directory {virtualenvs_dir}"
 
+            # Create system distractor packages first (should NOT be detected)
+            self._create_system_distractor_packages(executor)
+
             self._create_venv(executor, venv_path)
             self._install_test_packages(executor, venv_path)
 
@@ -177,7 +180,7 @@ class TestPipVenvDetection(DockerTestBase):
 
             self._validate_venv_detection(result, expected_scope="project")
 
-            # Verify it found the virtualenvs venv
+            # Verify it found the specific virtualenvs venv path
             assert result["location"].startswith(
                 venv_path
             ), f"Expected location to start with {venv_path}, got {result['location']}"
@@ -197,6 +200,9 @@ class TestPipVenvDetection(DockerTestBase):
         try:
             container_id = self.start_container(self.PYTHON_DOCKER_IMAGE)
             executor = DockerExecutor(container_id)
+
+            # Create system distractor packages first (should NOT be detected)
+            self._create_system_distractor_packages(executor)
 
             # Create a virtual environment at /opt/venv
             venv_path = "/opt/venv"
@@ -220,6 +226,58 @@ class TestPipVenvDetection(DockerTestBase):
             ), f"Expected location to start with {venv_path}, got {result['location']}"
 
             print(f"✓ Successfully detected venv at /opt/venv: {venv_path}")
+
+        finally:
+            if container_id:
+                self.cleanup_container(container_id)
+
+    @pytest.mark.skipif(docker is None, reason="Docker not available")
+    def test_pip_show_pip_venv_detection(self, request: pytest.FixtureRequest) -> None:
+        """Test venv detection using pip show pip fallback method with activated venv."""
+        verbose_output = self.setup_verbose_output(request)
+        container_id = None
+
+        try:
+            container_id = self.start_container(self.PYTHON_DOCKER_IMAGE)
+            executor = DockerExecutor(container_id)
+
+            # Create system distractor packages first (should NOT be detected)
+            self._create_system_distractor_packages(executor)
+
+            # Create a venv in an unusual location that won't be found by standard searches
+            unusual_venv_path = "/unusual/location/myvenv"
+            _, _, exit_code = executor.execute_command(f"mkdir -p {os.path.dirname(unusual_venv_path)}")
+            assert exit_code == 0, "Failed to create parent directory for unusual venv path"
+
+            self._create_venv(executor, unusual_venv_path)
+            self._install_test_packages(executor, unusual_venv_path)
+
+            # Activate the venv by using its pip directly (simulates activated environment)
+            venv_pip = f"{unusual_venv_path}/bin/pip"
+            _, _, exit_code = executor.execute_command(f"{venv_pip} --version")
+            assert exit_code == 0, "Venv pip should be usable"
+
+            # Override PATH to make the venv pip the default (simulates activation)
+            _, _, exit_code = executor.execute_command(f"ln -sf {venv_pip} /usr/local/bin/pip")
+            assert exit_code == 0, "Failed to make venv pip the default"
+
+            self.wait_for_container_ready(container_id, "pip --version", max_wait=60)
+
+            # Test detector - should find venv via pip show pip fallback method
+            detector = PipDetector(debug=True)
+            result = detector.get_dependencies(executor)
+
+            if verbose_output:
+                self.print_verbose_results("PIP SHOW PIP DETECTION:", result)
+
+            self._validate_venv_detection(result, expected_scope="project")
+
+            # Verify it found the unusual venv location via pip show pip
+            assert result["location"].startswith(
+                unusual_venv_path
+            ), f"Expected location to start with {unusual_venv_path}, got {result['location']}"
+
+            print(f"✓ Successfully detected venv via pip show pip fallback: {unusual_venv_path}")
 
         finally:
             if container_id:
@@ -281,6 +339,48 @@ class TestPipVenvDetection(DockerTestBase):
             _, stderr, exit_code = executor.execute_command(f"{pip_path} install {package}")
             if exit_code != 0:
                 pytest.fail(f"Failed to install {package} in venv: {stderr}")
+
+    def _create_system_distractor_packages(self, executor: DockerExecutor) -> None:
+        """Create fake system packages in /usr/local that should NOT be detected by venv detection.
+
+        This method creates decoy packages to ensure the detector correctly identifies
+        venv packages instead of falling back to system-wide installations.
+        """
+        # Create fake system python site-packages structure in /usr/local
+        system_site_packages = "/usr/local/lib/python3.9/site-packages"
+        _, _, exit_code = executor.execute_command(f"mkdir -p {system_site_packages}")
+        if exit_code != 0:
+            pytest.fail(f"Failed to create system site-packages directory: {system_site_packages}")
+
+        # Create fake system packages with different names (these should NOT be detected)
+        distractor_packages = ["numpy==1.24.0", "pandas==1.5.3"]
+        for package in distractor_packages:
+            package_name = package.split("==", maxsplit=1)[0]
+            package_version = package.split("==", maxsplit=1)[1]
+
+            # Create package metadata files that pip would create
+            dist_info_dir = f"{system_site_packages}/{package_name}-{package_version}.dist-info"
+            _, _, exit_code = executor.execute_command(f"mkdir -p {dist_info_dir}")
+            if exit_code != 0:
+                pytest.fail(f"Failed to create dist-info directory: {dist_info_dir}")
+
+            # Create METADATA file
+            metadata_content = f"""Name: {package_name}
+Version: {package_version}
+"""
+            _, _, exit_code = executor.execute_command(f"echo '{metadata_content}' > {dist_info_dir}/METADATA")
+            if exit_code != 0:
+                pytest.fail(f"Failed to create METADATA file for {package_name}")
+
+        # Also create a fake pyvenv.cfg in /usr/local (should NOT be detected due to /usr/local exclusion)
+        fake_venv_cfg = "/usr/local/pyvenv.cfg"
+        cfg_content = """home = /usr/bin
+include-system-site-packages = false
+version = 3.9.0
+"""
+        _, _, exit_code = executor.execute_command(f"echo '{cfg_content}' > {fake_venv_cfg}")
+        if exit_code != 0:
+            pytest.fail(f"Failed to create fake pyvenv.cfg at {fake_venv_cfg}")
 
     def _validate_venv_detection(self, result: Dict[str, Any], expected_scope: str) -> None:
         """Validate that venv detection worked correctly."""
