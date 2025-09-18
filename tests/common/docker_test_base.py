@@ -109,18 +109,31 @@ class DockerTestBase:
         print("=" * 60)
 
     def validate_basic_structure(self, result: Dict[str, Any], detector_type: str) -> None:
-        """Validate basic structure of new scope-based results."""
+        """Validate basic structure of dependency resolver results.
+
+        Validates both package scopes (project/system) and metadata sections (source).
+        Handles both full analysis results and metadata-only results.
+        """
         assert isinstance(result, dict), "Result should be a dictionary"
 
-        # Should have either project or system scope (or both)
-        valid_scopes = ["project", "system", "_container-info"]
-        found_scopes = [scope for scope in result.keys() if scope in valid_scopes]
-        assert len(found_scopes) > 0, f"Expected at least one scope in result keys: {list(result.keys())}"
+        # Should have either package scopes (project/system) or source metadata
+        package_scopes = ["project", "system"]
+        metadata_sections = ["source"]
+        all_valid_sections = package_scopes + metadata_sections
 
-        # Validate packages were found for the expected detector type
-        packages_found = False
-        for scope_name in ["project", "system"]:
-            if scope_name in result:
+        found_package_scopes = [scope for scope in result.keys() if scope in package_scopes]
+        found_metadata_sections = [section for section in result.keys() if section in metadata_sections]
+        found_valid_sections = [section for section in result.keys() if section in all_valid_sections]
+
+        assert (
+            len(found_valid_sections) > 0
+        ), f"Expected at least one valid section in result keys: {list(result.keys())}"
+
+        # Validate packages were found for the expected detector type (unless only metadata)
+        if found_package_scopes:
+            # If we have package scopes, validate that the expected detector type is present
+            packages_found = False
+            for scope_name in found_package_scopes:
                 scope_result = result[scope_name]
                 assert isinstance(scope_result, dict), f"{scope_name} should be a dictionary"
                 assert "packages" in scope_result, f"{scope_name} should contain 'packages'"
@@ -134,7 +147,16 @@ class DockerTestBase:
                         packages_found = True
                         break
 
-        assert packages_found, f"Should have found packages of type '{detector_type}' in result"
+            assert packages_found, f"Should have found packages of type '{detector_type}' in result"
+        elif found_metadata_sections:
+            # If only metadata sections, validate source structure (e.g., container-info-only mode)
+            source_result = result["source"]
+            assert isinstance(source_result, dict), "source should be a dictionary"
+            assert "type" in source_result, "source should contain 'type'"
+            assert source_result["type"] in [
+                "container",
+                "host",
+            ], f"source type should be 'container' or 'host': {source_result['type']}"
 
     def validate_dependency_structure(self, packages: list, sample_count: int = 5) -> None:
         """Validate structure of package entries in the new format."""

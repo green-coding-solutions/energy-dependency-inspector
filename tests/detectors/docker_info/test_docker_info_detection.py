@@ -96,14 +96,14 @@ class TestDockerInfoDetection(DockerTestBase):
         """Validate that container info is present in full analysis result."""
         assert isinstance(result, dict), "Result should be a dictionary"
 
-        # Check for _container-info
-        assert "_container-info" in result, f"Expected '_container-info' in result keys: {list(result.keys())}"
+        # Check for source
+        assert "source" in result, f"Expected 'source' in result keys: {list(result.keys())}"
 
-        container_info = result["_container-info"]
+        container_info = result["source"]
         self._validate_container_info_structure(container_info)
 
         # Should also have other detectors
-        other_detectors = [key for key in result.keys() if key != "_container-info"]
+        other_detectors = [key for key in result.keys() if key != "source"]
         assert len(other_detectors) > 0, "Should have other detectors in full analysis"
 
         print(f"✓ Container info included in full analysis with {len(other_detectors)} other detectors")
@@ -112,11 +112,11 @@ class TestDockerInfoDetection(DockerTestBase):
         """Validate container-info-only result structure."""
         assert isinstance(result, dict), "Result should be a dictionary"
 
-        # Should only have _container-info
-        assert "_container-info" in result, f"Expected '_container-info' in result keys: {list(result.keys())}"
+        # Should only have source
+        assert "source" in result, f"Expected 'source' in result keys: {list(result.keys())}"
         assert len(result) == 1, f"Container-info-only should have exactly 1 key, got: {list(result.keys())}"
 
-        container_info = result["_container-info"]
+        container_info = result["source"]
         self._validate_container_info_structure(container_info)
 
         print("✓ Container-info-only mode working correctly")
@@ -126,9 +126,12 @@ class TestDockerInfoDetection(DockerTestBase):
         assert isinstance(container_info, dict), "Container info should be a dictionary"
 
         # Required fields
-        required_fields = ["name", "image", "hash"]
+        required_fields = ["type", "name", "image", "hash"]
         for field in required_fields:
             assert field in container_info, f"Container info should have '{field}': {container_info}"
+
+        # Validate type field
+        assert container_info["type"] == "container", f"Type should be 'container': {container_info['type']}"
 
         name = container_info["name"]
         image = container_info["image"]
@@ -171,15 +174,17 @@ class TestDockerInfoDetectorIntegration:
             # Test only_container_info mode
             result = orchestrator.resolve_dependencies(executor, only_container_info=True)
 
-            # Should only contain _container-info
+            # Should only contain source
             assert isinstance(result, dict)
-            assert "_container-info" in result
+            assert "source" in result
             assert len(result) == 1
 
-            container_info = result["_container-info"]
+            container_info = result["source"]
+            assert "type" in container_info
             assert "name" in container_info
             assert "image" in container_info
             assert "hash" in container_info
+            assert container_info["type"] == "container"
 
         finally:
             if container_id:

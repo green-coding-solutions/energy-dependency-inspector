@@ -22,7 +22,7 @@ This directory contains tests for the Docker Info detector, which extracts metad
 
 - ✅ Container metadata extraction (name, image, hash)
 - ✅ Both full analysis and container-info-only modes
-- ✅ Simplified JSON output format (`_container-info`)
+- ✅ Simplified JSON output format (`source` with `type: "container"`)
 - ✅ Error handling and graceful degradation
 
 ### Integration Tests
@@ -62,7 +62,8 @@ pytest tests/detectors/docker_info/test_docker_info_detection.py::TestDockerInfo
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "container-id",
     "image": "nginx:alpine",
     "hash": "sha256:abc123..."
@@ -74,13 +75,18 @@ pytest tests/detectors/docker_info/test_docker_info_detection.py::TestDockerInfo
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "container-id",
     "image": "nginx:alpine",
     "hash": "sha256:abc123..."
   },
-  "dpkg": { ... },
-  "apk": { ... }
+  "system": {
+    "packages": [...]
+  },
+  "project": {
+    "packages": [...]
+  }
 }
 ```
 

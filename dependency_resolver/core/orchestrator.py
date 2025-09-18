@@ -71,7 +71,8 @@ class Orchestrator:
                     if detector_name == "docker-info":
                         packages, metadata = detector.get_dependencies(executor, working_dir)
                         if metadata:  # Only include if we got container info
-                            result["_container-info"] = metadata
+                            metadata["type"] = "container"
+                            result["source"] = metadata
                         if self.debug:
                             print(f"Found container info for {detector_name}")
                     else:

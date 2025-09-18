@@ -260,7 +260,9 @@ class TestResolveDockerDependenciesAsDict:
 
         mock_orchestrator_instance = MagicMock()
         mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {"_container-info": {"name": "my-container", "image": "ubuntu:20.04", "hash": "abc123"}}
+        mock_dependencies = {
+            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "abc123"}
+        }
         mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
 
         # Call function with all arguments

@@ -64,7 +64,7 @@ The tool outputs structured JSON with packages aggregated by scope (project/syst
 
 ```json
 {
-  "_container-info": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
+  "source": { "type": "container", "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
   "project": {
     "packages": [
       { "name": "numpy", "version": "1.3.3", "type": "pip" }
@@ -87,7 +87,7 @@ For complete JSON schema documentation, field definitions, and examples, see [do
 - **System Packages**: All system-scoped packages aggregated in `system.packages[]` array
 - **Package Type**: Each package includes `type` field (`pip`, `npm`, `dpkg`, `apk`, `maven`)
 - **Metadata**: Package manager metadata stored in `project.{manager}` sections (location, hash)
-- **Container Info**: Docker metadata included as `_container-info` when applicable
+- **Source Info**: Environment metadata included as `source` when applicable (includes `type` field for container/host)
 
 ## Implementation Constraints
 
