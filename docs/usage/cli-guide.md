@@ -43,6 +43,9 @@ python3 -m dependency_resolver --working-dir /path/to/project
 
 # Skip system scope package managers (focus on project dependencies)
 python3 -m dependency_resolver --skip-system-scope
+
+# Skip hash collection for improved performance
+python3 -m dependency_resolver --skip-hash-collection
 ```
 
 ## Common Usage Patterns
@@ -79,6 +82,9 @@ python3 -m dependency_resolver --debug
 
 # Focus on project dependencies only
 python3 -m dependency_resolver --skip-system-scope --debug
+
+# Fast analysis without hash collection
+python3 -m dependency_resolver --skip-hash-collection --debug
 ```
 
 ## Supported Environments

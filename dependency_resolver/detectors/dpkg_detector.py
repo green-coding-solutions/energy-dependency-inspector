@@ -27,7 +27,9 @@ class DpkgDetector(PackageManagerDetector):
         _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
         return dpkg_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any]:
         """Extract system packages with versions using dpkg-query.
 
         Uses dpkg-query -W -f for reliable package information extraction.
@@ -39,8 +41,8 @@ class DpkgDetector(PackageManagerDetector):
         if exit_code != 0:
             return {"scope": "system", "dependencies": {}}
 
-        # Collect all package hashes in a single batch operation
-        batch_hashes = self._collect_all_package_hashes(executor)
+        # Collect all package hashes in a single batch operation (unless skipped)
+        batch_hashes = {} if skip_hash_collection else self._collect_all_package_hashes(executor)
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -57,13 +59,15 @@ class DpkgDetector(PackageManagerDetector):
                         "version": full_version,
                     }
 
-                    # Use batch-collected hash or fallback to individual lookup
-                    package_hash = batch_hashes.get(package_name)
-                    if not package_hash:
-                        package_hash = self._get_package_hash(executor, package_name, architecture)
+                    # Skip hash collection if requested
+                    if not skip_hash_collection:
+                        # Use batch-collected hash or fallback to individual lookup
+                        package_hash = batch_hashes.get(package_name)
+                        if not package_hash:
+                            package_hash = self._get_package_hash(executor, package_name, architecture)
 
-                    if package_hash:
-                        package_data["hash"] = package_hash
+                        if package_hash:
+                            package_data["hash"] = package_hash
 
                     dependencies[package_name] = package_data
 

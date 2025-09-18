@@ -23,7 +23,9 @@ class PipDetector(PackageManagerDetector):
         _, _, exit_code = executor.execute_command("pip --version", working_dir)
         return exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any]:
         """Extract pip dependencies with versions.
 
         Uses 'pip list --format=freeze' for clean package==version format.
@@ -68,7 +70,7 @@ class PipDetector(PackageManagerDetector):
         if scope == "project":
             final_result["location"] = location
             # Generate location-based hash if appropriate
-            if dependencies:
+            if dependencies and not skip_hash_collection:
                 final_result["hash"] = self._generate_location_hash(executor, location)
 
         final_result["dependencies"] = dependencies

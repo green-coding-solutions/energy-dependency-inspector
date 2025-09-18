@@ -21,12 +21,23 @@ class ApkDetector(PackageManagerDetector):
         _, _, apk_exit_code = executor.execute_command("apk --version")
         return apk_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any]:
         """Extract system packages with versions and architecture using apk list.
 
         Uses 'apk list --installed' for comprehensive package information including architecture.
         See docs/technical/detectors/apk_detector.md
+
+        Args:
+            skip_hash_collection: Not applicable for apk (no hash collection implemented)
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type
+            - metadata: Empty dict (system scope has no metadata)
         """
+        _ = skip_hash_collection  # Not applicable for apk detector
         command = "apk list --installed"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 

@@ -34,7 +34,9 @@ class NpmDetector(PackageManagerDetector):
         # Fallback to package-lock.json
         return executor.path_exists(f"{search_dir}/package-lock.json")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any]:
         """Extract npm dependencies with versions.
 
         Uses 'npm list --json --depth=0' for structured package information.
@@ -67,7 +69,7 @@ class NpmDetector(PackageManagerDetector):
             pass
 
         # Generate location-based hash if appropriate
-        if dependencies and scope == "project":
+        if dependencies and not skip_hash_collection:
             result["hash"] = self._generate_location_hash(executor, location)
 
         result["dependencies"] = dependencies

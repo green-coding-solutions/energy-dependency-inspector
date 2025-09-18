@@ -21,8 +21,16 @@ class MavenDetector(PackageManagerDetector):
         search_dir = working_dir or "."
         return executor.path_exists(f"{search_dir}/pom.xml")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract Maven dependencies with versions."""
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any]:
+        """Extract Maven dependencies with versions.
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type
+            - metadata: Dict with location and hash for project scope
+        """
         search_dir = working_dir or "."
         location = self._resolve_absolute_path(executor, search_dir)
         dependencies: dict[str, dict[str, str]] = {}
@@ -37,8 +45,8 @@ class MavenDetector(PackageManagerDetector):
             # Fallback to pom.xml parsing
             dependencies = self._get_dependencies_via_pom_parsing(executor, search_dir)
 
-        # Generate location-based hash if we have dependencies
-        if dependencies:
+        # Generate location-based hash if appropriate
+        if dependencies and not skip_hash_collection:
             result["hash"] = self._generate_location_hash(executor, location)
 
         result["dependencies"] = dependencies

@@ -16,9 +16,11 @@ class Orchestrator:
         debug: bool = False,
         skip_system_scope: bool = False,
         venv_path: str | None = None,
+        skip_hash_collection: bool = False,
     ):
         self.debug = debug
         self.skip_system_scope = skip_system_scope
+        self.skip_hash_collection = skip_hash_collection
 
         # Create detector instances
         self.detectors: list[PackageManagerDetector] = [
@@ -63,7 +65,9 @@ class Orchestrator:
                     if self.debug:
                         print(f"{detector_name} is usable, extracting dependencies...")
 
-                    dependencies = detector.get_dependencies(executor, working_dir)
+                    dependencies = detector.get_dependencies(
+                        executor, working_dir, skip_hash_collection=self.skip_hash_collection
+                    )
 
                     # Special handling for docker-info detector (simplified format)
                     if detector_name == "docker-info":
