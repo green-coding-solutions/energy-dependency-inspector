@@ -145,8 +145,7 @@ class PipDetector(PackageManagerDetector):
                     self._venv_path_searched = True
                     return venv_path
 
-        # 3. Extract venv path from pip show pip location (fallback method) - check immediately
-        # Use basic pip command to avoid circular dependency with _get_pip_command
+        # 3. Extract venv path from pip show pip location
         stdout, _, exit_code = executor.execute_command("pip show pip", working_dir)
         if exit_code == 0:
             for line in stdout.split("\n"):
@@ -163,14 +162,22 @@ class PipDetector(PackageManagerDetector):
 
         # 4. Batch search for remaining venv locations
         # Collect all paths and use single find command for efficiency (fewer executor calls)
-        search_paths = []
+        search_paths = set()
         common_venv_names = ["venv", ".venv", "env", ".env", "virtualenv"]
 
-        # Check working directory and its subdirectories (if working_dir specified)
+        # Check working directory, if specified
         if working_dir:
-            search_paths.append(working_dir)  # working_dir itself
+            search_paths.add(working_dir)  # working_dir itself
             for venv_name in common_venv_names:
-                search_paths.append(f"{working_dir}/{venv_name}")
+                search_paths.add(f"{working_dir}/{venv_name}")
+
+        # Check current directory, if running in container environment
+        if not isinstance(executor, HostExecutor):
+            pwd_stdout, _, pwd_exit_code = executor.execute_command("pwd")
+            if pwd_exit_code == 0 and pwd_stdout.strip():
+                current_dir = pwd_stdout.strip()
+                for venv_name in common_venv_names:
+                    search_paths.add(f"{current_dir}/{venv_name}")
 
         # Check home directory subdirectories (always check)
         # Resolve home directory explicitly to avoid tilde expansion issues
@@ -178,7 +185,7 @@ class PipDetector(PackageManagerDetector):
         if home_exit_code == 0 and home_stdout.strip():
             home_dir = home_stdout.strip()
             for venv_name in common_venv_names:
-                search_paths.append(f"{home_dir}/{venv_name}")
+                search_paths.add(f"{home_dir}/{venv_name}")
 
         # External venv locations (project-specific, only if working_dir specified)
         if working_dir:
@@ -194,7 +201,7 @@ class PipDetector(PackageManagerDetector):
                     f"{home_dir}/.cache/pypoetry/virtualenvs/{project_name}",
                     f"{home_dir}/.pyenv/versions/{project_name}",
                 ]
-                search_paths.extend(external_locations)
+                search_paths.update(external_locations)
 
         if search_paths:
             escaped_paths = [f"'{path}'" for path in search_paths]
