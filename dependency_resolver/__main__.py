@@ -37,6 +37,7 @@ Examples:
   %(prog)s --debug                                # Enable debug output
   %(prog)s --skip-system-scope                    # Skip system scope package managers
   %(prog)s --skip-hash-collection                 # Skip hash collection for improved performance
+  %(prog)s --select-detectors "pip,dpkg"          # Use only pip and dpkg detectors
         """,
     )
 
@@ -83,6 +84,12 @@ Examples:
         "--skip-hash-collection",
         action="store_true",
         help="Skip hash collection for packages and project locations to improve performance",
+    )
+
+    parser.add_argument(
+        "--select-detectors",
+        type=str,
+        help="Comma-separated list of detectors to use (e.g., 'pip,dpkg'). Available: pip, npm, dpkg, apk, maven, docker-info",
     )
 
     return parser.parse_args()
@@ -133,6 +140,7 @@ def main() -> None:
             skip_system_scope=args.skip_system_scope,
             venv_path=args.venv_path,
             skip_hash_collection=args.skip_hash_collection,
+            selected_detectors=args.select_detectors,
         )
         dependencies = orchestrator.resolve_dependencies(executor, args.working_dir, args.only_container_info)
         formatter = OutputFormatter(debug=args.debug)

@@ -68,7 +68,12 @@ from dependency_resolver import Orchestrator, HostExecutor, DockerExecutor, Outp
 
 # Host system analysis with custom settings
 executor = HostExecutor()
-orchestrator = Orchestrator(debug=True, skip_system_scope=True, skip_hash_collection=True)
+orchestrator = Orchestrator(
+    debug=True,
+    skip_system_scope=True,
+    skip_hash_collection=True,
+    selected_detectors="pip,npm"  # Only analyze Python and Node.js dependencies
+)
 dependencies = orchestrator.resolve_dependencies(executor)
 
 # Format output
@@ -84,7 +89,12 @@ from dependency_resolver import Orchestrator, DockerExecutor, OutputFormatter
 # Docker container analysis
 container_id = "nginx"
 executor = DockerExecutor(container_id)
-orchestrator = Orchestrator(debug=False, skip_system_scope=False, skip_hash_collection=False)
+orchestrator = Orchestrator(
+    debug=False,
+    skip_system_scope=False,
+    skip_hash_collection=False,
+    selected_detectors="dpkg,docker-info"  # Analyze system packages and container info only
+)
 
 dependencies = orchestrator.resolve_dependencies(executor, working_dir="/app")
 
@@ -119,9 +129,29 @@ orchestrator = Orchestrator(
     debug=True,                    # Enable debug output
     skip_system_scope=False,       # Skip system-wide package managers
     venv_path="/path/to/venv",     # Specify Python virtual environment path
-    skip_hash_collection=False     # Skip hash collection for improved performance
+    skip_hash_collection=False,    # Skip hash collection for improved performance
+    selected_detectors="pip,npm"   # Use only specific detectors
 )
 ```
+
+### Detector Selection
+
+Control which package managers are analyzed by specifying the `selected_detectors` parameter:
+
+```python
+from dependency_resolver import Orchestrator, HostExecutor
+
+# Use only Python pip detector
+orchestrator = Orchestrator(selected_detectors="pip")
+
+# Use multiple specific detectors
+orchestrator = Orchestrator(selected_detectors="pip,npm,maven")
+
+# Use all detectors (default behavior)
+orchestrator = Orchestrator(selected_detectors=None)
+```
+
+**Available detectors:** `pip`, `npm`, `dpkg`, `apk`, `maven`, `docker-info`
 
 ### Executor Options
 

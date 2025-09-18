@@ -46,7 +46,34 @@ python3 -m dependency_resolver --skip-system-scope
 
 # Skip hash collection for improved performance
 python3 -m dependency_resolver --skip-hash-collection
+
+# Select specific detectors to run
+python3 -m dependency_resolver --select-detectors "pip,dpkg"
 ```
+
+## Detector Selection
+
+Control which package managers are analyzed with the `--select-detectors` flag:
+
+```bash
+# Use only pip and dpkg detectors
+python3 -m dependency_resolver --select-detectors "pip,dpkg"
+
+# Use only npm detector for Node.js projects
+python3 -m dependency_resolver --select-detectors "npm"
+
+# Use multiple detectors with debug output
+python3 -m dependency_resolver --select-detectors "pip,npm,maven" --debug
+```
+
+**Available detectors:**
+
+- `pip` - Python packages (pip/PyPI)
+- `npm` - Node.js packages (npm/yarn)
+- `dpkg` - Debian/Ubuntu system packages
+- `apk` - Alpine Linux system packages
+- `maven` - Java Maven dependencies
+- `docker-info` - Docker container metadata
 
 ## Common Usage Patterns
 
@@ -60,6 +87,9 @@ python3 -m dependency_resolver --working-dir /path/to/python/project
 
 # Analyze Node.js project
 python3 -m dependency_resolver --working-dir /path/to/nodejs/project
+
+# Analyze only Python dependencies in a project
+python3 -m dependency_resolver --working-dir /path/to/python/project --select-detectors "pip"
 ```
 
 ### Comprehensive Docker Analysis
