@@ -80,8 +80,10 @@ class TestNpmDockerDetection(DockerTestBase):
         self.validate_dependency_structure(npm_packages, sample_count=3)
 
         # Should have location metadata
-        assert "npm" in project_result, "Project scope should contain npm metadata"
-        npm_metadata = project_result["npm"]
+        assert "package-management" in project_result, "Project scope should contain package-management metadata"
+        package_management = project_result["package-management"]
+        assert "npm" in package_management, "package-management should contain npm metadata"
+        npm_metadata = package_management["npm"]
         assert "location" in npm_metadata, "npm metadata should have location field for project scope"
         location = npm_metadata["location"]
         assert isinstance(location, str), "Location should be a string"

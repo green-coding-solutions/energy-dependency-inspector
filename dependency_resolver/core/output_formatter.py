@@ -36,7 +36,7 @@ class OutputFormatter:
 
                 for key, value in section_data.items():
                     if key != "packages":
-                        # Copy metadata (location, hash for project managers)
+                        # Copy metadata (package-management and other metadata)
                         excerpt[section_name][key] = value
 
                 if "packages" in section_data:

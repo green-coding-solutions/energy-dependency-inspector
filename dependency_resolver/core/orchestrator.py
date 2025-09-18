@@ -104,13 +104,11 @@ class Orchestrator:
 
         # Build final result structure matching proposal
         if project_packages or project_metadata:
-            project_section: dict[str, Any] = {"packages": project_packages}
-            project_section.update(project_metadata)
+            project_section: dict[str, Any] = {"packages": project_packages, "package-management": project_metadata}
             result["project"] = project_section
 
         if system_packages or system_metadata:
-            system_section: dict[str, Any] = {"packages": system_packages}
-            system_section.update(system_metadata)
+            system_section: dict[str, Any] = {"packages": system_packages, "package-management": system_metadata}
             result["system"] = system_section
 
         return result

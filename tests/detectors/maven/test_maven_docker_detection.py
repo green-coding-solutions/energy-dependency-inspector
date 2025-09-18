@@ -218,8 +218,10 @@ wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-w
         assert len(maven_packages) > 0, "Should have found Maven packages"
 
         # Should have location metadata
-        assert "maven" in project_result, "Project scope should contain Maven metadata"
-        maven_metadata = project_result["maven"]
+        assert "package-management" in project_result, "Project scope should contain package-management metadata"
+        package_management = project_result["package-management"]
+        assert "maven" in package_management, "package-management should contain Maven metadata"
+        maven_metadata = package_management["maven"]
         assert "location" in maven_metadata
         assert maven_metadata["location"] == "/tmp/test-maven-project"
 
@@ -260,8 +262,10 @@ wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-w
         assert len(maven_packages) > 0, "Should have found Maven packages"
 
         # Should have location metadata
-        assert "maven" in project_result, "Project scope should contain Maven metadata"
-        maven_metadata = project_result["maven"]
+        assert "package-management" in project_result, "Project scope should contain package-management metadata"
+        package_management = project_result["package-management"]
+        assert "maven" in package_management, "package-management should contain Maven metadata"
+        maven_metadata = package_management["maven"]
         assert "location" in maven_metadata
         assert maven_metadata["location"] == "/tmp/test-maven-project"
 

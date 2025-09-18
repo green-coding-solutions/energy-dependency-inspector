@@ -69,7 +69,9 @@ The tool outputs structured JSON with packages aggregated by scope (project/syst
     "packages": [
       { "name": "numpy", "version": "1.3.3", "type": "pip" }
     ],
-    "pip": { "location": "/app/venv/lib/python3.12/site-packages", "hash": "sha256:..." }
+    "package-management": {
+      "pip": { "location": "/app/venv/lib/python3.12/site-packages", "hash": "sha256:..." }
+    }
   },
   "system": {
     "packages": [

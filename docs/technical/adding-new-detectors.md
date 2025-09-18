@@ -336,14 +336,14 @@ def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[
 def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if working_dir and self._has_project_files(executor, working_dir):
         # Extract project dependencies
-        packages = []  # List of package dictionaries
+        packages = []
         location = self._resolve_absolute_path(executor, working_dir)
-        metadata = {"location": location}  # Project scope metadata
+        metadata = {"location": location}
         return packages, metadata
     else:
         # Extract system dependencies
-        packages = []  # List of package dictionaries
-        metadata = {}  # Empty for system scope
+        packages = []
+        metadata = {}
         return packages, metadata
 ```
 

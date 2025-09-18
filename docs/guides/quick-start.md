@@ -48,9 +48,11 @@ The tool outputs JSON with packages organized by scope:
         "type": "pip"
       }
     ],
-    "pip": {
-      "location": "/path/to/venv/lib/python3.12/site-packages",
-      "hash": "abc123..."
+    "package-management": {
+      "pip": {
+        "location": "/path/to/venv/lib/python3.12/site-packages",
+        "hash": "abc123..."
+      }
     }
   },
   "system": {

@@ -11,8 +11,10 @@ The dependency-resolver outputs a unified JSON structure that aggregates all pac
   "source": { ... },
   "project": {
     "packages": [...],
-    "pip": { ... },
-    "npm": { ... }
+    "package-management": {
+      "pip": { ... },
+      "npm": { ... }
+    }
   },
   "system": {
     "packages": [...]
@@ -63,13 +65,15 @@ Project-specific packages from all package managers are aggregated in a single a
         "type": "npm"
       }
     ],
-    "pip": {
-      "location": "/path/to/venv/lib/python3.12/site-packages",
-      "hash": "def456..."
-    },
-    "npm": {
-      "location": "/app/node_modules",
-      "hash": "abc123..."
+    "package-management": {
+      "pip": {
+        "location": "/path/to/venv/lib/python3.12/site-packages",
+        "hash": "def456..."
+      },
+      "npm": {
+        "location": "/app/node_modules",
+        "hash": "abc123..."
+      }
     }
   }
 }
@@ -142,9 +146,11 @@ For project-scoped package managers, a location hash is provided in the metadata
 {
   "project": {
     "packages": [...],
-    "pip": {
-      "location": "/path/to/venv/lib/python3.12/site-packages",
-      "hash": "sha256:location-based-hash"
+    "package-management": {
+      "pip": {
+        "location": "/path/to/venv/lib/python3.12/site-packages",
+        "hash": "sha256:location-based-hash"
+      }
     }
   }
 }
@@ -197,13 +203,15 @@ Here's a complete example showing the new unified structure:
         "type": "npm"
       }
     ],
-    "pip": {
-      "location": "/app/venv/lib/python3.12/site-packages",
-      "hash": "sha256:xyz789..."
-    },
-    "npm": {
-      "location": "/app/node_modules",
-      "hash": "sha256:npm456..."
+    "package-management": {
+      "pip": {
+        "location": "/app/venv/lib/python3.12/site-packages",
+        "hash": "sha256:xyz789..."
+      },
+      "npm": {
+        "location": "/app/node_modules",
+        "hash": "sha256:npm456..."
+      }
     }
   },
   "system": {
@@ -250,8 +258,9 @@ if "project" in deps:
         print(f"  {name}: {version} ({pkg_type}) {'✓' if has_hash else ''}")
 
     # Show metadata for each package manager
-    for key, value in project.items():
-        if key != "packages" and isinstance(value, dict):
+    package_management = project.get("package-management", {})
+    for key, value in package_management.items():
+        if isinstance(value, dict):
             location = value.get("location", "N/A")
             has_hash = "hash" in value
             print(f"  {key.upper()} location: {location} {'✓' if has_hash else ''}")
