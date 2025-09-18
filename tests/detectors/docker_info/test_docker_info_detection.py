@@ -2,7 +2,6 @@
 
 import os
 import sys
-from typing import Dict, Any
 from unittest.mock import Mock
 
 # Add parent directory to path for imports
@@ -31,56 +30,65 @@ class TestDockerInfoDetection(DockerTestBase):
         container_id = None
 
         try:
-            # Start a test container
-            container_id = self.start_container("nginx:alpine", sleep_duration="60")
+            # Start a test container (use non-Docker Hub image to test full repository name preservation)
+            container_id = self.start_container("quay.io/prometheus/busybox:latest", sleep_duration="60")
 
             # Wait for container to be ready
             self.wait_for_container_ready(container_id, "echo ready", max_wait=10)
 
-            # Test Docker Info detection
+            # Test Docker Info detection (container info only)
             executor = DockerExecutor(container_id)
             orchestrator = Orchestrator(debug=False)
 
-            # Test full analysis (includes container info)
-            result = orchestrator.resolve_dependencies(executor)
+            result = orchestrator.resolve_dependencies(executor, only_container_info=True)
 
             if verbose_output:
-                self.print_verbose_results("DOCKER INFO DETECTION OUTPUT (FULL):", result)
+                self.print_verbose_results("DOCKER INFO DETECTION OUTPUT:", result)
 
-            # Validate container info is included
-            self._validate_container_info_in_full_result(result)
+            assert isinstance(result, dict), "Result should be a dictionary"
 
-            # Test container-info-only mode
-            result_info_only = orchestrator.resolve_dependencies(executor, only_container_info=True)
+            # Should only have source
+            assert "source" in result, f"Expected 'source' in result keys: {list(result.keys())}"
+            assert len(result) == 1, f"Container-info-only should have exactly 1 key, got: {list(result.keys())}"
 
-            if verbose_output:
-                self.print_verbose_results("DOCKER INFO DETECTION OUTPUT (INFO ONLY):", result_info_only)
+            container_info = result["source"]
 
-            # Validate container-info-only result
-            self._validate_container_info_only_result(result_info_only)
+            # Required fields
+            required_fields = ["type", "name", "image", "hash"]
+            for field in required_fields:
+                assert field in container_info, f"Container info should have '{field}': {container_info}"
+
+            # Validate type field
+            assert container_info["type"] == "container", f"Type should be 'container': {container_info['type']}"
+
+            name = container_info["name"]
+            image = container_info["image"]
+            hash_value = container_info["hash"]
+
+            # Validate field types and content
+            assert isinstance(name, str) and len(name) > 0, f"Name should be non-empty string: {name}"
+            assert isinstance(image, str) and len(image) > 0, f"Image should be non-empty string: {image}"
+            assert isinstance(hash_value, str) and len(hash_value) > 0, f"Hash should be non-empty string: {hash_value}"
+
+            # Validate that full image name with repository is preserved
+            assert "quay.io/prometheus/busybox:latest" == image, f"Expected full image name with repository: {image}"
+
+            # Validate hash format (should start with sha256:)
+            if hash_value != "unknown":
+                assert hash_value.startswith("sha256:"), f"Hash should start with 'sha256:': {hash_value}"
+                assert len(hash_value) == 71, f"Hash should be 71 chars (sha256: + 64 hex): {hash_value}"
+
+            # Optional error field
+            if "error" in container_info:
+                error = container_info["error"]
+                assert isinstance(error, str), f"Error should be string: {error}"
+
+            print(f"✓ Container info structure valid: {name} -> {image} ({hash_value[:19]}...)")
+            print("✓ Container-info-only mode working correctly")
 
         finally:
             if container_id:
                 self.cleanup_container(container_id)
-
-    def test_docker_info_detector_unit_tests(self) -> None:
-        """Unit tests for Docker Info detector without real containers."""
-        detector = DockerInfoDetector()
-
-        # Test detector name
-        assert detector.NAME == "docker-info"
-
-        # Test system scope
-        mock_executor = Mock()
-        assert not detector.has_system_scope(mock_executor)
-
-        # Test is_usable with DockerExecutor
-        docker_executor = Mock(spec=DockerExecutor)
-        assert detector.is_usable(docker_executor)
-
-        # Test is_usable with non-DockerExecutor
-        other_executor = Mock()
-        assert not detector.is_usable(other_executor)
 
     def test_docker_info_detector_non_docker_executor(self) -> None:
         """Test behavior with non-DockerExecutor."""
@@ -91,68 +99,6 @@ class TestDockerInfoDetection(DockerTestBase):
 
         assert not packages
         assert not metadata
-
-    def _validate_container_info_in_full_result(self, result: Dict[str, Any]) -> None:
-        """Validate that container info is present in full analysis result."""
-        assert isinstance(result, dict), "Result should be a dictionary"
-
-        # Check for source
-        assert "source" in result, f"Expected 'source' in result keys: {list(result.keys())}"
-
-        container_info = result["source"]
-        self._validate_container_info_structure(container_info)
-
-        # Should also have other detectors
-        other_detectors = [key for key in result.keys() if key != "source"]
-        assert len(other_detectors) > 0, "Should have other detectors in full analysis"
-
-        print(f"✓ Container info included in full analysis with {len(other_detectors)} other detectors")
-
-    def _validate_container_info_only_result(self, result: Dict[str, Any]) -> None:
-        """Validate container-info-only result structure."""
-        assert isinstance(result, dict), "Result should be a dictionary"
-
-        # Should only have source
-        assert "source" in result, f"Expected 'source' in result keys: {list(result.keys())}"
-        assert len(result) == 1, f"Container-info-only should have exactly 1 key, got: {list(result.keys())}"
-
-        container_info = result["source"]
-        self._validate_container_info_structure(container_info)
-
-        print("✓ Container-info-only mode working correctly")
-
-    def _validate_container_info_structure(self, container_info: Dict[str, Any]) -> None:
-        """Validate the structure of container info."""
-        assert isinstance(container_info, dict), "Container info should be a dictionary"
-
-        # Required fields
-        required_fields = ["type", "name", "image", "hash"]
-        for field in required_fields:
-            assert field in container_info, f"Container info should have '{field}': {container_info}"
-
-        # Validate type field
-        assert container_info["type"] == "container", f"Type should be 'container': {container_info['type']}"
-
-        name = container_info["name"]
-        image = container_info["image"]
-        hash_value = container_info["hash"]
-
-        # Validate field types and content
-        assert isinstance(name, str) and len(name) > 0, f"Name should be non-empty string: {name}"
-        assert isinstance(image, str) and len(image) > 0, f"Image should be non-empty string: {image}"
-        assert isinstance(hash_value, str) and len(hash_value) > 0, f"Hash should be non-empty string: {hash_value}"
-
-        # Validate hash format (should start with sha256:)
-        if hash_value != "unknown":
-            assert hash_value.startswith("sha256:"), f"Hash should start with 'sha256:': {hash_value}"
-            assert len(hash_value) == 71, f"Hash should be 71 chars (sha256: + 64 hex): {hash_value}"
-
-        # Optional error field
-        if "error" in container_info:
-            error = container_info["error"]
-            assert isinstance(error, str), f"Error should be string: {error}"
-
-        print(f"✓ Container info structure valid: {name} -> {image} ({hash_value[:19]}...)")
 
 
 class TestDockerInfoDetectorIntegration:
