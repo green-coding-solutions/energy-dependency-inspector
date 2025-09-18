@@ -3,7 +3,6 @@
 - Rename CLI flag '--only-container-info' to '--only-source-info'
 - Publish package to PyPI
 - Add host_info_detector (similar to docker_info_detector)
-- Add CLI flag to select a subset of detectors (see how Syft does it: <https://github.com/anchore/syft/wiki/package-cataloger-selection>)
 - Extend the set of supported package managers with the common ones for Go, PHP and Java
 - Add Dockerfile
 - Add support for Podman

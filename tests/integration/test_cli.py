@@ -38,3 +38,21 @@ class TestCliArguments:
         """Test docker executor creation fails without identifier."""
         with pytest.raises(SystemExit):
             create_executor("docker", None)
+
+    def test_select_detectors_argument(self) -> None:
+        """Test --select-detectors argument parsing."""
+        with patch.object(sys, "argv", ["dependency_resolver", "--select-detectors", "pip,dpkg"]):
+            args = parse_arguments()
+            assert args.select_detectors == "pip,dpkg"
+
+    def test_select_detectors_single(self) -> None:
+        """Test --select-detectors with single detector."""
+        with patch.object(sys, "argv", ["dependency_resolver", "--select-detectors", "npm"]):
+            args = parse_arguments()
+            assert args.select_detectors == "npm"
+
+    def test_select_detectors_default_none(self) -> None:
+        """Test --select-detectors defaults to None."""
+        with patch.object(sys, "argv", ["dependency_resolver"]):
+            args = parse_arguments()
+            assert args.select_detectors is None

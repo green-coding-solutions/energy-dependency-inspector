@@ -17,13 +17,14 @@ class Orchestrator:
         skip_system_scope: bool = False,
         venv_path: str | None = None,
         skip_hash_collection: bool = False,
+        selected_detectors: str | None = None,
     ):
         self.debug = debug
         self.skip_system_scope = skip_system_scope
         self.skip_hash_collection = skip_hash_collection
 
-        # Create detector instances
-        self.detectors: list[PackageManagerDetector] = [
+        # Create all detector instances
+        all_detectors: list[PackageManagerDetector] = [
             DockerInfoDetector(),
             DpkgDetector(),
             ApkDetector(),
@@ -31,6 +32,26 @@ class Orchestrator:
             PipDetector(venv_path=venv_path, debug=debug),
             NpmDetector(debug=debug),
         ]
+
+        # Filter detectors based on selection
+        if selected_detectors:
+            selected_names = [name.strip() for name in selected_detectors.split(",")]
+            available_names = {detector.NAME for detector in all_detectors}
+
+            # Validate detector names
+            invalid_names = [name for name in selected_names if name not in available_names]
+            if invalid_names:
+                raise ValueError(
+                    f"Invalid detector names: {', '.join(invalid_names)}. Available detectors: {', '.join(sorted(available_names))}"
+                )
+
+            # Filter to only selected detectors
+            self.detectors = [detector for detector in all_detectors if detector.NAME in selected_names]
+            if self.debug:
+                selected_detector_names = [detector.NAME for detector in self.detectors]
+                print(f"Selected detectors: {', '.join(selected_detector_names)}")
+        else:
+            self.detectors = all_detectors
 
     def resolve_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, only_container_info: bool = False
