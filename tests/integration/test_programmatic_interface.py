@@ -1,7 +1,9 @@
 """Tests for the programmatic interface in dependency_resolver/__init__.py."""
 
+# pylint: disable=redefined-outer-name  # Standard pytest fixture usage
+
 import pytest
-from typing import Any
+from typing import Any, Dict
 from unittest.mock import patch, MagicMock
 
 from dependency_resolver import (
@@ -13,164 +15,169 @@ from dependency_resolver import (
 )
 
 
+@pytest.fixture
+def mock_host_setup() -> Any:
+    """Fixture for common host environment mock setup."""
+    with (
+        patch("dependency_resolver.HostExecutor") as mock_executor_cls,
+        patch("dependency_resolver.Orchestrator") as mock_orchestrator_cls,
+    ):
+
+        mock_executor = MagicMock()
+        mock_executor_cls.return_value = mock_executor
+
+        mock_orchestrator = MagicMock()
+        mock_orchestrator_cls.return_value = mock_orchestrator
+
+        yield {
+            "executor_cls": mock_executor_cls,
+            "executor": mock_executor,
+            "orchestrator_cls": mock_orchestrator_cls,
+            "orchestrator": mock_orchestrator,
+        }
+
+
+@pytest.fixture
+def mock_docker_setup() -> Any:
+    """Fixture for common docker environment mock setup."""
+    with (
+        patch("dependency_resolver.DockerExecutor") as mock_executor_cls,
+        patch("dependency_resolver.Orchestrator") as mock_orchestrator_cls,
+    ):
+
+        mock_executor = MagicMock()
+        mock_executor_cls.return_value = mock_executor
+
+        mock_orchestrator = MagicMock()
+        mock_orchestrator_cls.return_value = mock_orchestrator
+
+        yield {
+            "executor_cls": mock_executor_cls,
+            "executor": mock_executor,
+            "orchestrator_cls": mock_orchestrator_cls,
+            "orchestrator": mock_orchestrator,
+        }
+
+
+@pytest.fixture
+def mock_formatter() -> Any:
+    """Fixture for OutputFormatter mock."""
+    with patch("dependency_resolver.OutputFormatter") as mock_formatter_cls:
+        mock_formatter_instance = MagicMock()
+        mock_formatter_cls.return_value = mock_formatter_instance
+        yield {"formatter_cls": mock_formatter_cls, "formatter": mock_formatter_instance}
+
+
+def create_host_dependencies(package_name: str = "requests", package_version: str = "2.28.0") -> Dict[str, Any]:
+    """Helper to create host dependency structure."""
+    return {
+        "source": {"type": "host", "name": "local-host"},
+        "project": {
+            "pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."},
+            "packages": [{"name": package_name, "version": package_version, "type": "pip"}],
+        },
+        "system": {"packages": []},
+    }
+
+
+def create_container_dependencies(
+    container_name: str = "test-container", package_name: str = "curl", package_version: str = "7.81.0-1ubuntu1.4"
+) -> Dict[str, Any]:
+    """Helper to create container dependency structure."""
+    return {
+        "source": {
+            "type": "container",
+            "name": container_name,
+            "image": "ubuntu:20.04",
+            "hash": "sha256:abc123...",
+        },
+        "project": {"packages": []},
+        "system": {
+            "packages": [{"name": package_name, "version": package_version, "hash": "sha256:def456...", "type": "dpkg"}]
+        },
+    }
+
+
+def create_container_info_only(container_name: str = "my-container") -> Dict[str, Any]:
+    """Helper to create container info only structure."""
+    return {
+        "source": {"type": "container", "name": container_name, "image": "ubuntu:20.04", "hash": "sha256:abc123..."}
+    }
+
+
 class TestResolveHostDependencies:
     """Tests for resolve_host_dependencies function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
-    @patch("dependency_resolver.OutputFormatter")
-    def test_resolve_host_dependencies_default_args(
-        self, mock_formatter: Any, mock_host_executor: Any, mock_orchestrator: Any
-    ) -> None:
+    def test_resolve_host_dependencies_default_args(self, mock_host_setup: Any, mock_formatter: Any) -> None:
         """Test resolve_host_dependencies with default arguments."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_host_executor.return_value = mock_executor_instance
+        mock_dependencies = create_host_dependencies()
+        mock_host_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
+        mock_formatter["formatter"].format_json.return_value = "formatted_json"
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {"type": "host", "name": "local-host"},
-            "project": {
-                "pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."},
-                "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}],
-            },
-            "system": {"packages": []},
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        mock_formatter_instance = MagicMock()
-        mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = '{"source": {"type": "host", "name": "local-host"}, "project": {"pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."}, "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}]}, "system": {"packages": []}}'
-
-        # Call function
         result = resolve_host_dependencies()
 
         # Verify calls
-        mock_host_executor.assert_called_once()
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None)
-        mock_formatter.assert_called_once_with(debug=False)
-        mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
-
-        assert (
-            result
-            == '{"source": {"type": "host", "name": "local-host"}, "project": {"pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."}, "packages": [{"name": "requests", "version": "2.28.0", "type": "pip"}]}, "system": {"packages": []}}'
+        mock_host_setup["executor_cls"].assert_called_once()
+        mock_host_setup["orchestrator_cls"].assert_called_once_with(
+            debug=False, skip_system_scope=False, venv_path=None
         )
+        mock_host_setup["orchestrator"].resolve_dependencies.assert_called_once_with(mock_host_setup["executor"], None)
+        mock_formatter["formatter_cls"].assert_called_once_with(debug=False)
+        mock_formatter["formatter"].format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
-    @patch("dependency_resolver.OutputFormatter")
-    def test_resolve_host_dependencies_with_all_args(
-        self, mock_formatter: Any, mock_host_executor: Any, mock_orchestrator: Any
-    ) -> None:
+        assert result == "formatted_json"
+
+    def test_resolve_host_dependencies_with_all_args(self, mock_host_setup: Any, mock_formatter: Any) -> None:
         """Test resolve_host_dependencies with all arguments specified."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_host_executor.return_value = mock_executor_instance
+        mock_dependencies = create_host_dependencies("express", "4.18.0")
+        mock_host_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
+        mock_formatter["formatter"].format_json.return_value = "formatted_pretty_json"
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {"type": "host", "name": "local-host"},
-            "project": {
-                "npm": {"location": "/tmp/test/node_modules", "hash": "sha256:npm456..."},
-                "packages": [{"name": "express", "version": "4.18.0", "type": "npm"}],
-            },
-            "system": {"packages": []},
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        mock_formatter_instance = MagicMock()
-        mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = '{\n  "source": {\n    "type": "host",\n    "name": "local-host"\n  },\n  "project": {\n    "npm": {\n      "location": "/tmp/test/node_modules",\n      "hash": "sha256:npm456..."\n    },\n    "packages": [\n      {\n        "name": "express",\n        "version": "4.18.0",\n        "type": "npm"\n      }\n    ]\n  },\n  "system": {\n    "packages": []\n  }\n}'
-
-        # Call function with all arguments
         resolve_host_dependencies(
             working_dir="/tmp/test", debug=True, skip_system_scope=True, venv_path="/path/to/venv", pretty_print=True
         )
 
         # Verify calls
-        mock_orchestrator.assert_called_once_with(debug=True, skip_system_scope=True, venv_path="/path/to/venv")
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/tmp/test")
-        mock_formatter.assert_called_once_with(debug=True)
-        mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=True)
+        mock_host_setup["orchestrator_cls"].assert_called_once_with(
+            debug=True, skip_system_scope=True, venv_path="/path/to/venv"
+        )
+        mock_host_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_host_setup["executor"], "/tmp/test"
+        )
+        mock_formatter["formatter_cls"].assert_called_once_with(debug=True)
+        mock_formatter["formatter"].format_json.assert_called_once_with(mock_dependencies, pretty_print=True)
 
 
 class TestResolveDockerDependencies:
     """Tests for resolve_docker_dependencies function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    @patch("dependency_resolver.OutputFormatter")
-    def test_resolve_docker_dependencies_default_args(
-        self, mock_formatter: Any, mock_docker_executor: Any, mock_orchestrator: Any
-    ) -> None:
+    def test_resolve_docker_dependencies_default_args(self, mock_docker_setup: Any, mock_formatter: Any) -> None:
         """Test resolve_docker_dependencies with minimal arguments."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_executor.return_value = mock_executor_instance
+        mock_dependencies = create_container_dependencies("test-container")
+        mock_docker_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
+        mock_formatter["formatter"].format_json.return_value = "formatted_json"
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {
-                "type": "container",
-                "name": "test-container",
-                "image": "ubuntu:20.04",
-                "hash": "sha256:abc123...",
-            },
-            "project": {"packages": []},
-            "system": {
-                "packages": [
-                    {"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}
-                ]
-            },
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        mock_formatter_instance = MagicMock()
-        mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = '{"source": {"type": "container", "name": "test-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}, "project": {"packages": []}, "system": {"packages": [{"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}]}}'
-
-        # Call function
         result = resolve_docker_dependencies("test-container")
 
         # Verify calls
-        mock_docker_executor.assert_called_once_with("test-container")
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
-        mock_formatter.assert_called_once_with(debug=False)
-        mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
-
-        assert (
-            result
-            == '{"source": {"type": "container", "name": "test-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}, "project": {"packages": []}, "system": {"packages": [{"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}]}}'
+        mock_docker_setup["executor_cls"].assert_called_once_with("test-container")
+        mock_docker_setup["orchestrator_cls"].assert_called_once_with(
+            debug=False, skip_system_scope=False, venv_path=None
         )
+        mock_docker_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_docker_setup["executor"], None, False
+        )
+        mock_formatter["formatter_cls"].assert_called_once_with(debug=False)
+        mock_formatter["formatter"].format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    @patch("dependency_resolver.OutputFormatter")
-    def test_resolve_docker_dependencies_with_all_args(
-        self, mock_formatter: Any, mock_docker_executor: Any, mock_orchestrator: Any
-    ) -> None:
+        assert result == "formatted_json"
+
+    def test_resolve_docker_dependencies_with_all_args(self, mock_docker_setup: Any, mock_formatter: Any) -> None:
         """Test resolve_docker_dependencies with all arguments."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_executor.return_value = mock_executor_instance
+        mock_dependencies = create_container_info_only("my-container")
+        mock_docker_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
+        mock_formatter["formatter"].format_json.return_value = "formatted_pretty_json"
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        mock_formatter_instance = MagicMock()
-        mock_formatter.return_value = mock_formatter_instance
-        mock_formatter_instance.format_json.return_value = '{\n  "source": {\n    "type": "container",\n    "name": "my-container",\n    "image": "ubuntu:20.04",\n    "hash": "sha256:abc123..."\n  }\n}'
-
-        # Call function with all arguments
         resolve_docker_dependencies(
             container_identifier="my-container",
             working_dir="/app",
@@ -182,77 +189,56 @@ class TestResolveDockerDependencies:
         )
 
         # Verify calls
-        mock_docker_executor.assert_called_once_with("my-container")
-        mock_orchestrator.assert_called_once_with(debug=True, skip_system_scope=True, venv_path="/opt/venv")
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app", True)
-        mock_formatter.assert_called_once_with(debug=True)
-        mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=True)
+        mock_docker_setup["executor_cls"].assert_called_once_with("my-container")
+        mock_docker_setup["orchestrator_cls"].assert_called_once_with(
+            debug=True, skip_system_scope=True, venv_path="/opt/venv"
+        )
+        mock_docker_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_docker_setup["executor"], "/app", True
+        )
+        mock_formatter["formatter_cls"].assert_called_once_with(debug=True)
+        mock_formatter["formatter"].format_json.assert_called_once_with(mock_dependencies, pretty_print=True)
 
 
 class TestResolveDependenciesAsDict:
     """Tests for resolve_dependencies_as_dict function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
-    def test_resolve_dependencies_as_dict_host(self, mock_host_executor: Any, mock_orchestrator: Any) -> None:
+    def test_resolve_dependencies_as_dict_host(self, mock_host_setup: Any) -> None:
         """Test resolve_dependencies_as_dict with host environment."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_host_executor.return_value = mock_executor_instance
+        mock_dependencies = create_host_dependencies("flask", "2.2.0")
+        mock_host_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {"type": "host", "name": "local-host"},
-            "project": {
-                "pip": {"location": "/home/user/.local/lib/python3.12/site-packages", "hash": "sha256:abc123..."},
-                "packages": [{"name": "flask", "version": "2.2.0", "type": "pip"}],
-            },
-            "system": {"packages": []},
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        # Call function
         result = resolve_dependencies_as_dict()
 
         # Verify calls
-        mock_host_executor.assert_called_once()
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_host_setup["executor_cls"].assert_called_once()
+        mock_host_setup["orchestrator_cls"].assert_called_once_with(
+            debug=False, skip_system_scope=False, venv_path=None
+        )
+        mock_host_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_host_setup["executor"], None, False
+        )
 
         assert result == mock_dependencies
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    def test_resolve_dependencies_as_dict_docker(self, mock_docker_executor: Any, mock_orchestrator: Any) -> None:
+    def test_resolve_dependencies_as_dict_docker(self, mock_docker_setup: Any) -> None:
         """Test resolve_dependencies_as_dict with docker environment."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_executor.return_value = mock_executor_instance
+        mock_dependencies = create_container_dependencies("alpine-container", "git", "2.36.2-r0")
+        # Update to apk type for alpine
+        mock_dependencies["system"]["packages"][0]["type"] = "apk"
+        mock_dependencies["source"]["image"] = "alpine:3.18"
+        mock_docker_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {
-                "type": "container",
-                "name": "alpine-container",
-                "image": "alpine:3.18",
-                "hash": "sha256:def456...",
-            },
-            "project": {"packages": []},
-            "system": {
-                "packages": [{"name": "git", "version": "2.36.2-r0", "hash": "sha256:ghi789...", "type": "apk"}]
-            },
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        # Call function
         result = resolve_dependencies_as_dict(environment_type="docker", environment_identifier="alpine-container")
 
         # Verify calls
-        mock_docker_executor.assert_called_once_with("alpine-container")
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_docker_setup["executor_cls"].assert_called_once_with("alpine-container")
+        mock_docker_setup["orchestrator_cls"].assert_called_once_with(
+            debug=False, skip_system_scope=False, venv_path=None
+        )
+        mock_docker_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_docker_setup["executor"], None, False
+        )
 
         assert result == mock_dependencies
 
@@ -270,62 +256,29 @@ class TestResolveDependenciesAsDict:
 class TestResolveDockerDependenciesAsDict:
     """Tests for resolve_docker_dependencies_as_dict function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    def test_resolve_docker_dependencies_as_dict_default_args(
-        self, mock_docker_executor: Any, mock_orchestrator: Any
-    ) -> None:
+    def test_resolve_docker_dependencies_as_dict_default_args(self, mock_docker_setup: Any) -> None:
         """Test resolve_docker_dependencies_as_dict with minimal arguments."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_executor.return_value = mock_executor_instance
+        mock_dependencies = create_container_dependencies("test-container")
+        mock_docker_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {
-                "type": "container",
-                "name": "test-container",
-                "image": "ubuntu:20.04",
-                "hash": "sha256:abc123...",
-            },
-            "project": {"packages": []},
-            "system": {
-                "packages": [
-                    {"name": "curl", "version": "7.81.0-1ubuntu1.4", "hash": "sha256:def456...", "type": "dpkg"}
-                ]
-            },
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        # Call function
         result = resolve_docker_dependencies_as_dict("test-container")
 
         # Verify calls
-        mock_docker_executor.assert_called_once_with("test-container")
-        mock_orchestrator.assert_called_once_with(debug=False, skip_system_scope=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_docker_setup["executor_cls"].assert_called_once_with("test-container")
+        mock_docker_setup["orchestrator_cls"].assert_called_once_with(
+            debug=False, skip_system_scope=False, venv_path=None
+        )
+        mock_docker_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_docker_setup["executor"], None, False
+        )
 
         assert result == mock_dependencies
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    def test_resolve_docker_dependencies_as_dict_with_all_args(
-        self, mock_docker_executor: Any, mock_orchestrator: Any
-    ) -> None:
+    def test_resolve_docker_dependencies_as_dict_with_all_args(self, mock_docker_setup: Any) -> None:
         """Test resolve_docker_dependencies_as_dict with all arguments."""
-        # Setup mocks
-        mock_executor_instance = MagicMock()
-        mock_docker_executor.return_value = mock_executor_instance
+        mock_dependencies = create_container_info_only("my-container")
+        mock_docker_setup["orchestrator"].resolve_dependencies.return_value = mock_dependencies
 
-        mock_orchestrator_instance = MagicMock()
-        mock_orchestrator.return_value = mock_orchestrator_instance
-        mock_dependencies = {
-            "source": {"type": "container", "name": "my-container", "image": "ubuntu:20.04", "hash": "sha256:abc123..."}
-        }
-        mock_orchestrator_instance.resolve_dependencies.return_value = mock_dependencies
-
-        # Call function with all arguments
         result = resolve_docker_dependencies_as_dict(
             container_identifier="my-container",
             working_dir="/app",
@@ -336,9 +289,13 @@ class TestResolveDockerDependenciesAsDict:
         )
 
         # Verify calls
-        mock_docker_executor.assert_called_once_with("my-container")
-        mock_orchestrator.assert_called_once_with(debug=True, skip_system_scope=True, venv_path="/opt/venv")
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app", True)
+        mock_docker_setup["executor_cls"].assert_called_once_with("my-container")
+        mock_docker_setup["orchestrator_cls"].assert_called_once_with(
+            debug=True, skip_system_scope=True, venv_path="/opt/venv"
+        )
+        mock_docker_setup["orchestrator"].resolve_dependencies.assert_called_once_with(
+            mock_docker_setup["executor"], "/app", True
+        )
 
         assert result == mock_dependencies
 
