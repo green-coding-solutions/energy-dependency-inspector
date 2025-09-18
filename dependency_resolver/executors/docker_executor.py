@@ -1,4 +1,5 @@
 import shlex
+import time
 from typing import Optional
 
 from ..core.interfaces import EnvironmentExecutor
@@ -48,8 +49,11 @@ class DockerExecutor(EnvironmentExecutor):
         Returns actual command exit code on success, or 1 for execution environment failures.
         """
         if self.debug:
+            start_time = time.perf_counter()
             workdir_info = f" (workdir: {working_dir})" if working_dir else ""
             print(f"Executing docker command: sh -c '{command}'{workdir_info}")
+        else:
+            start_time = None
 
         try:
             # First, try with sh
@@ -59,22 +63,34 @@ class DockerExecutor(EnvironmentExecutor):
             stdout = result.output.decode("utf-8") if result.output else ""
             stderr = ""
 
-            if self.debug:
-                print(f"Docker command exit code: {result.exit_code}")
+            if self.debug and start_time is not None:
+                elapsed_time = time.perf_counter() - start_time
+                print(f"Docker command completed in {elapsed_time:.3f}s with exit code: {result.exit_code}")
 
             return stdout, stderr, result.exit_code
 
         except docker.errors.APIError as e:
             # Check if this is a "sh not found" error
             if "executable file not found" in str(e).lower() and "sh" in str(e).lower():
-                return self._execute_command_direct(command, working_dir)
+                return self._execute_command_direct(command, working_dir, start_time)
             else:
+                if self.debug and start_time is not None:
+                    elapsed_time = time.perf_counter() - start_time
+                    print(f"Docker command failed after {elapsed_time:.3f}s: {str(e)}")
                 return "", f"Docker API error: {str(e)}", 1
         except (OSError, ValueError) as e:
+            if self.debug and start_time is not None:
+                elapsed_time = time.perf_counter() - start_time
+                print(f"Docker command failed after {elapsed_time:.3f}s: {str(e)}")
             return "", f"Command execution failed: {str(e)}", 1
 
-    def _execute_command_direct(self, command: str, working_dir: Optional[str] = None) -> tuple[str, str, int]:
+    def _execute_command_direct(
+        self, command: str, working_dir: Optional[str] = None, start_time: Optional[float] = None
+    ) -> tuple[str, str, int]:
         """Fallback: execute simple commands directly without shell."""
+        if start_time is None:
+            start_time = time.perf_counter()
+
         if self.debug:
             workdir_info = f" (workdir: {working_dir})" if working_dir else ""
             print(f"Fallback: executing docker command directly: {command}{workdir_info}")
@@ -83,6 +99,9 @@ class DockerExecutor(EnvironmentExecutor):
             # Handle only the simple cases we actually use
             cmd_parts = DockerExecutor._parse_simple_command(command)
             if not cmd_parts:
+                if self.debug:
+                    elapsed_time = time.perf_counter() - start_time
+                    print(f"Direct execution failed after {elapsed_time:.3f}s: command too complex")
                 return "", f"Command too complex for direct execution (no shell available): {command}", 1
 
             if self.debug:
@@ -93,11 +112,15 @@ class DockerExecutor(EnvironmentExecutor):
             stderr = ""
 
             if self.debug:
-                print(f"Direct execution exit code: {result.exit_code}")
+                elapsed_time = time.perf_counter() - start_time
+                print(f"Direct execution completed in {elapsed_time:.3f}s with exit code: {result.exit_code}")
 
             return stdout, stderr, result.exit_code
 
         except docker.errors.APIError as e:
+            if self.debug:
+                elapsed_time = time.perf_counter() - start_time
+                print(f"Direct execution failed after {elapsed_time:.3f}s: {str(e)}")
             return "", f"Direct execution failed: {str(e)}", 1
 
     @staticmethod
