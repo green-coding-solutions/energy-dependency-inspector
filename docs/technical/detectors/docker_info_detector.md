@@ -98,7 +98,27 @@ Works exclusively with `DockerExecutor` to:
 
 ## Output Format
 
+The detector returns a tuple: `(packages, metadata)` but is handled specially by the orchestrator.
+
 ### Standard Output
+
+**Packages:** (always empty)
+
+```json
+[]
+```
+
+**Metadata:**
+
+```json
+{
+  "name": "my-nginx-container",
+  "image": "nginx:latest",
+  "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
+}
+```
+
+**Final orchestrator output:**
 
 ```json
 {
@@ -112,14 +132,14 @@ Works exclusively with `DockerExecutor` to:
 
 ### Error Output Format
 
+**Metadata with error:**
+
 ```json
 {
-  "_container-info": {
-    "name": "my-container",
-    "image": "unknown",
-    "hash": "unknown",
-    "error": "AttributeError: 'NoneType' object has no attribute 'tags'"
-  }
+  "name": "my-container",
+  "image": "unknown",
+  "hash": "unknown",
+  "error": "AttributeError: 'NoneType' object has no attribute 'tags'"
 }
 ```
 

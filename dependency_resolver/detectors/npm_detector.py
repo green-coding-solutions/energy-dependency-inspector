@@ -4,6 +4,9 @@ from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
+# Package type constant
+PACKAGE_TYPE_NPM = "npm"
+
 
 class NpmDetector(PackageManagerDetector):
     """Detector for Node.js packages managed by npm."""
@@ -34,26 +37,29 @@ class NpmDetector(PackageManagerDetector):
         # Fallback to package-lock.json
         return executor.path_exists(f"{search_dir}/package-lock.json")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract npm dependencies with versions.
 
         Uses 'npm list --json --depth=0' for structured package information.
         See docs/technical/detectors/npm_detector.md
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type
+            - metadata: Dict with location and hash for project scope, empty for system scope
         """
         stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", working_dir)
 
         location = self._get_npm_location(executor, working_dir)
-        scope = "system" if location == "system" else "project"
-        dependencies: dict[str, dict[str, str]] = {}
-
-        # Build result with desired field order: scope, location, hash, dependencies
-        result: dict[str, Any] = {"scope": scope}
-        if scope == "project":
-            result["location"] = location
+        packages: list[dict[str, Any]] = []
 
         if exit_code != 0:
-            result["dependencies"] = dependencies
-            return result
+            if location == "system":
+                return packages, {}
+            else:
+                return packages, {"location": location}
 
         try:
             npm_data = json.loads(stdout)
@@ -61,18 +67,20 @@ class NpmDetector(PackageManagerDetector):
 
             for package_name, package_info in npm_dependencies.items():
                 version = package_info.get("version", "unknown")
-                dependencies[package_name] = {"version": version}
+                packages.append({"name": package_name, "version": version, "type": PACKAGE_TYPE_NPM})
 
         except (json.JSONDecodeError, AttributeError):
             pass
 
-        # Generate location-based hash if appropriate
-        if dependencies and scope == "project":
-            result["hash"] = self._generate_location_hash(executor, location)
-
-        result["dependencies"] = dependencies
-
-        return result
+        if location == "system":
+            return packages, {}
+        else:
+            # Build metadata for project scope
+            metadata = {"location": location}
+            # Generate location-based hash if we have packages
+            if packages:
+                metadata["hash"] = self._generate_location_hash(executor, location)
+            return packages, metadata
 
     def _get_npm_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the location of the npm project."""

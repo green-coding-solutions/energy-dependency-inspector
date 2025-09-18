@@ -12,14 +12,21 @@ class DockerInfoDetector(PackageManagerDetector):
         """Check if this is a Docker environment."""
         return isinstance(executor, DockerExecutor)
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract Docker container metadata."""
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+        """Extract Docker container metadata.
+
+        Note: This detector returns metadata rather than packages, but conforms to the interface.
+        The orchestrator handles this specially.
+        """
         if not isinstance(executor, DockerExecutor):
-            return {}
+            return [], {}
 
         container_info = executor.get_container_info()
 
-        # Return simplified container info structure
+        # Return simplified container info structure as metadata
+        # The orchestrator will handle this specially for _container-info section
         result = {
             "name": container_info["name"],
             "image": container_info["image"],
@@ -30,7 +37,8 @@ class DockerInfoDetector(PackageManagerDetector):
         if "error" in container_info:
             result["error"] = container_info["error"]
 
-        return result
+        # Return empty packages list and the container info as metadata
+        return [], result
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Docker container info has container scope, not system scope."""

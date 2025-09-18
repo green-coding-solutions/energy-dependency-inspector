@@ -91,10 +91,14 @@ formatter = OutputFormatter()
 json_output = formatter.format_json(dependencies, pretty_print=True)
 
 # Or work with raw dictionary
-for detector_name, result in dependencies.items():
-    print(f"Detector: {detector_name}")
-    if "dependencies" in result:
-        print(f"Found {len(result['dependencies'])} packages")
+for scope, result in dependencies.items():
+    if scope in ["project", "system"] and "packages" in result:
+        print(f"Scope: {scope}")
+        print(f"Found {len(result['packages'])} packages")
+        # Access package manager metadata
+        for manager, metadata in result.items():
+            if manager != "packages":
+                print(f"  {manager}: {metadata.get('location', 'system-wide')}")
 ```
 
 ## Available Classes
@@ -180,11 +184,11 @@ class DependencyTracker:
 
             # Create stable fingerprint from dependency versions
             fingerprint_data = {}
-            for detector, result in deps.items():
-                if "dependencies" in result:
-                    fingerprint_data[detector] = {
-                        pkg: info.get("version", "")
-                        for pkg, info in result["dependencies"].items()
+            for scope, result in deps.items():
+                if scope in ["project", "system"] and "packages" in result:
+                    fingerprint_data[scope] = {
+                        pkg["name"]: pkg.get("version", "")
+                        for pkg in result["packages"]
                     }
 
             fingerprint_json = json.dumps(fingerprint_data, sort_keys=True)
@@ -243,11 +247,15 @@ def generate_dependency_report():
 
     # Log summary
     total_packages = 0
-    for detector, result in deps.items():
-        if "dependencies" in result:
-            count = len(result["dependencies"])
-            print(f"{detector}: {count} packages")
+    for scope, result in deps.items():
+        if scope in ["project", "system"] and "packages" in result:
+            count = len(result["packages"])
+            print(f"{scope}: {count} packages")
             total_packages += count
+            # Log package managers in this scope
+            managers = [key for key in result.keys() if key != "packages"]
+            if managers:
+                print(f"  Package managers: {', '.join(managers)}")
 
     print(f"Total packages detected: {total_packages}")
     return deps

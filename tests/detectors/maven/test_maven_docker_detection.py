@@ -208,50 +208,69 @@ wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-w
         """Validate Maven dependencies in the result."""
         self.validate_basic_structure(result, "maven")
 
-        maven_result = result["maven"]
-        dependencies = maven_result["dependencies"]
+        # Get Maven packages from project scope
+        assert "project" in result, "Expected 'project' scope in result"
+        project_result = result["project"]
+        assert "packages" in project_result, "Project scope should contain 'packages'"
 
-        # Should have project scope and location
-        assert maven_result["scope"] == "project"
-        assert "location" in maven_result
-        assert maven_result["location"] == "/tmp/test-maven-project"
+        packages = project_result["packages"]
+        maven_packages = [pkg for pkg in packages if pkg.get("type") == "maven"]
+        assert len(maven_packages) > 0, "Should have found Maven packages"
+
+        # Should have location metadata
+        assert "maven" in project_result, "Project scope should contain Maven metadata"
+        maven_metadata = project_result["maven"]
+        assert "location" in maven_metadata
+        assert maven_metadata["location"] == "/tmp/test-maven-project"
 
         # Should have hash for project scope
-        if dependencies:
-            assert "hash" in maven_result
+        if maven_packages:
+            assert "hash" in maven_metadata
 
         # Validate dependencies structure
-        self.validate_dependency_structure(dependencies)
+        self.validate_dependency_structure(maven_packages)
 
         # Should have some of our test dependencies (excluding test scope)
         expected_deps = ["com.fasterxml.jackson.core:jackson-core", "org.apache.commons:commons-lang3"]
+        package_names = [pkg["name"] for pkg in maven_packages]
 
         for dep in expected_deps:
-            assert dep in dependencies, f"Expected dependency {dep} not found in {list(dependencies.keys())}"
-            assert "version" in dependencies[dep]
-            assert len(dependencies[dep]["version"]) > 0
+            assert dep in package_names, f"Expected dependency {dep} not found in {package_names}"
+            # Find the package and validate version
+            pkg = next(p for p in maven_packages if p["name"] == dep)
+            assert "version" in pkg
+            assert len(pkg["version"]) > 0
+            assert pkg["type"] == "maven"
 
         # Should NOT have test-scoped dependencies
-        assert "org.junit.jupiter:junit-jupiter" not in dependencies
+        test_deps = [pkg["name"] for pkg in maven_packages if "junit" in pkg["name"]]
+        assert len(test_deps) == 0, f"Should not have test dependencies: {test_deps}"
 
     def _validate_maven_dependencies_pom_only(self, result: Dict[str, Any]) -> None:
         """Validate Maven dependencies when using pom.xml parsing only."""
         self.validate_basic_structure(result, "maven")
 
-        maven_result = result["maven"]
-        dependencies = maven_result["dependencies"]
+        # Get Maven packages from project scope
+        assert "project" in result, "Expected 'project' scope in result"
+        project_result = result["project"]
+        assert "packages" in project_result, "Project scope should contain 'packages'"
 
-        # Should have project scope and location
-        assert maven_result["scope"] == "project"
-        assert "location" in maven_result
-        assert maven_result["location"] == "/tmp/test-maven-project"
+        packages = project_result["packages"]
+        maven_packages = [pkg for pkg in packages if pkg.get("type") == "maven"]
+        assert len(maven_packages) > 0, "Should have found Maven packages"
+
+        # Should have location metadata
+        assert "maven" in project_result, "Project scope should contain Maven metadata"
+        maven_metadata = project_result["maven"]
+        assert "location" in maven_metadata
+        assert maven_metadata["location"] == "/tmp/test-maven-project"
 
         # Should have hash for project scope
-        if dependencies:
-            assert "hash" in maven_result
+        if maven_packages:
+            assert "hash" in maven_metadata
 
         # Validate dependencies structure
-        self.validate_dependency_structure(dependencies)
+        self.validate_dependency_structure(maven_packages)
 
         # Should have our test dependencies with resolved versions
         expected_deps = {
@@ -259,9 +278,15 @@ wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-w
             "org.apache.commons:commons-lang3": "3.12.0",
         }
 
+        package_names = {pkg["name"]: pkg["version"] for pkg in maven_packages}
+
         for dep, expected_version in expected_deps.items():
-            assert dep in dependencies, f"Expected dependency {dep} not found in {list(dependencies.keys())}"
-            assert dependencies[dep]["version"] == expected_version
+            assert dep in package_names, f"Expected dependency {dep} not found in {list(package_names.keys())}"
+            assert package_names[dep] == expected_version
+            # Find the package and validate type
+            pkg = next(p for p in maven_packages if p["name"] == dep)
+            assert pkg["type"] == "maven"
 
         # Should NOT have test-scoped dependencies
-        assert "org.junit.jupiter:junit-jupiter" not in dependencies
+        test_deps = [pkg["name"] for pkg in maven_packages if "junit" in pkg["name"]]
+        assert len(test_deps) == 0, f"Should not have test dependencies: {test_deps}"

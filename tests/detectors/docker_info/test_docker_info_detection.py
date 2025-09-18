@@ -87,9 +87,10 @@ class TestDockerInfoDetection(DockerTestBase):
         detector = DockerInfoDetector()
         mock_executor = Mock()  # Not a DockerExecutor
 
-        result = detector.get_dependencies(mock_executor)
+        packages, metadata = detector.get_dependencies(mock_executor)
 
-        assert not result
+        assert not packages
+        assert not metadata
 
     def _validate_container_info_in_full_result(self, result: Dict[str, Any]) -> None:
         """Validate that container info is present in full analysis result."""

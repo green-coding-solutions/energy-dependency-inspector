@@ -134,21 +134,34 @@ The detector is usable when:
 
 ## Output Format
 
+The detector returns a tuple: `(packages, metadata)`
+
+**Packages:**
+
 ```json
-{
-  "scope": "system",
-  "dependencies": {
-    "bash": {
-      "version": "5.1-6ubuntu1 amd64",
-      "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
-    },
-    "libc6": {
-      "version": "2.35-0ubuntu3.1 amd64",
-      "hash": "b2c3d4e5f6789012345678901234567890123456789012345678901234567890a1"
-    }
+[
+  {
+    "name": "bash",
+    "version": "5.1-6ubuntu1 amd64",
+    "type": "dpkg",
+    "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
+  },
+  {
+    "name": "libc6",
+    "version": "2.35-0ubuntu3.1 amd64",
+    "type": "dpkg",
+    "hash": "b2c3d4e5f6789012345678901234567890123456789012345678901234567890a1"
   }
-}
+]
 ```
+
+**Metadata:**
+
+```json
+{}
+```
+
+Note: System-scoped packages have empty metadata as they don't have project-specific locations.
 
 ## Key Advantages
 

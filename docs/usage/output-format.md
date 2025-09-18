@@ -4,14 +4,19 @@ This guide explains the JSON output structure produced by the dependency-resolve
 
 ## JSON Structure Overview
 
-The dependency-resolver outputs a JSON object where each key represents a detector (package manager) and contains information about detected dependencies:
+The dependency-resolver outputs a unified JSON structure that aggregates all packages by scope:
 
 ```json
 {
   "_container-info": { ... },
-  "dpkg": { ... },
-  "pip": { ... },
-  "npm": { ... }
+  "project": {
+    "packages": [...],
+    "pip": { ... },
+    "npm": { ... }
+  },
+  "system": {
+    "packages": [...]
+  }
 }
 ```
 
@@ -35,75 +40,80 @@ When analyzing Docker containers, the `_container-info` section provides metadat
 - `image` - Docker image used
 - `hash` - Container image hash
 
-## Package Manager Sections
+## Package Sections
 
-Each package manager detector produces a section with this structure:
+### Project Packages
 
-### System-Scoped Packages
-
-System-wide package managers (dpkg, apk) output:
+Project-specific packages from all package managers are aggregated in a single array:
 
 ```json
 {
-  "dpkg": {
-    "scope": "system",
-    "dependencies": {
-      "package-name": {
-        "version": "1.2.3 amd64",
-        "hash": "abc123..."
+  "project": {
+    "packages": [
+      {
+        "name": "flask",
+        "version": "2.3.3",
+        "type": "pip"
       },
-      "another-package": {
-        "version": "2.0.0 amd64",
-        "hash": "def456..."
+      {
+        "name": "express",
+        "version": "4.18.2",
+        "type": "npm"
       }
+    ],
+    "pip": {
+      "location": "/path/to/venv/lib/python3.12/site-packages",
+      "hash": "def456..."
+    },
+    "npm": {
+      "location": "/app/node_modules",
+      "hash": "abc123..."
     }
   }
 }
 ```
 
-### Project-Scoped Packages
+### System Packages
 
-Project-specific package managers (pip, npm) output:
+System-wide packages are aggregated in a single array:
 
 ```json
 {
-  "pip": {
-    "scope": "project",
-    "location": "/path/to/venv/lib/python3.12/site-packages",
-    "hash": "def456...",
-    "dependencies": {
-      "package-name": {
-        "version": "1.2.3"
+  "system": {
+    "packages": [
+      {
+        "name": "libc6",
+        "version": "2.36-9+deb12u4 amd64",
+        "hash": "abc123...",
+        "type": "dpkg"
       },
-      "another-package": {
-        "version": "2.0.0"
+      {
+        "name": "bash",
+        "version": "5.2.15-r5 x86_64",
+        "type": "apk"
       }
-    }
+    ]
   }
 }
 ```
 
 ## Field Definitions
 
-### Common Fields
-
-- **scope** - Either `"system"` or `"project"`
-  - `system`: System-wide packages affecting the entire environment
-  - `project`: Project-specific packages in a local scope
-
-- **dependencies** - Object containing all detected packages
-  - Keys: Package names
-  - Values: Objects with version and optional hash information
-
-### Project-Scoped Fields
-
-- **location** - Absolute path where project dependencies are installed
-- **hash** - Hash of the dependency location/environment
-
 ### Package Fields
 
+Each package in the `packages` arrays contains:
+
+- **name** - Package name
 - **version** - Package version string (format varies by package manager)
-- **hash** - Package-specific hash (when available)
+- **type** - Package manager type (`"pip"`, `"npm"`, `"dpkg"`, `"apk"`, `"maven"`)
+- **hash** - Package-specific hash (when available, primarily for system packages)
+
+### Project Metadata Fields
+
+Project-scoped package managers provide metadata sections:
+
+- **location** - Absolute path where dependencies are installed
+- **hash** - Hash of the dependency location/environment for change detection
 
 ## Hash Strategy
 
@@ -124,15 +134,16 @@ Package managers that provide authentic hashes use them directly:
 
 ### Tier 2: Location-Based Hashes
 
-For project-scoped package managers, a location hash is provided:
+For project-scoped package managers, a location hash is provided in the metadata:
 
 ```json
 {
-  "pip": {
-    "scope": "project",
-    "location": "/path/to/venv/lib/python3.12/site-packages",
-    "hash": "sha256:location-based-hash",
-    "dependencies": { ... }
+  "project": {
+    "packages": [...],
+    "pip": {
+      "location": "/path/to/venv/lib/python3.12/site-packages",
+      "hash": "sha256:location-based-hash"
+    }
   }
 }
 ```
@@ -143,15 +154,15 @@ Some package managers don't provide hash information:
 
 ```json
 {
-  "package-name": {
-    "version": "1.2.3"
-  }
+  "name": "package-name",
+  "version": "1.2.3",
+  "type": "npm"
 }
 ```
 
 ## Complete Example
 
-Here's a complete example showing multiple package managers:
+Here's a complete example showing the new unified structure:
 
 ```json
 {
@@ -160,44 +171,53 @@ Here's a complete example showing multiple package managers:
     "image": "python:3.12-slim",
     "hash": "sha256:a1b2c3d4e5f6..."
   },
-  "dpkg": {
-    "scope": "system",
-    "dependencies": {
-      "libc6": {
+  "project": {
+    "packages": [
+      {
+        "name": "flask",
+        "version": "2.3.3",
+        "type": "pip"
+      },
+      {
+        "name": "requests",
+        "version": "2.31.0",
+        "type": "pip"
+      },
+      {
+        "name": "express",
+        "version": "4.18.2",
+        "type": "npm"
+      },
+      {
+        "name": "lodash",
+        "version": "4.17.21",
+        "type": "npm"
+      }
+    ],
+    "pip": {
+      "location": "/app/venv/lib/python3.12/site-packages",
+      "hash": "sha256:xyz789..."
+    },
+    "npm": {
+      "location": "/app/node_modules",
+      "hash": "sha256:npm456..."
+    }
+  },
+  "system": {
+    "packages": [
+      {
+        "name": "libc6",
         "version": "2.36-9+deb12u4 amd64",
-        "hash": "abc123..."
+        "hash": "abc123...",
+        "type": "dpkg"
       },
-      "python3": {
+      {
+        "name": "python3",
         "version": "3.11.2-1+b1 amd64",
-        "hash": "def456..."
+        "hash": "def456...",
+        "type": "dpkg"
       }
-    }
-  },
-  "pip": {
-    "scope": "project",
-    "location": "/app/venv/lib/python3.12/site-packages",
-    "hash": "sha256:xyz789...",
-    "dependencies": {
-      "flask": {
-        "version": "2.3.3"
-      },
-      "requests": {
-        "version": "2.31.0"
-      }
-    }
-  },
-  "npm": {
-    "scope": "project",
-    "location": "/app/node_modules",
-    "hash": "sha256:npm456...",
-    "dependencies": {
-      "express": {
-        "version": "4.18.2"
-      },
-      "lodash": {
-        "version": "4.17.21"
-      }
-    }
+    ]
   }
 }
 ```
@@ -213,37 +233,60 @@ import dependency_resolver
 # Get dependencies as dictionary
 deps = dependency_resolver.resolve_dependencies_as_dict("host")
 
-# Process each detector
-for detector_name, result in deps.items():
-    if detector_name.startswith("_"):
-        continue  # Skip metadata sections
+# Process project packages
+if "project" in deps:
+    project = deps["project"]
+    packages = project.get("packages", [])
+    print(f"\nPROJECT PACKAGES: {len(packages)}")
 
-    print(f"\n{detector_name.upper()} ({result['scope']} scope):")
+    for pkg in packages:
+        name = pkg.get("name", "unknown")
+        version = pkg.get("version", "unknown")
+        pkg_type = pkg.get("type", "unknown")
+        has_hash = "hash" in pkg
+        print(f"  {name}: {version} ({pkg_type}) {'✓' if has_hash else ''}")
 
-    if "location" in result:
-        print(f"  Location: {result['location']}")
+    # Show metadata for each package manager
+    for key, value in project.items():
+        if key != "packages" and isinstance(value, dict):
+            location = value.get("location", "N/A")
+            has_hash = "hash" in value
+            print(f"  {key.upper()} location: {location} {'✓' if has_hash else ''}")
 
-    dependencies = result.get("dependencies", {})
-    print(f"  Packages: {len(dependencies)}")
+# Process system packages
+if "system" in deps:
+    packages = deps["system"].get("packages", [])
+    print(f"\nSYSTEM PACKAGES: {len(packages)}")
 
-    for package, info in dependencies.items():
-        version = info.get("version", "unknown")
-        has_hash = "hash" in info
-        print(f"    {package}: {version} {'✓' if has_hash else ''}")
+    for pkg in packages:
+        name = pkg.get("name", "unknown")
+        version = pkg.get("version", "unknown")
+        pkg_type = pkg.get("type", "unknown")
+        has_hash = "hash" in pkg
+        print(f"  {name}: {version} ({pkg_type}) {'✓' if has_hash else ''}")
 ```
 
 ### Filtering Examples
 
 ```python
 # Get only system packages
-system_packages = {k: v for k, v in deps.items()
-                  if not k.startswith("_") and v.get("scope") == "system"}
+system_packages = deps.get("system", {}).get("packages", [])
 
 # Get only project packages
-project_packages = {k: v for k, v in deps.items()
-                   if not k.startswith("_") and v.get("scope") == "project"}
+project_packages = deps.get("project", {}).get("packages", [])
+
+# Get packages by type
+pip_packages = [pkg for pkg in project_packages if pkg.get("type") == "pip"]
+npm_packages = [pkg for pkg in project_packages if pkg.get("type") == "npm"]
 
 # Count total packages
-total = sum(len(v.get("dependencies", {})) for v in deps.values()
-           if not k.startswith("_"))
+total_project = len(project_packages)
+total_system = len(system_packages)
+total = total_project + total_system
+
+# Get all packages with hashes
+packages_with_hashes = [
+    pkg for pkg in (project_packages + system_packages)
+    if "hash" in pkg
+]
 ```

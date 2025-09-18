@@ -5,6 +5,9 @@ from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
+# Package type constant
+PACKAGE_TYPE_MAVEN = "maven"
+
 
 class MavenDetector(PackageManagerDetector):
     """Detector for Maven-based Java projects."""
@@ -21,28 +24,38 @@ class MavenDetector(PackageManagerDetector):
         search_dir = working_dir or "."
         return executor.path_exists(f"{search_dir}/pom.xml")
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract Maven dependencies with versions."""
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+        """Extract Maven dependencies with versions.
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type
+            - metadata: Dict with location and hash for project scope
+        """
         search_dir = working_dir or "."
         location = self._resolve_absolute_path(executor, search_dir)
-        dependencies: dict[str, dict[str, str]] = {}
-
-        # Always project scope for Maven projects
-        result: dict[str, Any] = {"scope": "project", "location": location}
+        packages: list[dict[str, Any]] = []
 
         # Try Maven command first if available
         if self._maven_available(executor, working_dir):
-            dependencies = self._get_dependencies_via_maven(executor, working_dir)
+            maven_deps = self._get_dependencies_via_maven(executor, working_dir)
         else:
             # Fallback to pom.xml parsing
-            dependencies = self._get_dependencies_via_pom_parsing(executor, search_dir)
+            maven_deps = self._get_dependencies_via_pom_parsing(executor, search_dir)
 
-        # Generate location-based hash if we have dependencies
-        if dependencies:
-            result["hash"] = self._generate_location_hash(executor, location)
+        # Convert dependencies dict to packages list
+        for package_name, package_info in maven_deps.items():
+            packages.append({"name": package_name, "version": package_info["version"], "type": PACKAGE_TYPE_MAVEN})
 
-        result["dependencies"] = dependencies
-        return result
+        # Build metadata for project scope
+        metadata = {"location": location}
+        # Generate location-based hash if we have packages
+        if packages:
+            metadata["hash"] = self._generate_location_hash(executor, location)
+
+        return packages, metadata
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Maven is always project scope."""

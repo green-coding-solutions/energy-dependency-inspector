@@ -108,31 +108,54 @@ class DockerTestBase:
         print(json.dumps(result, indent=2))
         print("=" * 60)
 
-    def validate_basic_structure(self, result: Dict[str, Any], detector_name: str) -> None:
-        """Validate basic structure of detector results."""
+    def validate_basic_structure(self, result: Dict[str, Any], detector_type: str) -> None:
+        """Validate basic structure of new scope-based results."""
         assert isinstance(result, dict), "Result should be a dictionary"
 
-        # Should have detector results
-        assert detector_name in result, f"Expected '{detector_name}' in result keys: {list(result.keys())}"
+        # Should have either project or system scope (or both)
+        valid_scopes = ["project", "system", "_container-info"]
+        found_scopes = [scope for scope in result.keys() if scope in valid_scopes]
+        assert len(found_scopes) > 0, f"Expected at least one scope in result keys: {list(result.keys())}"
 
-        detector_result = result[detector_name]
-        assert "dependencies" in detector_result, f"{detector_name} result should contain 'dependencies'"
-        assert "scope" in detector_result, f"{detector_name} result should contain 'scope'"
+        # Validate packages were found for the expected detector type
+        packages_found = False
+        for scope_name in ["project", "system"]:
+            if scope_name in result:
+                scope_result = result[scope_name]
+                assert isinstance(scope_result, dict), f"{scope_name} should be a dictionary"
+                assert "packages" in scope_result, f"{scope_name} should contain 'packages'"
 
-        dependencies = detector_result["dependencies"]
-        assert isinstance(dependencies, dict), "Dependencies should be a dictionary"
-        assert len(dependencies) > 0, "Should have detected some dependencies"
+                packages = scope_result["packages"]
+                assert isinstance(packages, list), f"{scope_name} packages should be a list"
 
-        scope = detector_result["scope"]
-        assert isinstance(scope, str), f"Scope should be a string, got: {scope}"
+                # Check if this scope contains packages of the expected type
+                for package in packages:
+                    if package.get("type") == detector_type:
+                        packages_found = True
+                        break
 
-    def validate_dependency_structure(self, dependencies: Dict[str, Any], sample_count: int = 5) -> None:
-        """Validate structure of dependency entries."""
-        sample_deps = list(dependencies.items())[:sample_count]
-        for dep_name, dep_info in sample_deps:
-            assert isinstance(dep_info, dict), f"Dependency {dep_name} should be a dict: {dep_info}"
-            assert "version" in dep_info, f"Dependency {dep_name} should have version: {dep_info}"
+        assert packages_found, f"Should have found packages of type '{detector_type}' in result"
 
-            version = dep_info["version"]
-            assert isinstance(version, str), f"Version for {dep_name} should be a string: {version}"
-            assert len(version) > 0, f"Version for {dep_name} should not be empty"
+    def validate_dependency_structure(self, packages: list, sample_count: int = 5) -> None:
+        """Validate structure of package entries in the new format."""
+        assert isinstance(packages, list), "Packages should be a list"
+        assert len(packages) > 0, "Should have detected some packages"
+
+        sample_packages = packages[:sample_count]
+        for package in sample_packages:
+            assert isinstance(package, dict), f"Package should be a dict: {package}"
+            assert "name" in package, f"Package should have name: {package}"
+            assert "version" in package, f"Package should have version: {package}"
+            assert "type" in package, f"Package should have type: {package}"
+
+            name = package["name"]
+            assert isinstance(name, str), f"Package name should be a string: {name}"
+            assert len(name) > 0, "Package name should not be empty"
+
+            version = package["version"]
+            assert isinstance(version, str), f"Version should be a string: {version}"
+            assert len(version) > 0, "Version should not be empty"
+
+            package_type = package["type"]
+            assert isinstance(package_type, str), f"Package type should be a string: {package_type}"
+            assert len(package_type) > 0, "Package type should not be empty"

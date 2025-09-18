@@ -45,7 +45,7 @@ class TestApkDockerDetection(DockerTestBase):
                 self.print_verbose_results("BASE ALPINE DEPENDENCIES:", result_base)
 
             self._validate_apk_dependencies(result_base)
-            base_package_count = len(result_base["apk"]["dependencies"])
+            base_package_count = self._get_apk_package_count(result_base)
 
             # Install additional packages
             packages_to_install = ["curl", "git", "bash", "nano"]
@@ -71,34 +71,45 @@ class TestApkDockerDetection(DockerTestBase):
         """Validate that APK dependencies were detected correctly."""
         self.validate_basic_structure(result, "apk")
 
-        apk_result = result["apk"]
-        dependencies = apk_result["dependencies"]
+        # Get APK packages from system scope
+        assert "system" in result, "Expected 'system' scope in result"
+        system_result = result["system"]
+        assert "packages" in system_result, "System scope should contain 'packages'"
+
+        packages = system_result["packages"]
+        apk_packages = [pkg for pkg in packages if pkg.get("type") == "apk"]
+        assert len(apk_packages) > 0, "Should have found APK packages"
 
         # Check for expected Alpine base packages
-        dependency_names = list(dependencies.keys())
+        package_names = [pkg["name"] for pkg in apk_packages]
 
         # Basic Alpine should have essential packages
         expected_packages = ["musl", "busybox", "alpine-baselayout", "alpine-keys"]
-        found_expected = [pkg for pkg in expected_packages if pkg in dependency_names]
-        assert len(found_expected) > 0, f"Expected to find at least one of {expected_packages} in: {dependency_names}"
+        found_expected = [pkg for pkg in expected_packages if pkg in package_names]
+        assert len(found_expected) > 0, f"Expected to find at least one of {expected_packages} in: {package_names}"
 
         # Validate dependency structure
-        self.validate_dependency_structure(dependencies)
+        self.validate_dependency_structure(apk_packages)
 
         # APK-specific validation: check architecture in versions
-        sample_deps = list(dependencies.items())[:5]
-        for dep_name, dep_info in sample_deps:
-            version = dep_info["version"]
+        for package in apk_packages[:5]:
+            version = package["version"]
             assert any(
                 arch in version for arch in ["x86_64", "aarch64", "armhf", "armv7"]
-            ), f"Version for {dep_name} should include architecture: {version}"
+            ), f"Version for {package['name']} should include architecture: {version}"
+            assert package["type"] == "apk", f"Package type should be 'apk', got: {package['type']}"
 
-        scope = apk_result["scope"]
-        assert scope == "system", f"Scope should be 'system', got: {scope}"
+        print(f"✓ Successfully detected {len(apk_packages)} APK packages")
+        print("✓ Scope: system")
+        print(f"✓ Sample packages: {package_names[:5]}")
 
-        print(f"✓ Successfully detected {len(dependencies)} APK packages")
-        print(f"✓ Scope: {scope}")
-        print(f"✓ Sample packages: {list(dependencies.keys())[:5]}")
+    def _get_apk_package_count(self, result: Dict[str, Any]) -> int:
+        """Get the count of APK packages from result."""
+        if "system" not in result or "packages" not in result["system"]:
+            return 0
+        packages = result["system"]["packages"]
+        apk_packages = [pkg for pkg in packages if pkg.get("type") == "apk"]
+        return len(apk_packages)
 
     def _validate_apk_dependencies_extended(
         self, result: Dict[str, Any], base_count: int, installed_packages: list
@@ -106,20 +117,21 @@ class TestApkDockerDetection(DockerTestBase):
         """Validate APK dependencies with additional installed packages."""
         self._validate_apk_dependencies(result)  # Basic validation first
 
-        apk_result = result["apk"]
-        dependencies = apk_result["dependencies"]
-        dependency_names = list(dependencies.keys())
+        # Get APK packages from system scope
+        system_result = result["system"]
+        packages = system_result["packages"]
+        apk_packages = [pkg for pkg in packages if pkg.get("type") == "apk"]
+        package_names = [pkg["name"] for pkg in apk_packages]
 
         # Should have more packages than base Alpine
-        assert len(dependencies) > base_count, f"Expected more than {base_count} packages, got: {len(dependencies)}"
+        current_count = len(apk_packages)
+        assert current_count > base_count, f"Expected more than {base_count} packages, got: {current_count}"
 
         # Check for the packages we installed
-        found_additional = [pkg for pkg in installed_packages if pkg in dependency_names]
-        assert (
-            len(found_additional) > 0
-        ), f"Expected to find at least one of {installed_packages} in: {dependency_names}"
+        found_additional = [pkg for pkg in installed_packages if pkg in package_names]
+        assert len(found_additional) > 0, f"Expected to find at least one of {installed_packages} in: {package_names}"
 
-        print(f"✓ Package count increased from {base_count} to {len(dependencies)}")
+        print(f"✓ Package count increased from {base_count} to {current_count}")
         print(f"✓ Found additional packages: {found_additional}")
 
 

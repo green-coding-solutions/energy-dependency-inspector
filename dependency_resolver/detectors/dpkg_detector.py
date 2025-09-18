@@ -3,6 +3,9 @@ from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
+# Package type constant
+PACKAGE_TYPE_DPKG = "dpkg"
+
 
 class DpkgDetector(PackageManagerDetector):
     """Detector for system packages managed by dpkg (Debian/Ubuntu)."""
@@ -27,22 +30,29 @@ class DpkgDetector(PackageManagerDetector):
         _, _, dpkg_exit_code = executor.execute_command("dpkg-query --version")
         return dpkg_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract system packages with versions using dpkg-query.
 
         Uses dpkg-query -W -f for reliable package information extraction.
         See docs/technical/detectors/dpkg_detector.md
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type, and hash
+            - metadata: Empty dict (system scope has no metadata)
         """
         command = "dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n'"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
         if exit_code != 0:
-            return {"scope": "system", "dependencies": {}}
+            return [], {}
 
         # Collect all package hashes in a single batch operation
         batch_hashes = self._collect_all_package_hashes(executor)
 
-        dependencies = {}
+        packages = []
         for line in stdout.strip().split("\n"):
             if line and "\t" in line:
                 parts = line.split("\t")
@@ -53,9 +63,7 @@ class DpkgDetector(PackageManagerDetector):
 
                     full_version = f"{version} {architecture}" if architecture else version
 
-                    package_data = {
-                        "version": full_version,
-                    }
+                    package_data = {"name": package_name, "version": full_version, "type": PACKAGE_TYPE_DPKG}
 
                     # Use batch-collected hash or fallback to individual lookup
                     package_hash = batch_hashes.get(package_name)
@@ -65,9 +73,9 @@ class DpkgDetector(PackageManagerDetector):
                     if package_hash:
                         package_data["hash"] = package_hash
 
-                    dependencies[package_name] = package_data
+                    packages.append(package_data)
 
-        return {"scope": "system", "dependencies": dependencies}
+        return packages, {}
 
     def _get_package_hash(self, executor: EnvironmentExecutor, package_name: str, architecture: str = "") -> str | None:
         """Get package hash from dpkg md5sums file if available.

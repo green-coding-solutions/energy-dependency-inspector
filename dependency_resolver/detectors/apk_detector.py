@@ -1,6 +1,9 @@
 from typing import Optional, Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 
+# Package type constant
+PACKAGE_TYPE_APK = "apk"
+
 
 class ApkDetector(PackageManagerDetector):
     """Detector for system packages managed by apk (Alpine Linux)."""
@@ -21,19 +24,26 @@ class ApkDetector(PackageManagerDetector):
         _, _, apk_exit_code = executor.execute_command("apk --version")
         return apk_exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract system packages with versions and architecture using apk list.
 
         Uses 'apk list --installed' for comprehensive package information including architecture.
         See docs/technical/detectors/apk_detector.md
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type
+            - metadata: Empty dict (system scope has no metadata)
         """
         command = "apk list --installed"
         stdout, _, exit_code = executor.execute_command(command, working_dir)
 
         if exit_code != 0:
-            return {"scope": "system", "dependencies": {}}
+            return [], {}
 
-        dependencies = {}
+        packages = []
         for line in stdout.strip().split("\n"):
             line = line.strip()
 
@@ -56,13 +66,9 @@ class ApkDetector(PackageManagerDetector):
 
                         full_version = f"{version} {architecture}" if architecture else version
 
-                        package_data = {
-                            "version": full_version,
-                        }
+                        packages.append({"name": package_name, "version": full_version, "type": PACKAGE_TYPE_APK})
 
-                        dependencies[package_name] = package_data
-
-        return {"scope": "system", "dependencies": dependencies}
+        return packages, {}
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """APK always has system scope (system packages)."""

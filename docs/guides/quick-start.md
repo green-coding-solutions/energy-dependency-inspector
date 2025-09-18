@@ -18,7 +18,7 @@ pip install .
 python3 -m dependency_resolver
 ```
 
-This analyzes your current system and outputs a JSON report of all detected package managers and their dependencies.
+This analyzes your current system and outputs a JSON report with packages organized by scope (project vs system).
 
 ### Analyze Docker Container
 
@@ -36,23 +36,37 @@ python3 -m dependency_resolver --pretty-print
 
 ## Understanding the Output
 
-The tool outputs JSON with detected package managers:
+The tool outputs JSON with packages organized by scope:
 
 ```json
 {
-  "dpkg": {
-    "scope": "system",
-    "dependencies": {
-      "package-name": {
-        "version": "1.2.3 amd64",
-        "hash": "abc123..."
+  "project": {
+    "packages": [
+      {
+        "name": "flask",
+        "version": "2.3.3",
+        "type": "pip"
       }
+    ],
+    "pip": {
+      "location": "/path/to/venv/lib/python3.12/site-packages",
+      "hash": "abc123..."
     }
+  },
+  "system": {
+    "packages": [
+      {
+        "name": "package-name",
+        "version": "1.2.3 amd64",
+        "type": "dpkg",
+        "hash": "def456..."
+      }
+    ]
   }
 }
 ```
 
-Each section represents a package manager (dpkg, pip, npm, etc.) with its detected packages.
+Packages are grouped into **project** (local dependencies) and **system** (system-wide packages), with metadata for each package manager stored separately.
 
 ## Common Use Cases
 

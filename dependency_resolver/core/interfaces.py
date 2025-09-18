@@ -31,8 +31,16 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract dependencies with versions and hashes."""
+    def get_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+        """Extract dependencies with versions and hashes.
+
+        Returns:
+            tuple: (packages, metadata)
+            - packages: List of package dicts with name, version, type, and optional hash
+            - metadata: Dict with location and hash for project scope, empty for system scope
+        """
         raise NotImplementedError
 
     @abstractmethod

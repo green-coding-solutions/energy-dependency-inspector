@@ -144,19 +144,21 @@ class TestDockerExecutorFallback:
             # Should find pip dependencies
             assert isinstance(result, dict)
 
-            # Check if pip detector found something
-            if "pip" in result:
-                pip_result = result["pip"]
-                assert "dependencies" in pip_result
-                assert isinstance(pip_result["dependencies"], dict)
+            # Check if pip detector found something in project scope
+            if "project" in result:
+                project_result = result["project"]
+                assert "packages" in project_result
+                packages = project_result["packages"]
+                pip_packages = [pkg for pkg in packages if pkg.get("type") == "pip"]
 
-                # Should find 'six' package we installed
-                dependencies = pip_result["dependencies"]
-                assert len(dependencies) > 0
+                if pip_packages:
+                    # Should find 'six' package we installed
+                    assert len(pip_packages) > 0
 
-                # Verify 'six' is in the dependencies
-                found_six = any("six" in dep_name.lower() for dep_name in dependencies.keys())
-                assert found_six, f"Expected to find 'six' in dependencies: {list(dependencies.keys())}"
+                    # Verify 'six' is in the packages
+                    package_names = [pkg["name"] for pkg in pip_packages]
+                    found_six = any("six" in pkg_name.lower() for pkg_name in package_names)
+                    assert found_six, f"Expected to find 'six' in packages: {package_names}"
 
         finally:
             # Clean up

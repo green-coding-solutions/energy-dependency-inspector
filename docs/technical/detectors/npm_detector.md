@@ -170,35 +170,54 @@ def _get_npm_location(self, executor: EnvironmentExecutor, working_dir: str = No
 
 ## Output Format
 
+The detector returns a tuple: `(packages, metadata)`
+
 ### Project Scope (with location hash)
+
+**Packages:**
+
+```json
+[
+  {
+    "name": "express",
+    "version": "4.18.2",
+    "type": "npm"
+  },
+  {
+    "name": "lodash",
+    "version": "4.17.21",
+    "type": "npm"
+  }
+]
+```
+
+**Metadata:**
 
 ```json
 {
-  "scope": "project",
   "location": "/path/to/project",
-  "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890",
-  "dependencies": {
-    "express": {
-      "version": "4.18.2"
-    },
-    "lodash": {
-      "version": "4.17.21"
-    }
-  }
+  "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
 }
 ```
 
 ### System Scope (no location/hash)
 
+**Packages:**
+
 ```json
-{
-  "scope": "system",
-  "dependencies": {
-    "npm": {
-      "version": "9.6.4"
-    }
+[
+  {
+    "name": "npm",
+    "version": "9.6.4",
+    "type": "npm"
   }
-}
+]
+```
+
+**Metadata:**
+
+```json
+{}
 ```
 
 ## Package Manager Conflict Avoidance

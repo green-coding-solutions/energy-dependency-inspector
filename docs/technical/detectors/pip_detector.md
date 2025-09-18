@@ -205,38 +205,59 @@ def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: str = No
 
 ## Output Format
 
+The detector returns a tuple: `(packages, metadata)`
+
 ### Project Scope (with virtual environment)
+
+**Packages:**
+
+```json
+[
+  {
+    "name": "Django",
+    "version": "4.2.1",
+    "type": "pip"
+  },
+  {
+    "name": "requests",
+    "version": "2.31.0",
+    "type": "pip"
+  }
+]
+```
+
+**Metadata:**
 
 ```json
 {
-  "scope": "project",
   "location": "/path/to/venv/lib/python3.9/site-packages",
-  "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890",
-  "dependencies": {
-    "Django": {
-      "version": "4.2.1"
-    },
-    "requests": {
-      "version": "2.31.0"
-    }
-  }
+  "hash": "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
 }
 ```
 
 ### System Scope (no virtual environment)
 
+**Packages:**
+
 ```json
-{
-  "scope": "system",
-  "dependencies": {
-    "pip": {
-      "version": "23.1.2"
-    },
-    "setuptools": {
-      "version": "67.8.0"
-    }
+[
+  {
+    "name": "pip",
+    "version": "23.1.2",
+    "type": "pip"
+  },
+  {
+    "name": "setuptools",
+    "version": "67.8.0",
+    "type": "pip"
   }
-}
+]
+```
+
+**Metadata:**
+
+```json
+{}
 ```
 
 ## Virtual Environment Detection Benefits

@@ -66,30 +66,37 @@ class TestPipDockerDetection(DockerTestBase):
         """Validate that pip dependencies were detected correctly."""
         self.validate_basic_structure(result, "pip")
 
-        pip_result = result["pip"]
-        dependencies = pip_result["dependencies"]
+        # Get pip packages from project scope
+        assert "project" in result, "Expected 'project' scope in result"
+        project_result = result["project"]
+        assert "packages" in project_result, "Project scope should contain 'packages'"
+
+        packages = project_result["packages"]
+        pip_packages = [pkg for pkg in packages if pkg.get("type") == "pip"]
+        assert len(pip_packages) > 0, "Should have found pip packages"
 
         # Check for our installed test packages
         expected_packages = ["requests", "numpy", "click"]
         found_packages = []
+        package_names = [pkg["name"] for pkg in pip_packages]
 
         for expected in expected_packages:
-            package_found = any(expected in dep_name.lower() for dep_name in dependencies.keys())
+            package_found = any(expected in pkg_name.lower() for pkg_name in package_names)
             if package_found:
                 found_packages.append(expected)
 
         assert len(found_packages) >= 2, f"Expected to find at least 2 test packages, found: {found_packages}"
 
         # Validate dependency structure
-        self.validate_dependency_structure(dependencies, sample_count=1)
+        self.validate_dependency_structure(pip_packages, sample_count=1)
 
-        # Check scope (should be project since we skip system scope)
-        scope = pip_result["scope"]
-        assert scope == "project", f"Scope should be 'project' when skipping system scope, got: {scope}"
+        # Validate package types
+        for pkg in pip_packages:
+            assert pkg["type"] == "pip", f"Package type should be 'pip', got: {pkg['type']}"
 
         print(f"✓ Successfully detected pip dependencies: {', '.join(found_packages)}")
-        print(f"✓ Total dependencies found: {len(dependencies)}")
-        print(f"✓ Scope: {scope}")
+        print(f"✓ Total dependencies found: {len(pip_packages)}")
+        print("✓ Scope: project")
 
 
 if __name__ == "__main__":

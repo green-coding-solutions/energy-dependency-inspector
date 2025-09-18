@@ -41,10 +41,12 @@ class {PackageManager}Detector(PackageManagerDetector):
         _, _, exit_code = executor.execute_command("{package_manager} --version", working_dir)
         return exit_code == 0
 
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         """Extract {package_manager} dependencies with versions."""
         # Implement dependency extraction logic
-        # Return format: {"scope": "system|project", "location": "path", "dependencies": {}, "hash": "sha256"}
+        # Return format: (packages_list, metadata_dict)
+        # packages_list: [{"name": "package", "version": "1.0", "type": "manager", "hash": "..."}]
+        # metadata_dict: {"location": "path", "hash": "sha256"} for project scope, {} for system scope
         pass
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
@@ -132,15 +134,38 @@ Create `/docs/technical/detectors/{package_manager}_detector.md` with the follow
 - **Limitations**: Known limitations or edge cases
 - **Example Output**: JSON sample showing expected output format
 
-**Example JSON Output Format:**
+**Example Detector Return Format:**
+
+**Packages (system scope):**
+
+```json
+[
+  {
+    "name": "package1",
+    "version": "1.0.0",
+    "type": "your-package-manager",
+    "hash": "sha256..."
+  },
+  {
+    "name": "package2",
+    "version": "2.0.0",
+    "type": "your-package-manager",
+    "hash": "sha256..."
+  }
+]
+```
+
+**Metadata (system scope):**
+
+```json
+{}
+```
+
+**Metadata (project scope example):**
 
 ```json
 {
-  "scope": "system",
-  "dependencies": {
-    "package1": {"version": "1.0.0", "hash": "sha256..."},
-    "package2": {"version": "2.0.0", "hash": "sha256..."}
-  },
+  "location": "/path/to/project/packages",
   "hash": "sha256..."
 }
 ```
@@ -214,20 +239,23 @@ class Test{PackageManager}DockerDetection(DockerTestBase):
             if container_id:
                 self.cleanup_container(container_id)
 
-    def _validate_{package_manager}_dependencies(self, result: Dict[str, Any]) -> None:
+    def _validate_{package_manager}_dependencies(self, packages: list[Dict[str, Any]], metadata: Dict[str, Any]) -> None:
         """Validate {package_manager} dependencies in the result."""
-        assert "{package_manager}" in result
+        assert isinstance(packages, list)
+        assert isinstance(metadata, dict)
 
-        {package_manager}_result = result["{package_manager}"]
-        assert "scope" in {package_manager}_result
-        assert "dependencies" in {package_manager}_result
+        # Validate package format
+        for package in packages:
+            assert "name" in package
+            assert "version" in package
+            assert "type" in package
+            assert package["type"] == "{package_manager}"
 
-        # Add specific validations for your package manager
-        dependencies = {package_manager}_result["dependencies"]
-        assert isinstance(dependencies, dict)
-
-        # Validate expected packages if known
-        # assert "expected-package" in dependencies
+        # Validate metadata based on scope
+        if metadata:  # Project scope
+            assert "location" in metadata
+            # assert "hash" in metadata  # Optional depending on implementation
+        # System scope has empty metadata {}
 ```
 
 ### 4.3 Test README
@@ -289,10 +317,11 @@ If a `performance-analysis/` directory exists, add a benchmark script following 
 def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
     return True  # Always system scope
 
-def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     # Extract from system package database
     # Usually ignore working_dir for system packages
-    result = {"scope": "system", "dependencies": {}}
+    packages = []  # List of package dictionaries
+    metadata = {}  # Empty for system scope
 ```
 
 ### Project-Scoped Detectors (pip, npm style)
@@ -304,14 +333,18 @@ def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[
         return not self._has_project_files(executor, working_dir)
     return True  # Default to system if no working_dir
 
-def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
+def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if working_dir and self._has_project_files(executor, working_dir):
         # Extract project dependencies
+        packages = []  # List of package dictionaries
         location = self._resolve_absolute_path(executor, working_dir)
-        return {"scope": "project", "location": location, "dependencies": {}}
+        metadata = {"location": location}  # Project scope metadata
+        return packages, metadata
     else:
         # Extract system dependencies
-        return {"scope": "system", "dependencies": {}}
+        packages = []  # List of package dictionaries
+        metadata = {}  # Empty for system scope
+        return packages, metadata
 ```
 
 ## Debugging Tips

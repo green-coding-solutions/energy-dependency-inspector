@@ -38,7 +38,11 @@ class Orchestrator:
         if working_dir is not None and not executor.path_exists(working_dir):
             raise ValueError(f"Working directory does not exist: {working_dir}")
 
-        result = {}
+        result: dict[str, Any] = {}
+        project_packages: list[dict[str, Any]] = []
+        project_metadata: dict[str, dict[str, Any]] = {}
+        system_packages: list[dict[str, Any]] = []
+        system_metadata: dict[str, dict[str, Any]] = {}
 
         if only_container_info:
             # Only run docker-info detector when only container info is requested
@@ -63,22 +67,31 @@ class Orchestrator:
                     if self.debug:
                         print(f"{detector_name} is usable, extracting dependencies...")
 
-                    dependencies = detector.get_dependencies(executor, working_dir)
-
-                    # Special handling for docker-info detector (simplified format)
+                    # Special handling for docker-info detector
                     if detector_name == "docker-info":
-                        if dependencies:  # Only include if we got container info
-                            result["_container-info"] = dependencies
+                        packages, metadata = detector.get_dependencies(executor, working_dir)
+                        if metadata:  # Only include if we got container info
+                            result["_container-info"] = metadata
                         if self.debug:
                             print(f"Found container info for {detector_name}")
                     else:
-                        # Standard handling for other detectors
-                        if dependencies.get("dependencies") or self.debug:
-                            result[detector_name] = dependencies
+                        # Standard handling for package detectors
+                        packages, metadata = detector.get_dependencies(executor, working_dir)
 
-                        if self.debug:
-                            dep_count = len(dependencies.get("dependencies", {}))
-                            print(f"Found {dep_count} dependencies for {detector_name}")
+                        if detector.has_system_scope(executor, working_dir):
+                            # System scope packages
+                            system_packages.extend(packages)
+                            if metadata:
+                                system_metadata[detector_name] = metadata
+                            if self.debug:
+                                print(f"Found {len(packages)} system packages for {detector_name}")
+                        else:
+                            # Project scope packages
+                            project_packages.extend(packages)
+                            if metadata:
+                                project_metadata[detector_name] = metadata
+                            if self.debug:
+                                print(f"Found {len(packages)} project packages for {detector_name}")
                 else:
                     if self.debug:
                         print(f"{detector_name} is not available")
@@ -87,5 +100,16 @@ class Orchestrator:
                 if self.debug:
                     print(f"Error checking {detector_name}: {str(e)}")
                 continue
+
+        # Build final result structure matching proposal
+        if project_packages or project_metadata:
+            project_section: dict[str, Any] = {"packages": project_packages}
+            project_section.update(project_metadata)
+            result["project"] = project_section
+
+        if system_packages or system_metadata:
+            system_section: dict[str, Any] = {"packages": system_packages}
+            system_section.update(system_metadata)
+            result["system"] = system_section
 
         return result

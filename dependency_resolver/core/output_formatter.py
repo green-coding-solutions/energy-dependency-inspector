@@ -22,30 +22,39 @@ class OutputFormatter:
             else:
                 return json.dumps(dependencies)
 
-    def create_excerpt(self, dependencies: dict[str, Any], max_deps_per_manager: int = 3) -> dict[str, Any]:
+    def create_excerpt(self, dependencies: dict[str, Any], max_deps_per_section: int = 3) -> dict[str, Any]:
         """Create an excerpt of dependencies for debug mode."""
         excerpt: dict[str, Any] = {}
 
-        for manager_name, manager_data in dependencies.items():
-            excerpt[manager_name] = {}
+        for section_name, section_data in dependencies.items():
+            if section_name.startswith("_"):
+                # Copy container info and other metadata as-is
+                excerpt[section_name] = section_data
+            elif section_name in ("project", "system"):
+                # Handle new unified structure with packages array
+                excerpt[section_name] = {}
 
-            for key, value in manager_data.items():
-                if key != "dependencies":
-                    excerpt[manager_name][key] = value
+                for key, value in section_data.items():
+                    if key != "packages":
+                        # Copy metadata (location, hash for project managers)
+                        excerpt[section_name][key] = value
 
-            if "dependencies" in manager_data:
-                deps = manager_data["dependencies"]
-                total_deps = len(deps)
+                if "packages" in section_data:
+                    packages = section_data["packages"]
+                    total_packages = len(packages)
 
-                if total_deps <= max_deps_per_manager:
-                    excerpt[manager_name]["dependencies"] = deps
-                else:
-                    limited_deps = dict(list(deps.items())[:max_deps_per_manager])
-                    excerpt[manager_name]["dependencies"] = limited_deps
-                    excerpt[manager_name]["_excerpt_info"] = {
-                        "total_dependencies": total_deps,
-                        "shown": max_deps_per_manager,
-                        "note": f"Showing {max_deps_per_manager} of {total_deps} dependencies (debug mode excerpt)",
-                    }
+                    if total_packages <= max_deps_per_section:
+                        excerpt[section_name]["packages"] = packages
+                    else:
+                        limited_packages = packages[:max_deps_per_section]
+                        excerpt[section_name]["packages"] = limited_packages
+                        excerpt[section_name]["_excerpt_info"] = {
+                            "total_packages": total_packages,
+                            "shown": max_deps_per_section,
+                            "note": f"Showing {max_deps_per_section} of {total_packages} packages (debug mode excerpt)",
+                        }
+            else:
+                # Fallback for any legacy structure
+                excerpt[section_name] = section_data
 
         return excerpt

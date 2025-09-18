@@ -85,44 +85,68 @@ The detector generates a SHA-256 hash based on Maven project files:
 2. **Multi-module Projects**: Processes only the specific `pom.xml` in working directory
 3. **Complex Builds**: Does not handle complex build scenarios or plugins
 
-## Example Output
+## Output Format
+
+The detector returns a tuple: `(packages, metadata)`
 
 ### With Maven CLI Available
 
+**Packages:**
+
+```json
+[
+  {
+    "name": "org.apache.commons:commons-lang3",
+    "version": "3.12.0",
+    "type": "maven"
+  },
+  {
+    "name": "com.fasterxml.jackson.core:jackson-core",
+    "version": "2.15.2",
+    "type": "maven"
+  }
+]
+```
+
+**Metadata:**
+
 ```json
 {
-  "scope": "project",
   "location": "/path/to/maven/project",
-  "hash": "abc123def456...",
-  "dependencies": {
-    "org.apache.commons:commons-lang3": {
-      "version": "3.12.0"
-    },
-    "com.fasterxml.jackson.core:jackson-core": {
-      "version": "2.15.2"
-    }
-  }
+  "hash": "abc123def456789012345678901234567890123456789012345678901234567890"
 }
 ```
 
 ### With POM.xml Parsing Only
 
+**Packages:**
+
+```json
+[
+  {
+    "name": "org.apache.commons:commons-lang3",
+    "version": "3.12.0",
+    "type": "maven"
+  },
+  {
+    "name": "com.fasterxml.jackson.core:jackson-core",
+    "version": "2.15.2",
+    "type": "maven"
+  },
+  {
+    "name": "org.springframework:spring-core",
+    "version": "${spring.version}",
+    "type": "maven"
+  }
+]
+```
+
+**Metadata:**
+
 ```json
 {
-  "scope": "project",
   "location": "/path/to/maven/project",
-  "hash": "def789abc012...",
-  "dependencies": {
-    "org.apache.commons:commons-lang3": {
-      "version": "3.12.0"
-    },
-    "com.fasterxml.jackson.core:jackson-core": {
-      "version": "2.15.2"
-    },
-    "org.springframework:spring-core": {
-      "version": "${spring.version}"
-    }
-  }
+  "hash": "def789abc012345678901234567890123456789012345678901234567890123456"
 }
 ```
 

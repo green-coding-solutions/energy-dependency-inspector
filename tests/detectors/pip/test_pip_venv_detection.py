@@ -43,17 +43,17 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector with explicit venv path
             detector = PipDetector(venv_path=venv_path, debug=True)
-            result = detector.get_dependencies(executor)
+            packages, metadata = detector.get_dependencies(executor)
 
             if verbose_output:
-                self.print_verbose_results("VENV PATH DETECTION:", result)
+                self.print_verbose_results("VENV PATH DETECTION:", {"packages": packages, "metadata": metadata})
 
-            self._validate_venv_detection(result, expected_scope="project")
+            self._validate_venv_detection(packages, metadata, expected_scope="project")
 
             # Verify it found the correct venv
-            assert result["location"].startswith(
+            assert metadata["location"].startswith(
                 venv_path
-            ), f"Expected location to start with {venv_path}, got {result['location']}"
+            ), f"Expected location to start with {venv_path}, got {metadata['location']}"
 
             print(f"✓ Successfully detected venv using --venv-path: {venv_path}")
 
@@ -81,17 +81,17 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector without explicit venv path (should use VIRTUAL_ENV)
             detector = PipDetector(debug=True)
-            result = detector.get_dependencies(executor)
+            packages, metadata = detector.get_dependencies(executor)
 
             if verbose_output:
-                self.print_verbose_results("VIRTUAL_ENV DETECTION:", result)
+                self.print_verbose_results("VIRTUAL_ENV DETECTION:", {"packages": packages, "metadata": metadata})
 
-            self._validate_venv_detection(result, expected_scope="project")
+            self._validate_venv_detection(packages, metadata, expected_scope="project")
 
             # Verify it found the correct venv
-            assert result["location"].startswith(
+            assert metadata["location"].startswith(
                 venv_path
-            ), f"Expected location to start with {venv_path}, got {result['location']}"
+            ), f"Expected location to start with {venv_path}, got {metadata['location']}"
 
             print(f"✓ Successfully detected venv using VIRTUAL_ENV: {venv_path}")
 
@@ -123,17 +123,17 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector with working_dir set to project (should find ./venv)
             detector = PipDetector(debug=True)
-            result = detector.get_dependencies(executor, working_dir=project_dir)
+            packages, metadata = detector.get_dependencies(executor, working_dir=project_dir)
 
             if verbose_output:
-                self.print_verbose_results("PROJECT VENV DETECTION:", result)
+                self.print_verbose_results("PROJECT VENV DETECTION:", {"packages": packages, "metadata": metadata})
 
-            self._validate_venv_detection(result, expected_scope="project")
+            self._validate_venv_detection(packages, metadata, expected_scope="project")
 
             # Verify it found the project venv
-            assert result["location"].startswith(
+            assert metadata["location"].startswith(
                 venv_dir
-            ), f"Expected location to start with {venv_dir}, got {result['location']}"
+            ), f"Expected location to start with {venv_dir}, got {metadata['location']}"
 
             print(f"✓ Successfully detected venv in project directory: {venv_dir}")
 
@@ -170,17 +170,17 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector with working_dir set to project (should find ~/.virtualenvs/myproject)
             detector = PipDetector(debug=True)
-            result = detector.get_dependencies(executor, working_dir=project_dir)
+            packages, metadata = detector.get_dependencies(executor, working_dir=project_dir)
 
             if verbose_output:
-                self.print_verbose_results("VIRTUALENVS DETECTION:", result)
+                self.print_verbose_results("VIRTUALENVS DETECTION:", {"packages": packages, "metadata": metadata})
 
-            self._validate_venv_detection(result, expected_scope="project")
+            self._validate_venv_detection(packages, metadata, expected_scope="project")
 
             # Verify it found the virtualenvs venv
-            assert result["location"].startswith(
+            assert metadata["location"].startswith(
                 venv_path
-            ), f"Expected location to start with {venv_path}, got {result['location']}"
+            ), f"Expected location to start with {venv_path}, got {metadata['location']}"
 
             print(f"✓ Successfully detected venv using ~/.virtualenvs pattern: {venv_path}")
 
@@ -207,17 +207,17 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector without explicit venv path (should find via system-wide search)
             detector = PipDetector(debug=True)
-            result = detector.get_dependencies(executor)
+            packages, metadata = detector.get_dependencies(executor)
 
             if verbose_output:
-                self.print_verbose_results("OPT VENV DETECTION:", result)
+                self.print_verbose_results("OPT VENV DETECTION:", {"packages": packages, "metadata": metadata})
 
-            self._validate_venv_detection(result, expected_scope="project")
+            self._validate_venv_detection(packages, metadata, expected_scope="project")
 
             # Verify it found the correct venv
-            assert result["location"].startswith(
+            assert metadata["location"].startswith(
                 venv_path
-            ), f"Expected location to start with {venv_path}, got {result['location']}"
+            ), f"Expected location to start with {venv_path}, got {metadata['location']}"
 
             print(f"✓ Successfully detected venv at /opt/venv: {venv_path}")
 
@@ -244,15 +244,15 @@ class TestPipVenvDetection(DockerTestBase):
 
             # Test detector with working_dir set to project without venv
             detector = PipDetector(debug=True)
-            result = detector.get_dependencies(executor, working_dir=project_dir)
+            packages, metadata = detector.get_dependencies(executor, working_dir=project_dir)
 
             if verbose_output:
-                self.print_verbose_results("NO VENV DETECTION:", result)
+                self.print_verbose_results("NO VENV DETECTION:", {"packages": packages, "metadata": metadata})
 
-            # Should return empty dependencies with project scope
-            assert result["scope"] == "project", f"Expected scope 'project', got {result['scope']}"
-            assert result["location"] == project_dir, f"Expected location {project_dir}, got {result['location']}"
-            assert result["dependencies"] == {}, f"Expected empty dependencies, got {result['dependencies']}"
+            # Should return empty packages with project scope metadata
+            assert "location" in metadata, "Should have project scope with location"
+            assert metadata["location"] == project_dir, f"Expected location {project_dir}, got {metadata['location']}"
+            assert not packages, f"Expected empty packages, got {packages}"
 
             print("✓ Successfully handled case with no venv found")
 
@@ -282,32 +282,29 @@ class TestPipVenvDetection(DockerTestBase):
             if exit_code != 0:
                 pytest.fail(f"Failed to install {package} in venv: {stderr}")
 
-    def _validate_venv_detection(self, result: Dict[str, Any], expected_scope: str) -> None:
+    def _validate_venv_detection(
+        self, packages: list[Dict[str, Any]], metadata: Dict[str, Any], expected_scope: str
+    ) -> None:
         """Validate that venv detection worked correctly."""
-        assert "scope" in result, "Result should contain scope"
-        assert "location" in result, "Result should contain location"
-        assert "dependencies" in result, "Result should contain dependencies"
+        assert isinstance(packages, list), f"Packages should be list, got {type(packages)}"
+        assert isinstance(metadata, dict), f"Metadata should be dict, got {type(metadata)}"
 
-        assert result["scope"] == expected_scope, f"Expected scope '{expected_scope}', got {result['scope']}"
-        assert isinstance(result["location"], str), f"Location should be string, got {type(result['location'])}"
-        assert len(result["location"]) > 0, "Location should not be empty"
-        assert isinstance(
-            result["dependencies"], dict
-        ), f"Dependencies should be dict, got {type(result['dependencies'])}"
+        if expected_scope == "project":
+            assert "location" in metadata, "Project scope should contain location"
+            assert isinstance(metadata["location"], str), f"Location should be string, got {type(metadata['location'])}"
+            assert len(metadata["location"]) > 0, "Location should not be empty"
+            assert "hash" in metadata, "Project scope should include hash"
+        else:
+            # System scope should have empty metadata
+            assert not metadata, f"System scope should have empty metadata, got {metadata}"
 
         # Should have found our test packages
-        dependencies = result["dependencies"]
         found_packages = []
-        for pkg_name in dependencies:
-            if any(test_pkg in pkg_name.lower() for test_pkg in ["requests", "click"]):
-                found_packages.append(pkg_name)
+        for pkg in packages:
+            if any(test_pkg in pkg["name"].lower() for test_pkg in ["requests", "click"]):
+                found_packages.append(pkg["name"])
 
         assert len(found_packages) >= 1, f"Should find at least 1 test package, found: {found_packages}"
-
-        # Should have a hash for project scope
-        if expected_scope == "project":
-            assert "hash" in result, "Project scope should include hash"
-            assert isinstance(result["hash"], str), f"Hash should be string, got {type(result['hash'])}"
 
 
 if __name__ == "__main__":

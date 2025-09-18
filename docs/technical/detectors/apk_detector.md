@@ -93,19 +93,32 @@ The detector is usable when:
 
 ## Output Format
 
+The detector returns a tuple: `(packages, metadata)`
+
+**Packages:**
+
 ```json
-{
-  "scope": "system",
-  "dependencies": {
-    "bash": {
-      "version": "5.2.15-r5 x86_64"
-    },
-    "musl": {
-      "version": "1.2.3-r2 x86_64"
-    }
+[
+  {
+    "name": "bash",
+    "version": "5.2.15-r5 x86_64",
+    "type": "apk"
+  },
+  {
+    "name": "musl",
+    "version": "1.2.3-r2 x86_64",
+    "type": "apk"
   }
-}
+]
 ```
+
+**Metadata:**
+
+```json
+{}
+```
+
+Note: System-scoped packages have empty metadata as they don't have project-specific locations.
 
 ## Limitations & Constraints
 

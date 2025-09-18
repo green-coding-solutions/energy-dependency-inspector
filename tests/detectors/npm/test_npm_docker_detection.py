@@ -53,43 +53,48 @@ class TestNpmDockerDetection(DockerTestBase):
         """Validate that npm dependencies were detected correctly."""
         self.validate_basic_structure(result, "npm")
 
-        npm_result = result["npm"]
-        dependencies = npm_result["dependencies"]
+        # Get npm packages from project scope
+        assert "project" in result, "Expected 'project' scope in result"
+        project_result = result["project"]
+        assert "packages" in project_result, "Project scope should contain 'packages'"
+
+        packages = project_result["packages"]
+        npm_packages = [pkg for pkg in packages if pkg.get("type") == "npm"]
+        assert len(npm_packages) > 0, "Should have found npm packages"
 
         # Check for expected dependencies (based on typical Node.js project structure)
-        # Look for common dependencies that would be in a Node.js project
-        dependency_names = list(dependencies.keys())
+        package_names = [pkg["name"] for pkg in npm_packages]
 
         # Validate that we found actual npm packages
-        assert len(dependency_names) > 5, f"Expected to find multiple npm dependencies, got: {dependency_names}"
+        assert len(package_names) > 5, f"Expected to find multiple npm dependencies, got: {package_names}"
 
         # Check for typical Node.js/TypeScript project dependencies
         typescript_related = any(
             name
-            for name in dependency_names
+            for name in package_names
             if any(keyword in name.lower() for keyword in ["typescript", "@types", "ts-", "jest"])
         )
-        assert typescript_related, f"Expected to find TypeScript-related dependencies in: {dependency_names}"
+        assert typescript_related, f"Expected to find TypeScript-related dependencies in: {package_names}"
 
         # Validate dependency structure
-        self.validate_dependency_structure(dependencies, sample_count=3)
+        self.validate_dependency_structure(npm_packages, sample_count=3)
 
-        scope = npm_result["scope"]
-        assert scope == "project", f"Scope should be 'project', got: {scope}"
-
-        assert "location" in npm_result, "npm result should have location field for project scope"
-        location = npm_result["location"]
+        # Should have location metadata
+        assert "npm" in project_result, "Project scope should contain npm metadata"
+        npm_metadata = project_result["npm"]
+        assert "location" in npm_metadata, "npm metadata should have location field for project scope"
+        location = npm_metadata["location"]
         assert isinstance(location, str), "Location should be a string"
         assert len(location) > 0, "Location should not be empty"
 
-        if "hash" in npm_result:
-            hash_value = npm_result["hash"]
+        if "hash" in npm_metadata:
+            hash_value = npm_metadata["hash"]
             assert isinstance(hash_value, str), "Hash should be a string"
 
-        print(f"✓ Successfully detected {len(dependencies)} npm dependencies")
-        print(f"✓ Scope: {scope}")
-        print(f"✓ Location: {npm_result.get('location', 'N/A')}")
-        hash_value = npm_result.get("hash", "")
+        print(f"✓ Successfully detected {len(npm_packages)} npm dependencies")
+        print("✓ Scope: project")
+        print(f"✓ Location: {npm_metadata.get('location', 'N/A')}")
+        hash_value = npm_metadata.get("hash", "")
         if hash_value:
             print(f"✓ Hash: {hash_value[:16]}...")
         else:

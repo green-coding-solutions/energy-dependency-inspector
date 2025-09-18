@@ -45,7 +45,7 @@ class TestDpkgDockerDetection(DockerTestBase):
                 self.print_verbose_results("BASE UBUNTU DEPENDENCIES:", result_base)
 
             self._validate_dpkg_dependencies(result_base)
-            base_package_count = len(result_base["dpkg"]["dependencies"])
+            base_package_count = self._get_dpkg_package_count(result_base)
 
             # Install additional packages
             packages_to_install = ["curl", "vim", "wget", "tree"]
@@ -64,51 +64,65 @@ class TestDpkgDockerDetection(DockerTestBase):
             self._validate_dpkg_dependencies_extended(result_extended, base_package_count, packages_to_install)
 
             # Validate hash coverage once for the final extended package set
-            final_dependencies = result_extended["dpkg"]["dependencies"]
-            self._validate_hash_coverage(final_dependencies)
+            final_packages = self._get_dpkg_packages(result_extended)
+            self._validate_hash_coverage(final_packages)
 
         finally:
             if container_id:
                 self.cleanup_container(container_id)
 
+    def _get_dpkg_packages(self, result: Dict[str, Any]) -> list:
+        """Get DPKG packages from result."""
+        if "system" not in result or "packages" not in result["system"]:
+            return []
+        packages = result["system"]["packages"]
+        return [pkg for pkg in packages if pkg.get("type") == "dpkg"]
+
+    def _get_dpkg_package_count(self, result: Dict[str, Any]) -> int:
+        """Get the count of DPKG packages from result."""
+        return len(self._get_dpkg_packages(result))
+
     def _validate_dpkg_dependencies(self, result: Dict[str, Any]) -> None:
         """Validate that DPKG dependencies were detected correctly."""
         self.validate_basic_structure(result, "dpkg")
 
-        dpkg_result = result["dpkg"]
-        dependencies = dpkg_result["dependencies"]
+        # Get DPKG packages from system scope
+        assert "system" in result, "Expected 'system' scope in result"
+        system_result = result["system"]
+        assert "packages" in system_result, "System scope should contain 'packages'"
+
+        packages = system_result["packages"]
+        dpkg_packages = [pkg for pkg in packages if pkg.get("type") == "dpkg"]
+        assert len(dpkg_packages) > 0, "Should have found DPKG packages"
 
         # Check for expected Ubuntu base packages
-        dependency_names = list(dependencies.keys())
+        package_names = [pkg["name"] for pkg in dpkg_packages]
 
         # Basic Ubuntu should have essential packages
         expected_packages = ["base-files", "libc6", "bash", "coreutils", "dpkg"]
-        found_expected = [pkg for pkg in expected_packages if pkg in dependency_names]
-        assert len(found_expected) > 0, f"Expected to find at least one of {expected_packages} in: {dependency_names}"
+        found_expected = [pkg for pkg in expected_packages if pkg in package_names]
+        assert len(found_expected) > 0, f"Expected to find at least one of {expected_packages} in: {package_names}"
 
         # Validate dependency structure
-        self.validate_dependency_structure(dependencies)
+        self.validate_dependency_structure(dpkg_packages)
 
         # DPKG-specific validation: check architecture in versions and hashes
-        sample_deps = list(dependencies.items())[:5]
-        for dep_name, dep_info in sample_deps:
-            version = dep_info["version"]
+        for package in dpkg_packages[:5]:
+            version = package["version"]
             assert any(
                 arch in version for arch in ["amd64", "all", "arm64", "armhf", "i386"]
-            ), f"Version for {dep_name} should include architecture: {version}"
+            ), f"Version for {package['name']} should include architecture: {version}"
+            assert package["type"] == "dpkg", f"Package type should be 'dpkg', got: {package['type']}"
 
             # Some packages may have hashes
-            if "hash" in dep_info:
-                hash_value = dep_info["hash"]
-                assert isinstance(hash_value, str), f"Hash for {dep_name} should be a string: {hash_value}"
-                assert len(hash_value) == 64, f"Hash for {dep_name} should be 64 chars (SHA256): {hash_value}"
+            if "hash" in package:
+                hash_value = package["hash"]
+                assert isinstance(hash_value, str), f"Hash for {package['name']} should be a string: {hash_value}"
+                assert len(hash_value) == 64, f"Hash for {package['name']} should be 64 chars (SHA256): {hash_value}"
 
-        scope = dpkg_result["scope"]
-        assert scope == "system", f"Scope should be 'system', got: {scope}"
-
-        print(f"✓ Successfully detected {len(dependencies)} DPKG packages")
-        print(f"✓ Scope: {scope}")
-        print(f"✓ Sample packages: {list(dependencies.keys())[:5]}")
+        print(f"✓ Successfully detected {len(dpkg_packages)} DPKG packages")
+        print("✓ Scope: system")
+        print(f"✓ Sample packages: {package_names[:5]}")
 
     def _validate_dpkg_dependencies_extended(
         self, result: Dict[str, Any], base_count: int, installed_packages: list
@@ -116,28 +130,29 @@ class TestDpkgDockerDetection(DockerTestBase):
         """Validate DPKG dependencies with additional installed packages."""
         self._validate_dpkg_dependencies(result)  # Basic validation first
 
-        dpkg_result = result["dpkg"]
-        dependencies = dpkg_result["dependencies"]
-        dependency_names = list(dependencies.keys())
+        # Get DPKG packages from system scope
+        dpkg_packages = self._get_dpkg_packages(result)
+        package_names = [pkg["name"] for pkg in dpkg_packages]
 
         # Should have more packages than base Ubuntu
-        assert len(dependencies) > base_count, f"Expected more than {base_count} packages, got: {len(dependencies)}"
+        current_count = len(dpkg_packages)
+        assert current_count > base_count, f"Expected more than {base_count} packages, got: {current_count}"
 
         # Check for the packages we installed (may have different names or be dependencies)
         # Look for related packages since apt installs dependencies too
         expected_related = ["curl", "vim", "wget", "tree", "libcurl"]
-        found_related = [pkg for pkg in dependency_names if any(exp in pkg for exp in expected_related)]
+        found_related = [pkg for pkg in package_names if any(exp in pkg for exp in expected_related)]
         assert (
             len(found_related) > 0
-        ), f"Expected to find packages related to {installed_packages} in: {dependency_names[:20]}..."
+        ), f"Expected to find packages related to {installed_packages} in: {package_names[:20]}..."
 
-        print(f"✓ Package count increased from {base_count} to {len(dependencies)}")
+        print(f"✓ Package count increased from {base_count} to {current_count}")
         print(f"✓ Found related packages: {found_related[:10]}")
 
-    def _validate_hash_coverage(self, dependencies: Dict[str, Any]) -> None:
+    def _validate_hash_coverage(self, packages: list) -> None:
         """Validate that all packages have hashes."""
-        total_packages = len(dependencies)
-        packages_with_hash = sum(1 for dep_info in dependencies.values() if "hash" in dep_info)
+        total_packages = len(packages)
+        packages_with_hash = sum(1 for pkg in packages if "hash" in pkg)
 
         print(f"✓ Hash coverage: {packages_with_hash}/{total_packages} packages have hashes")
 

@@ -60,13 +60,22 @@ For complete architecture documentation, see [docs/technical/architecture/overvi
 
 ### JSON Output Schema
 
-The tool outputs structured JSON with detected package managers and their dependencies:
+The tool outputs structured JSON with packages aggregated by scope (project/system):
 
 ```json
 {
   "_container-info": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
-  "dpkg": { "scope": "system", "dependencies": { "curl": { "version": "7.81.0-1ubuntu1.18 amd64" } } },
-  "pip": { "scope": "project", "location": "/app/venv/lib/python3.12/site-packages", "dependencies": { "numpy": { "version": "1.3.3" } } }
+  "project": {
+    "packages": [
+      { "name": "numpy", "version": "1.3.3", "type": "pip" }
+    ],
+    "pip": { "location": "/app/venv/lib/python3.12/site-packages", "hash": "sha256:..." }
+  },
+  "system": {
+    "packages": [
+      { "name": "curl", "version": "7.81.0-1ubuntu1.18 amd64", "type": "dpkg", "hash": "abc123..." }
+    ]
+  }
 }
 ```
 
@@ -74,10 +83,11 @@ For complete JSON schema documentation, field definitions, and examples, see [do
 
 ### Key Schema Concepts
 
-- **Scope**: `"system"` (system-wide packages) or `"project"` (project-specific packages)
-- **Location**: Path to project-local installations (project scope only)
-- **Hash**: Dependency integrity verification when available
-- **Container Info**: Docker metadata included as `_container-info`
+- **Project Packages**: All project-scoped packages aggregated in `project.packages[]` array
+- **System Packages**: All system-scoped packages aggregated in `system.packages[]` array
+- **Package Type**: Each package includes `type` field (`pip`, `npm`, `dpkg`, `apk`, `maven`)
+- **Metadata**: Package manager metadata stored in `project.{manager}` sections (location, hash)
+- **Container Info**: Docker metadata included as `_container-info` when applicable
 
 ## Implementation Constraints
 
