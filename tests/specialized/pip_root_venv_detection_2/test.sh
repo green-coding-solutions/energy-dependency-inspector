@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Build Playwright container and verify psutils is detected in /root/venv/ by dependency_resolver
+# Build container and verify psutils is detected in /root/venv/ by dependency_resolver
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKERFILE_PATH="$SCRIPT_DIR"
 DEPENDENCY_RESOLVER_PATH="$SCRIPT_DIR/../../.."
-CONTAINER_NAME="test-playwright-$(date +%s)"
+CONTAINER_NAME="test-pip-root-venv-detection-2-$(date +%s)"
 
 echo "Building Docker image from $DOCKERFILE_PATH..."
 docker build -t "$CONTAINER_NAME" -f "$DOCKERFILE_PATH/Dockerfile" "$DOCKERFILE_PATH"
