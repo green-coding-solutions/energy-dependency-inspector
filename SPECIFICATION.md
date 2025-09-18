@@ -64,7 +64,7 @@ The tool outputs structured JSON with detected package managers and their depend
 
 ```json
 {
-  "_container-info": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
+  "source": { "name": "nginx-container", "image": "nginx:latest", "hash": "sha256:..." },
   "dpkg": { "scope": "system", "dependencies": { "curl": { "version": "7.81.0-1ubuntu1.18 amd64" } } },
   "pip": { "scope": "project", "location": "/app/venv/lib/python3.12/site-packages", "dependencies": { "numpy": { "version": "1.3.3" } } }
 }
@@ -77,7 +77,7 @@ For complete JSON schema documentation, field definitions, and examples, see [do
 - **Scope**: `"system"` (system-wide packages) or `"project"` (project-specific packages)
 - **Location**: Path to project-local installations (project scope only)
 - **Hash**: Dependency integrity verification when available
-- **Container Info**: Docker metadata included as `_container-info`
+- **Source Info**: Environment metadata included as `source` when applicable (includes `type` field for container/host)
 
 ## Implementation Constraints
 

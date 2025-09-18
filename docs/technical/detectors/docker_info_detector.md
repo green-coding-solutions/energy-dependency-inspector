@@ -20,7 +20,8 @@ Unlike other detectors, Docker Info uses a flattened output structure:
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "container-name",
     "image": "nginx:latest",
     "hash": "sha256:abc123def456..."
@@ -28,7 +29,7 @@ Unlike other detectors, Docker Info uses a flattened output structure:
 }
 ```
 
-This simplified format reflects that container metadata is fundamentally different from package dependencies.
+This simplified format reflects that source metadata is fundamentally different from package dependencies. The `type` field distinguishes between container and host sources.
 
 ## Implementation Details
 
@@ -86,7 +87,7 @@ Container images don't use location-based hashing since:
 
 ### Container Scope
 
-Docker container info has `container` scope in the orchestrator logic, but outputs directly as `_container-info` to distinguish it from package managers.
+Docker container info has `container` scope in the orchestrator logic, but outputs directly as `source` with `type: "container"` to distinguish it from package managers.
 
 ### Executor Context
 
@@ -102,7 +103,8 @@ Works exclusively with `DockerExecutor` to:
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "my-nginx-container",
     "image": "nginx:latest",
     "hash": "sha256:2cd1d97f893f70cee86a38b7160c30e5750f3ed6ad86c598884ca9c6a563a501"
@@ -114,12 +116,11 @@ Works exclusively with `DockerExecutor` to:
 
 ```json
 {
-  "_container-info": {
-    "name": "my-container",
-    "image": "unknown",
-    "hash": "unknown",
-    "error": "AttributeError: 'NoneType' object has no attribute 'tags'"
-  }
+  "type": "container",
+  "name": "my-container",
+  "image": "unknown",
+  "hash": "unknown",
+  "error": "AttributeError: 'NoneType' object has no attribute 'tags'"
 }
 ```
 

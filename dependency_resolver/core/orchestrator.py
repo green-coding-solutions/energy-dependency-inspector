@@ -38,7 +38,7 @@ class Orchestrator:
         if working_dir is not None and not executor.path_exists(working_dir):
             raise ValueError(f"Working directory does not exist: {working_dir}")
 
-        result = {}
+        result: dict[str, Any] = {}
 
         if only_container_info:
             # Only run docker-info detector when only container info is requested
@@ -67,8 +67,8 @@ class Orchestrator:
 
                     # Special handling for docker-info detector (simplified format)
                     if detector_name == "docker-info":
-                        if dependencies:  # Only include if we got container info
-                            result["_container-info"] = dependencies
+                        result["source"] = dependencies
+                        result["source"]["type"] = "container"
                         if self.debug:
                             print(f"Found container info for {detector_name}")
                     else:

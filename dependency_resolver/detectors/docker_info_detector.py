@@ -10,16 +10,23 @@ class DockerInfoDetector(PackageManagerDetector):
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this is a Docker environment."""
+        _ = working_dir  # Unused parameter, required by interface
         return isinstance(executor, DockerExecutor)
 
     def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract Docker container metadata."""
+        """Extract Docker container metadata.
+
+        Note: This detector returns metadata rather than packages, but conforms to the interface.
+        The orchestrator handles this specially.
+        """
+        _ = working_dir  # Unused parameter, required by interface
         if not isinstance(executor, DockerExecutor):
             return {}
 
         container_info = executor.get_container_info()
 
-        # Return simplified container info structure
+        # Return simplified container info structure as metadata
+        # The orchestrator will handle this specially for source section
         result = {
             "name": container_info["name"],
             "image": container_info["image"],
@@ -34,4 +41,6 @@ class DockerInfoDetector(PackageManagerDetector):
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Docker container info has container scope, not system scope."""
+        _ = executor  # Unused parameter, required by interface
+        _ = working_dir  # Unused parameter, required by interface
         return False

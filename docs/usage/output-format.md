@@ -8,20 +8,21 @@ The dependency-resolver outputs a JSON object where each key represents a detect
 
 ```json
 {
-  "_container-info": { ... },
+  "source": { ... },
   "dpkg": { ... },
   "pip": { ... },
   "npm": { ... }
 }
 ```
 
-## Container Information
+## Source Information
 
-When analyzing Docker containers, the `_container-info` section provides metadata:
+When analyzing environments, the `source` section provides metadata about where the scan was performed:
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "nginx-container",
     "image": "nginx:latest",
     "hash": "sha256:2cd1d97f893f..."
@@ -31,9 +32,10 @@ When analyzing Docker containers, the `_container-info` section provides metadat
 
 ### Fields
 
-- `name` - Container name
-- `image` - Docker image used
-- `hash` - Container image hash
+- `type` - Source type (`"container"` for Docker containers, `"host"` for host scans)
+- `name` - Container name (for container sources)
+- `image` - Docker image used (for container sources)
+- `hash` - Container image hash (for container sources)
 
 ## Package Manager Sections
 
@@ -155,7 +157,8 @@ Here's a complete example showing multiple package managers:
 
 ```json
 {
-  "_container-info": {
+  "source": {
+    "type": "container",
     "name": "web-app",
     "image": "python:3.12-slim",
     "hash": "sha256:a1b2c3d4e5f6..."
