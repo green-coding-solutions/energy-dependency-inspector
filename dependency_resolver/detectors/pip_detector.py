@@ -44,11 +44,7 @@ class PipDetector(PackageManagerDetector):
         if exit_code != 0:
             location = self._get_pip_location(executor, working_dir)
             scope = "system" if self._is_system_location(location) else "project"
-            result: dict[str, Any] = {"scope": scope}
-            if scope == "project":
-                result["location"] = location
-            result["dependencies"] = {}
-            return result
+            return {"scope": scope, "location": location, "dependencies": {}}
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -65,17 +61,14 @@ class PipDetector(PackageManagerDetector):
         scope = "system" if self._is_system_location(location) else "project"
 
         # Build result with desired field order: scope, location, hash, dependencies
-        final_result: dict[str, Any] = {"scope": scope}
+        result: dict[str, Any] = {"scope": scope, "location": location}
 
-        if scope == "project":
-            final_result["location"] = location
-            # Generate location-based hash if appropriate
-            if dependencies and not skip_hash_collection:
-                final_result["hash"] = self._generate_location_hash(executor, location)
+        # Generate location-based hash if appropriate
+        if dependencies and not skip_hash_collection:
+            result["hash"] = self._generate_location_hash(executor, location)
 
-        final_result["dependencies"] = dependencies
-
-        return final_result
+        result["dependencies"] = dependencies
+        return result
 
     def _is_system_location(self, location: str) -> bool:
         """Check if a location path represents a system-wide installation."""

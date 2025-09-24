@@ -50,8 +50,7 @@ class NpmDetector(PackageManagerDetector):
 
         # Build result with desired field order: scope, location, hash, dependencies
         result: dict[str, Any] = {"scope": scope}
-        if scope == "project":
-            result["location"] = location
+        result["location"] = location
 
         if exit_code != 0:
             result["dependencies"] = dependencies

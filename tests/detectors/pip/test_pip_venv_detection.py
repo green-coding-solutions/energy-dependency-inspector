@@ -404,10 +404,8 @@ version = 3.9.0
 
         assert len(found_packages) >= 1, f"Should find at least 1 test package, found: {found_packages}"
 
-        # Should have a hash for project scope
-        if expected_scope == "project":
-            assert "hash" in result, "Project scope should include hash"
-            assert isinstance(result["hash"], str), f"Hash should be string, got {type(result['hash'])}"
+        assert "hash" in result, "Hash should be included"
+        assert isinstance(result["hash"], str), f"Hash should be string, got {type(result['hash'])}"
 
 
 if __name__ == "__main__":
