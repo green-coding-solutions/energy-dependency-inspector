@@ -116,11 +116,13 @@ Works exclusively with `DockerExecutor` to:
 
 ```json
 {
+  "source": {
   "type": "container",
   "name": "my-container",
   "image": "unknown",
   "hash": "unknown",
   "error": "AttributeError: 'NoneType' object has no attribute 'tags'"
+  }
 }
 ```
 

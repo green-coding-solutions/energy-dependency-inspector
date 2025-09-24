@@ -10,7 +10,7 @@ The dependency resolver uses a modular detector architecture where each package 
 
 Before adding a new detector, ensure you understand:
 
-1. **Architecture Decision Records (ADRs)**: Review `/docs/adr/` for design principles
+1. **Architecture Decision Records (ADRs)**: Review `/docs/technical/architecture/adr/` for design principles
 2. **Existing Detectors**: Study `/dependency_resolver/detectors/` implementations
 3. **Interface Contracts**: Understand `PackageManagerDetector` in `/dependency_resolver/core/interfaces.py`
 4. **Testing Patterns**: Review `/tests/detectors/` structure
@@ -19,40 +19,13 @@ Before adding a new detector, ensure you understand:
 
 ### 1.1 Create the Detector File
 
-Create `/dependency_resolver/detectors/{package_manager}_detector.py`:
+Create `/dependency_resolver/detectors/{package_manager}_detector.py` implementing the `PackageManagerDetector` interface with these required methods:
 
-```python
-from typing import Optional, Any
-from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
-
-
-class {PackageManager}Detector(PackageManagerDetector):
-    """Detector for {Package Manager Description}."""
-
-    NAME = "{package_manager}"
-
-    def __init__(self, debug: bool = False):
-        self.debug = debug
-
-    def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Check if {package_manager} is usable in the environment."""
-        # Implement OS compatibility check if needed
-        # Check if package manager tool is available
-        _, _, exit_code = executor.execute_command("{package_manager} --version", working_dir)
-        return exit_code == 0
-
-    def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-        """Extract {package_manager} dependencies with versions."""
-        # Implement dependency extraction logic
-        # Return format: {"scope": "system|project", "location": "path", "dependencies": {}, "hash": "sha256"}
-        pass
-
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Check if this detector operates at system scope."""
-        # Return True for system-wide package managers (dpkg, apk)
-        # Return False or implement logic for project-scoped managers (pip, npm)
-        pass
-```
+- `__init__(self, debug: bool = False)`: Initialize detector with debug flag
+- `is_usable()`: Check if package manager is available in the environment
+- `get_dependencies()`: Extract package dependencies with versions and metadata
+- `has_system_scope()`: Determine if detector operates at system or project scope
+- `get_name()`: Return the detector name (inherited from base class)
 
 ### 1.2 Key Implementation Considerations
 
@@ -89,29 +62,15 @@ class {PackageManager}Detector(PackageManagerDetector):
 
 ### 2.1 Update the Orchestrator
 
-Add your detector to `/dependency_resolver/core/orchestrator.py`:
-
-```python
-from ..detectors.{package_manager}_detector import {PackageManager}Detector
-
-class Orchestrator:
-    def __init__(self, ...):
-        # Add to detectors list in priority order
-        self.detectors: list[PackageManagerDetector] = [
-            DockerInfoDetector(),
-            DpkgDetector(),
-            ApkDetector(),
-            {PackageManager}Detector(debug=debug),  # Add here
-            PipDetector(venv_path=venv_path, debug=debug),
-            NpmDetector(debug=debug),
-        ]
-```
+Add your detector to the detectors list in `/dependency_resolver/core/orchestrator.py` following the priority order:
 
 **Priority Ordering**:
 
 1. Container information (docker-info)
 2. System packages (dpkg, apk, yum, etc.)
 3. Language-specific packages (pip, npm, etc.)
+
+Reference existing detectors like `DpkgDetector`, `ApkDetector`, `PipDetector`, and `NpmDetector` for import and initialization patterns.
 
 ### 2.2 Update Package Imports
 
@@ -132,120 +91,46 @@ Create `/docs/technical/detectors/{package_manager}_detector.md` with the follow
 - **Limitations**: Known limitations or edge cases
 - **Example Output**: JSON sample showing expected output format
 
-**Example JSON Output Format:**
+**Expected JSON Output Format:**
 
-```json
-{
-  "scope": "system",
-  "dependencies": {
-    "package1": {"version": "1.0.0", "hash": "sha256..."},
-    "package2": {"version": "2.0.0", "hash": "sha256..."}
-  },
-  "hash": "sha256..."
-}
-```
+Standard output includes `scope`, `dependencies` dict with package names and versions, and optional `hash` and `location` fields. Reference existing detector documentation for specific examples.
 
 ## Step 4: Implement Tests
 
 ### 4.1 Test Directory Structure
 
-Create `/tests/detectors/{package_manager}/`:
+Create `/tests/detectors/{package_manager}/` with:
 
-```plain
-tests/detectors/{package_manager}/
-├── __init__.py
-├── README.md
-└── test_{package_manager}_docker_detection.py
-```
+- `__init__.py`
+- `README.md`
+- `test_{package_manager}_docker_detection.py`
 
 ### 4.2 Docker Test Implementation
 
-Create `/tests/detectors/{package_manager}/test_{package_manager}_docker_detection.py`:
+Create a test class inheriting from `DockerTestBase` in `/tests/common/docker_test_base.py`. Key components:
 
-```python
-"""Test {package_manager} Docker container dependency detection."""
+- Choose appropriate Docker image containing your package manager
+- Use `DockerExecutor` to run tests in containerized environment
+- Test via `Orchestrator` to ensure integration works correctly
+- Validate expected output format and required fields
+- Include proper cleanup and error handling
 
-import os
-import sys
-from typing import Dict, Any
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-import pytest
-from dependency_resolver.executors import DockerExecutor
-from dependency_resolver.core.orchestrator import Orchestrator
-from tests.common.docker_test_base import DockerTestBase
-
-try:
-    import docker
-except ImportError:
-    docker = None  # type: ignore
-
-
-class Test{PackageManager}DockerDetection(DockerTestBase):
-    """Test {package_manager} dependency detection using Docker container environment."""
-
-    # Choose appropriate Docker image that has your package manager
-    TEST_IMAGE = "appropriate/docker-image"
-
-    @pytest.mark.skipif(docker is None, reason="Docker not available")
-    def test_{package_manager}_docker_container_detection(self, request: pytest.FixtureRequest) -> None:
-        """Test {package_manager} dependency detection inside a Docker container."""
-
-        verbose_output = self.setup_verbose_output(request)
-        container_id = None
-
-        try:
-            container_id = self.start_container(self.TEST_IMAGE, additional_args=[])
-            self.wait_for_container_ready(container_id, "{package_manager} --version", max_wait=60)
-
-            executor = DockerExecutor(container_id)
-            orchestrator = Orchestrator(debug=False, skip_system_scope=False)
-
-            result = orchestrator.resolve_dependencies(executor)
-
-            if verbose_output:
-                self.print_verbose_results("DEPENDENCY RESOLVER OUTPUT:", result)
-
-            self._validate_{package_manager}_dependencies(result)
-
-        finally:
-            if container_id:
-                self.cleanup_container(container_id)
-
-    def _validate_{package_manager}_dependencies(self, result: Dict[str, Any]) -> None:
-        """Validate {package_manager} dependencies in the result."""
-        assert "{package_manager}" in result
-
-        {package_manager}_result = result["{package_manager}"]
-        assert "scope" in {package_manager}_result
-        assert "dependencies" in {package_manager}_result
-
-        # Add specific validations for your package manager
-        dependencies = {package_manager}_result["dependencies"]
-        assert isinstance(dependencies, dict)
-
-        # Validate expected packages if known
-        # assert "expected-package" in dependencies
-```
+Reference existing detector tests in `/tests/detectors/` for implementation patterns.
 
 ### 4.3 Test README
 
-Create `/tests/detectors/{package_manager}/README.md` with:
+Create `/tests/detectors/{package_manager}/README.md` documenting:
 
 **Content Structure:**
 
 - **Docker Test**: Description of Docker-based testing approach
 - **Image Used**: Document the Docker image used for testing
-- **Test Commands**: List the commands tested (e.g., `{package_manager} --version`)
+- **Test Commands**: List the commands tested
 - **Running Tests**: Instructions for executing the tests
 
-**Test Execution Commands:**
+**Test Execution Patterns:**
 
-- Run all tests: `pytest tests/detectors/{package_manager}/`
-- Verbose output: `pytest tests/detectors/{package_manager}/ --verbose-resolver`
-- Specific test: `pytest tests/detectors/{package_manager}/test_{package_manager}_docker_detection.py::Test{PackageManager}DockerDetection::test_{package_manager}_docker_container_detection`
+Reference pytest command patterns from existing detector test READMEs for running individual tests, verbose output, and full test suites.
 
 ## Step 5: Integration and Testing
 
@@ -253,23 +138,14 @@ Create `/tests/detectors/{package_manager}/README.md` with:
 
 **Basic Testing Steps:**
 
-1. **Activate environment**: `source venv/bin/activate`
+1. **Activate environment**: Use virtual environment activation
 2. **Test detector directly**: Import and run your detector with `debug=True`
-3. **Test via CLI**: `python3 -m dependency_resolver --debug`
+3. **Test via CLI**: Use debug mode to see detailed output
 4. **Test in target environment**: Use appropriate executor (host/docker) for your use case
 
 ### 5.2 Run Test Suite
 
-```bash
-# Run your detector tests
-pytest tests/detectors/{package_manager}/
-
-# Run all tests
-pytest
-
-# Run linting
-pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)
-```
+Run detector-specific tests, full test suite, and linting checks. Reference CLAUDE.md for specific commands and patterns.
 
 ## Step 6: Documentation and Performance
 
@@ -283,36 +159,23 @@ If a `performance-analysis/` directory exists, add a benchmark script following 
 
 ## Common Implementation Patterns
 
-### System-Wide Detectors (dpkg, apk style)
+### System-Wide Detectors
 
-```python
-def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-    return True  # Always system scope
+Reference `DpkgDetector` and `ApkDetector` implementations:
 
-def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-    # Extract from system package database
-    # Usually ignore working_dir for system packages
-    result = {"scope": "system", "dependencies": {}}
-```
+- Always return `True` for `has_system_scope()`
+- Extract from system package database
+- Usually ignore `working_dir` for system packages
+- Return `{"scope": "system", "dependencies": {}}`
 
-### Project-Scoped Detectors (pip, npm style)
+### Project-Scoped Detectors
 
-```python
-def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-    if working_dir:
-        # Check for project files in working_dir
-        return not self._has_project_files(executor, working_dir)
-    return True  # Default to system if no working_dir
+Reference `PipDetector` and `NpmDetector` implementations:
 
-def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
-    if working_dir and self._has_project_files(executor, working_dir):
-        # Extract project dependencies
-        location = self._resolve_absolute_path(executor, working_dir)
-        return {"scope": "project", "location": location, "dependencies": {}}
-    else:
-        # Extract system dependencies
-        return {"scope": "system", "dependencies": {}}
-```
+- Check for project files in `working_dir` to determine scope
+- Extract project dependencies when project files found
+- Fall back to system scope when no project context
+- Return appropriate scope with location for project dependencies
 
 ## Debugging Tips
 
@@ -321,6 +184,8 @@ def get_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[
 3. **Test Edge Cases**: Empty environments, permission issues, missing tools
 4. **Validate JSON Output**: Ensure output follows expected schema
 5. **Test Both Scopes**: If supporting both project and system scope
+
+Use `python3 -m dependency_resolver --debug` to see detailed execution flow.
 
 ## Quality Checklist
 
@@ -338,11 +203,19 @@ Before submitting your detector:
 - [ ] Manual testing in target environments
 - [ ] Performance considerations documented
 
-## Support
+## Support and References
 
-For questions or assistance:
+**Key Reference Files:**
 
-1. Review existing detector implementations in `/dependency_resolver/detectors/`
-2. Check ADRs in `/docs/adr/` for architectural decisions
-3. Examine test patterns in `/tests/detectors/`
-4. Follow the debug output with `python3 -m dependency_resolver --debug`
+- `/dependency_resolver/detectors/` - Existing detector implementations
+- `/dependency_resolver/core/interfaces.py` - PackageManagerDetector interface
+- `/dependency_resolver/core/orchestrator.py` - Detector registration
+- `/docs/technical/architecture/adr/` - Architecture decision records
+- `/tests/detectors/` - Test patterns and examples
+- `/tests/common/docker_test_base.py` - Docker testing base class
+
+**Debug Commands:**
+
+- `python3 -m dependency_resolver --debug` - Full debug output
+- `source venv/bin/activate` - Activate development environment
+- `pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)` - Run linting
