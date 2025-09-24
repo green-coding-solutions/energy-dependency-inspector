@@ -41,7 +41,7 @@ class TestMavenDockerDetection(DockerTestBase):
             # Create a simple Maven project for testing
             self._create_test_maven_project(executor)
 
-            orchestrator = Orchestrator(debug=False, skip_system_scope=False)
+            orchestrator = Orchestrator(debug=False, selected_detectors="maven")
 
             # Test with Maven project directory
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")
@@ -72,7 +72,7 @@ class TestMavenDockerDetection(DockerTestBase):
             # Create a Maven project with Maven wrapper
             self._create_test_maven_project_with_wrapper(executor)
 
-            orchestrator = Orchestrator(debug=False, skip_system_scope=False)
+            orchestrator = Orchestrator(debug=False, selected_detectors="maven")
 
             # Test with Maven project directory
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")
@@ -103,7 +103,7 @@ class TestMavenDockerDetection(DockerTestBase):
             # Create a Maven project structure with pom.xml
             self._create_test_maven_project_without_maven(executor)
 
-            orchestrator = Orchestrator(debug=False, skip_system_scope=False)
+            orchestrator = Orchestrator(debug=False, selected_detectors="maven")
 
             # Test with Maven project directory
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")

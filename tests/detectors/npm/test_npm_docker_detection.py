@@ -36,7 +36,7 @@ class TestNpmDockerDetection(DockerTestBase):
             self.wait_for_container_ready(container_id, "npm --version", max_wait=60)
 
             executor = DockerExecutor(container_id)
-            orchestrator = Orchestrator(debug=False, skip_system_scope=True)
+            orchestrator = Orchestrator(debug=False, selected_detectors="npm")
 
             result = orchestrator.resolve_dependencies(executor)
 
