@@ -43,7 +43,7 @@ class PipDetector(PackageManagerDetector):
 
         if exit_code != 0:
             location = self._get_pip_location(executor, working_dir)
-            scope = "system" if location == "system" else "project"
+            scope = "system" if self._is_system_location(location) else "project"
             result: dict[str, Any] = {"scope": scope}
             if scope == "project":
                 result["location"] = location
@@ -62,7 +62,7 @@ class PipDetector(PackageManagerDetector):
                 }
 
         location = self._get_pip_location(executor, working_dir)
-        scope = "system" if location == "system" else "project"
+        scope = "system" if self._is_system_location(location) else "project"
 
         # Build result with desired field order: scope, location, hash, dependencies
         final_result: dict[str, Any] = {"scope": scope}
@@ -77,8 +77,12 @@ class PipDetector(PackageManagerDetector):
 
         return final_result
 
+    def _is_system_location(self, location: str) -> bool:
+        """Check if a location path represents a system-wide installation."""
+        return location.startswith(("/usr/lib", "/usr/local/lib"))
+
     def _get_pip_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
-        """Get the location of the pip environment, properly classifying system vs project scope."""
+        """Get the actual location path of the pip environment."""
         pip_command = self._get_pip_command(executor, working_dir)
         stdout, _, exit_code = executor.execute_command(f"{pip_command} show pip", working_dir)
 
@@ -86,14 +90,10 @@ class PipDetector(PackageManagerDetector):
             for line in stdout.split("\n"):
                 if line.startswith("Location:"):
                     location = line.split(":", 1)[1].strip()
-
-                    # Check if this is a system location
-                    if location.startswith(("/usr/lib", "/usr/local/lib")):
-                        return "system"
-
                     return location
 
-        return "system"
+        # Fallback: return a default system location when pip location cannot be determined
+        return "/usr/lib/python3/dist-packages"
 
     def _get_pip_command(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Get the appropriate pip command, activating venv if available."""
@@ -291,5 +291,6 @@ class PipDetector(PackageManagerDetector):
             return ""
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """PIP has system scope when no virtual environment is found."""
-        return self._get_pip_location(executor, working_dir) == "system"
+        """PIP has system scope when pip is installed in a system location."""
+        location = self._get_pip_location(executor, working_dir)
+        return self._is_system_location(location)

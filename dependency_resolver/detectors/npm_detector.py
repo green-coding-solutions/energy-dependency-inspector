@@ -45,7 +45,7 @@ class NpmDetector(PackageManagerDetector):
         stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", working_dir)
 
         location = self._get_npm_location(executor, working_dir)
-        scope = "system" if location == "system" else "project"
+        scope = "system" if self._is_system_location(location) else "project"
         dependencies: dict[str, dict[str, str]] = {}
 
         # Build result with desired field order: scope, location, hash, dependencies
@@ -76,8 +76,16 @@ class NpmDetector(PackageManagerDetector):
 
         return result
 
+    def _is_system_location(self, location: str) -> bool:
+        """Check if a location represents a system-wide npm installation.
+
+        For npm, system scope means no local package.json or node_modules found.
+        This is determined by the special 'system' marker returned by _get_npm_location.
+        """
+        return location == "system"
+
     def _get_npm_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
-        """Get the location of the npm project."""
+        """Get the actual location path of the npm project or global installation."""
         search_dir = working_dir or "."
 
         package_json_path = f"{search_dir}/package.json"
@@ -88,6 +96,12 @@ class NpmDetector(PackageManagerDetector):
         if executor.path_exists(node_modules_path):
             return self._resolve_absolute_path(executor, search_dir)
 
+        # Fallback: get npm global location when no local project found
+        stdout, _, exit_code = executor.execute_command("npm config get prefix")
+        if exit_code == 0 and stdout.strip():
+            return stdout.strip()
+
+        # Final fallback: return "system" marker for system scope identification
         return "system"
 
     def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
@@ -140,4 +154,5 @@ class NpmDetector(PackageManagerDetector):
 
     def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """NPM has system scope when no local package.json or node_modules exists."""
-        return self._get_npm_location(executor, working_dir) == "system"
+        location = self._get_npm_location(executor, working_dir)
+        return self._is_system_location(location)
