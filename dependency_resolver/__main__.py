@@ -35,7 +35,7 @@ Examples:
   %(prog)s --working-dir /tmp/repo                # Set working directory on target environment
   %(prog)s --venv-path ~/.virtualenvs/myproject   # Use specific virtual environment for pip
   %(prog)s --debug                                # Enable debug output
-  %(prog)s --skip-system-scope                    # Skip system scope package managers
+  %(prog)s --skip-os-packages                     # Skip OS package managers (dpkg, apk)
   %(prog)s --skip-hash-collection                 # Skip hash collection for improved performance
   %(prog)s --select-detectors "pip,dpkg"          # Use only pip and dpkg detectors
         """,
@@ -63,9 +63,9 @@ Examples:
     parser.add_argument("--debug", action="store_true", help="Print debug statements")
 
     parser.add_argument(
-        "--skip-system-scope",
+        "--skip-os-packages",
         action="store_true",
-        help="Skip system scope package managers (system packages or globally installed Python packages)",
+        help="Skip OS package managers (dpkg, apk) - language package managers like pip/npm will still run",
     )
 
     parser.add_argument(
@@ -137,7 +137,7 @@ def main() -> None:
         executor = create_executor(args.environment_type, args.environment_identifier, debug=args.debug)
         orchestrator = Orchestrator(
             debug=args.debug,
-            skip_system_scope=args.skip_system_scope,
+            skip_os_packages=args.skip_os_packages,
             venv_path=args.venv_path,
             skip_hash_collection=args.skip_hash_collection,
             selected_detectors=args.select_detectors,

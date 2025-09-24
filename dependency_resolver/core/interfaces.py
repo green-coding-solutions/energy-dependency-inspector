@@ -49,10 +49,10 @@ class PackageManagerDetector(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Check if this detector operates at system scope for the given environment.
+    def is_os_package_manager(self) -> bool:
+        """Check if this detector manages OS-level packages (like dpkg, apk).
 
-        Returns True if the detector would return scope: "system" in get_dependencies().
-        This allows efficient scope checking without the overhead of dependency extraction.
+        Returns True for OS package managers that install system packages.
+        Returns False for language package managers (pip, npm, maven) and other detectors.
         """
         raise NotImplementedError

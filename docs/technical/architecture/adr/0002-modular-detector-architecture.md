@@ -39,7 +39,7 @@ This modular approach provides extensibility while maintaining reliability throu
 - **Error Isolation**: Failed detectors don't affect others (comprehensive exception handling)
 - **Priority Ordering**: Container orchestration → System packages → Language-specific packages
 - **Working Directory Respect**: All detectors honor `working_dir` parameter
-- **Scope Efficiency**: Separate `has_system_scope()` method for efficient scope checking
+- **Scope Efficiency**: Separate `is_os_package_manager()` method for efficient OS package manager identification
 
 **Current Detector Implementations**:
 
@@ -52,7 +52,7 @@ This modular approach provides extensibility while maintaining reliability throu
 
 - `PackageManagerDetector.is_usable()`: Combined OS compatibility and package manager availability check
 - `PackageManagerDetector.get_dependencies()`: Dependency extraction with error handling
-- `PackageManagerDetector.has_system_scope()`: Efficient system scope determination
+- `PackageManagerDetector.is_os_package_manager()`: Efficient OS package manager identification
 - `EnvironmentExecutor.execute_command()`: Environment-agnostic command execution
 - `EnvironmentExecutor.path_exists()`: Cross-environment path existence checking
 

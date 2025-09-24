@@ -27,7 +27,7 @@ deps_json = dependency_resolver.resolve_host_dependencies()
 # Get Python dictionary for further processing
 deps_dict = dependency_resolver.resolve_dependencies_as_dict(
     environment_type="host",
-    skip_system_scope=True,
+    skip_os_packages=True,
     skip_hash_collection=True  # Skip hash collection for improved performance
 )
 ```
@@ -47,7 +47,7 @@ docker_deps = dependency_resolver.resolve_docker_dependencies(
 docker_dict = dependency_resolver.resolve_docker_dependencies_as_dict(
     container_identifier="nginx",
     working_dir="/app",
-    skip_system_scope=False,
+    skip_os_packages=False,
     skip_hash_collection=False  # Include hashes in output
 )
 ```
@@ -70,7 +70,7 @@ from dependency_resolver import Orchestrator, HostExecutor, DockerExecutor, Outp
 executor = HostExecutor()
 orchestrator = Orchestrator(
     debug=True,
-    skip_system_scope=True,
+    skip_os_packages=True,
     skip_hash_collection=True,
     selected_detectors="pip,npm"  # Only analyze Python and Node.js dependencies
 )
@@ -91,7 +91,7 @@ container_id = "nginx"
 executor = DockerExecutor(container_id)
 orchestrator = Orchestrator(
     debug=False,
-    skip_system_scope=False,
+    skip_os_packages=False,
     skip_hash_collection=False,
     selected_detectors="dpkg,docker-info"  # Analyze system packages and container info only
 )
@@ -123,7 +123,7 @@ for detector_name, result in dependencies.items():
 ```python
 orchestrator = Orchestrator(
     debug=True,                    # Enable debug output
-    skip_system_scope=False,       # Skip system-wide package managers
+    skip_os_packages=False,       # Skip OS package managers (dpkg, apk)
     venv_path="/path/to/venv",     # Specify Python virtual environment path
     skip_hash_collection=False,    # Skip hash collection for improved performance
     selected_detectors="pip,npm"   # Use only specific detectors
@@ -208,7 +208,7 @@ class DependencyTracker:
             deps = dependency_resolver.resolve_dependencies_as_dict(
                 environment_type="host",
                 working_dir=working_dir,
-                skip_system_scope=True,      # Focus on project dependencies
+                skip_os_packages=True,      # Skip OS packages, focus on project dependencies
                 skip_hash_collection=True    # Skip hashes for faster fingerprinting
             )
 

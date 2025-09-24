@@ -24,7 +24,7 @@ Create `/dependency_resolver/detectors/{package_manager}_detector.py` implementi
 - `__init__(self, debug: bool = False)`: Initialize detector with debug flag
 - `is_usable()`: Check if package manager is available in the environment
 - `get_dependencies()`: Extract package dependencies with versions and metadata
-- `has_system_scope()`: Determine if detector operates at system or project scope
+- `is_os_package_manager()`: Determine if detector manages OS-level packages
 - `get_name()`: Return the detector name (inherited from base class)
 
 ### 1.2 Key Implementation Considerations
@@ -163,7 +163,7 @@ If a `performance-analysis/` directory exists, add a benchmark script following 
 
 Reference `DpkgDetector` and `ApkDetector` implementations:
 
-- Always return `True` for `has_system_scope()`
+- Always return `True` for `is_os_package_manager()`
 - Extract from system package database
 - Usually ignore `working_dir` for system packages
 - Return `{"scope": "system", "dependencies": {}}`

@@ -75,6 +75,6 @@ class ApkDetector(PackageManagerDetector):
 
         return {"scope": "system", "dependencies": dependencies}
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """APK always has system scope (system packages)."""
+    def is_os_package_manager(self) -> bool:
+        """APK manages OS-level packages."""
         return True

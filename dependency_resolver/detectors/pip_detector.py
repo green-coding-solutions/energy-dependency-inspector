@@ -290,7 +290,6 @@ class PipDetector(PackageManagerDetector):
                 print(f"ERROR: location: {location}")
             return ""
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """PIP has system scope when pip is installed in a system location."""
-        location = self._get_pip_location(executor, working_dir)
-        return self._is_system_location(location)
+    def is_os_package_manager(self) -> bool:
+        """PIP is a language package manager, not an OS package manager."""
+        return False

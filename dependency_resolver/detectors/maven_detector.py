@@ -52,8 +52,8 @@ class MavenDetector(PackageManagerDetector):
         result["dependencies"] = dependencies
         return result
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Maven is always project scope."""
+    def is_os_package_manager(self) -> bool:
+        """Maven is a language package manager, not an OS package manager."""
         return False
 
     def _maven_available(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:

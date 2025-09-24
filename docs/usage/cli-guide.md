@@ -41,8 +41,8 @@ python3 -m dependency_resolver --debug
 # Set working directory for project-scoped package managers
 python3 -m dependency_resolver --working-dir /path/to/project
 
-# Skip system scope package managers (focus on project dependencies)
-python3 -m dependency_resolver --skip-system-scope
+# Skip OS package managers like dpkg/apk (focus on project dependencies)
+python3 -m dependency_resolver --skip-os-packages
 
 # Skip hash collection for improved performance
 python3 -m dependency_resolver --skip-hash-collection
@@ -111,7 +111,7 @@ python3 -m dependency_resolver docker my-container --only-container-info
 python3 -m dependency_resolver --debug
 
 # Focus on project dependencies only
-python3 -m dependency_resolver --skip-system-scope --debug
+python3 -m dependency_resolver --skip-os-packages --debug
 
 # Fast analysis without hash collection
 python3 -m dependency_resolver --skip-hash-collection --debug

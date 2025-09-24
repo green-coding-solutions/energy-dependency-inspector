@@ -14,13 +14,13 @@ class Orchestrator:
     def __init__(
         self,
         debug: bool = False,
-        skip_system_scope: bool = False,
+        skip_os_packages: bool = False,
         venv_path: str | None = None,
         skip_hash_collection: bool = False,
         selected_detectors: str | None = None,
     ):
         self.debug = debug
-        self.skip_system_scope = skip_system_scope
+        self.skip_os_packages = skip_os_packages
         self.skip_hash_collection = skip_hash_collection
 
         # Create all detector instances
@@ -77,10 +77,10 @@ class Orchestrator:
 
             try:
                 if detector.is_usable(executor, working_dir):
-                    # Check if detector has system scope and skip if requested
-                    if self.skip_system_scope and detector.has_system_scope(executor, working_dir):
+                    # Check if detector is OS package manager and skip if requested
+                    if self.skip_os_packages and detector.is_os_package_manager():
                         if self.debug:
-                            print(f"Skipping {detector_name} (system scope, --skip-system-scope enabled)")
+                            print(f"Skipping {detector_name} (OS package manager, --skip-os-packages enabled)")
                         continue
 
                     if self.debug:

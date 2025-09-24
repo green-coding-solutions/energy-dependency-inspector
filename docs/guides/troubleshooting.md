@@ -157,7 +157,7 @@ npm --version
 **Solutions**:
 
 1. Check package manager scope (system vs project)
-2. Try `--skip-system-scope` or include system scope
+2. Try `--skip-os-packages` or include system scope
 3. Verify packages are actually installed in target location
 4. Check working directory is correct
 
@@ -169,7 +169,7 @@ npm --version
 
 **Solutions**:
 
-1. Use `--skip-system-scope` to skip system package managers
+1. Use `--skip-os-packages` to skip system package managers
 2. Use `--skip-hash-collection` to skip hash generation for packages and locations
 3. Use `--select-detectors` to analyze only specific package managers (e.g., `--select-detectors "pip,npm"`)
 4. Use `--only-container-info` for Docker metadata only
@@ -209,7 +209,7 @@ python3 -m dependency_resolver host --debug
 python3 -m dependency_resolver docker container_name --debug
 
 # Skip system scope for faster testing
-python3 -m dependency_resolver --skip-system-scope --debug
+python3 -m dependency_resolver --skip-os-packages --debug
 
 # Test specific working directory
 python3 -m dependency_resolver --working-dir /path --debug

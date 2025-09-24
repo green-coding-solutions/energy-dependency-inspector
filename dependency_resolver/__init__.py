@@ -11,7 +11,7 @@ from typing import Optional, Any
 def resolve_host_dependencies(
     working_dir: Optional[str] = None,
     debug: bool = False,
-    skip_system_scope: bool = False,
+    skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
     pretty_print: bool = False,
 ) -> str:
@@ -21,7 +21,7 @@ def resolve_host_dependencies(
     Args:
         working_dir: Working directory to analyze (defaults to current directory)
         debug: Enable debug output
-        skip_system_scope: Skip system-scope package managers
+        skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
         pretty_print: Format JSON output with indentation
 
@@ -29,7 +29,7 @@ def resolve_host_dependencies(
         JSON string containing all discovered dependencies
     """
     executor = HostExecutor(debug=debug)
-    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
+    orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
     dependencies = orchestrator.resolve_dependencies(executor, working_dir)
     formatter = OutputFormatter(debug=debug)
     return formatter.format_json(dependencies, pretty_print=pretty_print)
@@ -39,7 +39,7 @@ def resolve_docker_dependencies(
     container_identifier: str,
     working_dir: Optional[str] = None,
     debug: bool = False,
-    skip_system_scope: bool = False,
+    skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
     only_container_info: bool = False,
     pretty_print: bool = False,
@@ -51,7 +51,7 @@ def resolve_docker_dependencies(
         container_identifier: Container ID or name
         working_dir: Working directory to analyze within the container
         debug: Enable debug output
-        skip_system_scope: Skip system-scope package managers
+        skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
         only_container_info: Only analyze container metadata (skip dependency detection)
         pretty_print: Format JSON output with indentation
@@ -60,7 +60,7 @@ def resolve_docker_dependencies(
         JSON string containing all discovered dependencies
     """
     executor = DockerExecutor(container_identifier, debug=debug)
-    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
+    orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
     dependencies = orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
     formatter = OutputFormatter(debug=debug)
     return formatter.format_json(dependencies, pretty_print=pretty_print)
@@ -70,7 +70,7 @@ def resolve_docker_dependencies_as_dict(
     container_identifier: str,
     working_dir: Optional[str] = None,
     debug: bool = False,
-    skip_system_scope: bool = False,
+    skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
     only_container_info: bool = False,
 ) -> dict[str, Any]:
@@ -84,7 +84,7 @@ def resolve_docker_dependencies_as_dict(
         container_identifier: Container ID or name
         working_dir: Working directory to analyze within the container
         debug: Enable debug output
-        skip_system_scope: Skip system-scope package managers
+        skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
         only_container_info: Only analyze container metadata (skip dependency detection)
 
@@ -99,7 +99,7 @@ def resolve_docker_dependencies_as_dict(
         raise ValueError("Container identifier is required")
 
     executor = DockerExecutor(container_identifier, debug=debug)
-    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
+    orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
     return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
 
 
@@ -108,7 +108,7 @@ def resolve_dependencies_as_dict(
     environment_identifier: Optional[str] = None,
     working_dir: Optional[str] = None,
     debug: bool = False,
-    skip_system_scope: bool = False,
+    skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
     only_container_info: bool = False,
 ) -> dict[str, Any]:
@@ -120,7 +120,7 @@ def resolve_dependencies_as_dict(
         environment_identifier: Environment identifier (required for docker)
         working_dir: Working directory to analyze
         debug: Enable debug output
-        skip_system_scope: Skip system-scope package managers
+        skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
         only_container_info: Only analyze container metadata (for docker environments)
 
@@ -137,7 +137,7 @@ def resolve_dependencies_as_dict(
     else:
         raise ValueError(f"Unsupported environment type: {environment_type}")
 
-    orchestrator = Orchestrator(debug=debug, skip_system_scope=skip_system_scope, venv_path=venv_path)
+    orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
     return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
 
 

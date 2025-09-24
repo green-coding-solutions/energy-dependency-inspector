@@ -18,7 +18,7 @@ class TestWorkingDirValidation:
 
     def test_resolve_dependencies_with_valid_working_dir(self) -> None:
         """Test resolve_dependencies with a valid working directory."""
-        orchestrator = Orchestrator(debug=False, skip_system_scope=True)
+        orchestrator = Orchestrator(debug=False, skip_os_packages=True)
         executor = HostExecutor()
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -28,7 +28,7 @@ class TestWorkingDirValidation:
 
     def test_resolve_dependencies_with_invalid_working_dir(self) -> None:
         """Test resolve_dependencies with an invalid working directory."""
-        orchestrator = Orchestrator(debug=False, skip_system_scope=True)
+        orchestrator = Orchestrator(debug=False, skip_os_packages=True)
         executor = HostExecutor()
 
         non_existent_dir = "/this/directory/does/not/exist"
@@ -38,7 +38,7 @@ class TestWorkingDirValidation:
 
     def test_resolve_dependencies_with_none_working_dir(self) -> None:
         """Test resolve_dependencies with None working directory (should work fine)."""
-        orchestrator = Orchestrator(debug=False, skip_system_scope=True)
+        orchestrator = Orchestrator(debug=False, skip_os_packages=True)
         executor = HostExecutor()
 
         # Should not raise an exception

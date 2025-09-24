@@ -42,8 +42,6 @@ class DockerInfoDetector(PackageManagerDetector):
 
         return result
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Docker container info has container scope, not system scope."""
-        _ = executor  # Unused parameter, required by interface
-        _ = working_dir  # Unused parameter, required by interface
+    def is_os_package_manager(self) -> bool:
+        """Docker info detector is not an OS package manager."""
         return False

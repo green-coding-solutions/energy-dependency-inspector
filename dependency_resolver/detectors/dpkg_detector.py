@@ -224,6 +224,6 @@ done
         content = "\n".join(sorted(md5_hashes))
         return hashlib.sha256(content.encode()).hexdigest()
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """DPKG always has system scope (system packages)."""
+    def is_os_package_manager(self) -> bool:
+        """DPKG manages OS-level packages."""
         return True

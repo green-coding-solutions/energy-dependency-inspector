@@ -152,7 +152,6 @@ class NpmDetector(PackageManagerDetector):
                 print(f"ERROR: location: {location}")
             return ""
 
-    def has_system_scope(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """NPM has system scope when no local package.json or node_modules exists."""
-        location = self._get_npm_location(executor, working_dir)
-        return self._is_system_location(location)
+    def is_os_package_manager(self) -> bool:
+        """NPM is a language package manager, not an OS package manager."""
+        return False
