@@ -146,21 +146,56 @@ class TestPipDockerDetection(DockerTestBase):
             pytest.fail(f"Failed to install psutils: {stderr}")
 
     def _validate_venv_priority_dependencies(self, result: Dict[str, Any]) -> None:
-        """Validate that pip detector prioritizes venv over system packages."""
+        """Validate that pip detector finds packages from both venv and system locations."""
         self.validate_basic_structure(result, "pip")
 
         pip_result = result["pip"]
-        dependencies = pip_result["dependencies"]
+        scope = pip_result["scope"]
 
-        # Check for expected location (should prioritize venv)
-        location = pip_result.get("location", "")
-        expected_venv_location = "/root/venv/lib/python3.12/site-packages"
+        # Check if we have mixed scope (packages from both locations)
+        if scope == "mixed":
+            assert "locations" in pip_result, "Expected 'locations' key for mixed scope"
+            locations = pip_result["locations"]
 
-        assert (
-            expected_venv_location in location
-        ), f"Expected to find venv location {expected_venv_location} in {location}"
+            # Should have exactly 2 locations: venv and system
+            assert len(locations) == 2, f"Expected 2 locations for mixed scope, got {len(locations)}"
 
-        # Check for specific packages - psutils should be found (we installed it in venv)
+            # Find venv and system locations
+            venv_location = None
+            system_location = None
+            all_dependencies = {}
+
+            for location_path, location_data in locations.items():
+                location_scope = location_data["scope"]
+                location_deps = location_data["dependencies"]
+                all_dependencies.update(location_deps)
+
+                if location_scope == "project":
+                    venv_location = location_path
+                elif location_scope == "system":
+                    system_location = location_path
+
+            assert venv_location is not None, "Expected to find venv location (scope: project)"
+            assert system_location is not None, "Expected to find system location (scope: system)"
+
+            expected_venv_location = "/root/venv/lib/python3.12/site-packages"
+            assert (
+                expected_venv_location in venv_location
+            ), f"Expected to find venv location {expected_venv_location} in {venv_location}"
+
+            dependencies = all_dependencies
+            print(f"✓ Found mixed scope with {len(locations)} locations")
+            print(f"✓ Venv location: {venv_location}")
+            print(f"✓ System location: {system_location}")
+
+        else:
+            # Single location case (either project or system)
+            dependencies = pip_result["dependencies"]
+            location = pip_result.get("location", "")
+            print(f"✓ Single location scope: {scope}")
+            print(f"✓ Location: {location}")
+
+        # Check for specific packages
         found_packages = []
         for package_name in dependencies.keys():
             if "psutils" in package_name.lower():
@@ -178,18 +213,14 @@ class TestPipDockerDetection(DockerTestBase):
             "playwright" in found_packages
         ), f"Expected to find playwright package, found packages: {list(dependencies.keys())}"
 
-        # Validate dependency structure
-        self.validate_dependency_structure(dependencies, sample_count=1)
-
-        # Check scope (should be project since we used a virtual environment)
-        scope = pip_result["scope"]
-        assert scope == "project", f"Scope should be 'project' for venv, got: {scope}"
+        # Validate dependency structure for a sample
+        sample_deps = dict(list(dependencies.items())[:1])
+        self.validate_dependency_structure(sample_deps, sample_count=1)
 
         print(f"✓ Successfully detected pip dependencies: {', '.join(found_packages)}")
         print(f"✓ Total dependencies found: {len(dependencies)}")
-        print(f"✓ Package location: {location}")
         print(f"✓ Scope: {scope}")
-        print("✓ Detector correctly prioritized venv over system packages")
+        print("✓ Detector correctly found packages from multiple locations")
 
 
 if __name__ == "__main__":

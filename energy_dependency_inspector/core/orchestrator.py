@@ -98,11 +98,21 @@ class Orchestrator:
                             print(f"Found container info for {detector_name}")
                     else:
                         # Standard handling for other detectors
-                        if dependencies.get("dependencies") or self.debug:
+                        # Check if result has dependencies (single location) or locations (mixed scope structure)
+                        has_dependencies = dependencies.get("dependencies") or (
+                            dependencies.get("scope") == "mixed" and dependencies.get("locations")
+                        )
+                        if has_dependencies or self.debug:
                             result[detector_name] = dependencies
 
                         if self.debug:
-                            dep_count = len(dependencies.get("dependencies", {}))
+                            if dependencies.get("scope") == "mixed":
+                                # Count dependencies across all locations for mixed scope
+                                dep_count = 0
+                                for location_data in dependencies.get("locations", {}).values():
+                                    dep_count += len(location_data.get("dependencies", {}))
+                            else:
+                                dep_count = len(dependencies.get("dependencies", {}))
                             print(f"Found {dep_count} dependencies for {detector_name}")
                 else:
                     if self.debug:

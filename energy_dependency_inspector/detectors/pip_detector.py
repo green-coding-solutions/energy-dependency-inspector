@@ -26,25 +26,63 @@ class PipDetector(PackageManagerDetector):
     def get_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
     ) -> dict[str, Any]:
-        """Extract pip dependencies with versions.
+        """Extract pip dependencies with versions from multiple locations.
 
         Uses 'pip list --format=freeze' for clean package==version format.
+        Returns single location structure or nested structure for mixed locations.
         See docs/technical/detectors/pip_detector.md
         """
-        # If working_dir is specified but no venv exists there, return empty dependencies
-        if working_dir:
-            venv_path = self._find_venv_path(executor, working_dir)
-            if not venv_path:
+        # Collect dependencies from both venv and system locations
+        venv_result = self._get_venv_dependencies(executor, working_dir, skip_hash_collection)
+        system_result = self._get_system_dependencies(executor, working_dir, skip_hash_collection)
+
+        # Determine output structure based on what was found
+        if venv_result and system_result:
+            # Mixed case - use new nested structure
+            locations = {}
+
+            # Add venv location
+            venv_location_data = {"scope": "project", "dependencies": venv_result["dependencies"]}
+            if "hash" in venv_result:
+                venv_location_data["hash"] = venv_result["hash"]
+            locations[venv_result["location"]] = venv_location_data
+
+            # Add system location
+            system_location_data = {"scope": "system", "dependencies": system_result["dependencies"]}
+            if "hash" in system_result:
+                system_location_data["hash"] = system_result["hash"]
+            locations[system_result["location"]] = system_location_data
+
+            return {"scope": "mixed", "locations": locations}
+        elif venv_result:
+            # Only venv - use single location structure
+            return venv_result
+        elif system_result:
+            # Only system - use single location structure
+            return system_result
+        else:
+            # No packages found - return empty result
+            if working_dir:
                 location = self._resolve_absolute_path(executor, working_dir)
                 return {"scope": "project", "location": location, "dependencies": {}}
+            else:
+                return {"scope": "system", "location": "/usr/lib/python3/dist-packages", "dependencies": {}}
 
-        pip_command = self._get_pip_command(executor, working_dir)
-        stdout, _, exit_code = executor.execute_command(f"{pip_command} list --format=freeze", working_dir)
+    def _get_venv_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any] | None:
+        """Get dependencies from virtual environment if it exists."""
+        venv_path = self._find_venv_path(executor, working_dir)
+        if not venv_path:
+            return None
 
+        venv_pip = f"{venv_path}/bin/pip"
+        if not executor.path_exists(venv_pip):
+            return None
+
+        stdout, _, exit_code = executor.execute_command(f"{venv_pip} list --format=freeze", working_dir)
         if exit_code != 0:
-            location = self._get_pip_location(executor, working_dir)
-            scope = "system" if self._is_system_location(location) else "project"
-            return {"scope": scope, "location": location, "dependencies": {}}
+            return None
 
         dependencies = {}
         for line in stdout.strip().split("\n"):
@@ -52,21 +90,93 @@ class PipDetector(PackageManagerDetector):
                 package_name, version = line.split("==", 1)
                 package_name = package_name.strip()
                 version = version.strip()
+                dependencies[package_name] = {"version": version}
 
-                dependencies[package_name] = {
-                    "version": version,
-                }
+        if not dependencies:
+            return None
 
-        location = self._get_pip_location(executor, working_dir)
-        scope = "system" if self._is_system_location(location) else "project"
+        # Get venv location
+        location_stdout, _, location_exit_code = executor.execute_command(f"{venv_pip} show pip", working_dir)
+        location = "/usr/lib/python3/dist-packages"  # fallback
+        if location_exit_code == 0:
+            for line in location_stdout.split("\n"):
+                if line.startswith("Location:"):
+                    location = line.split(":", 1)[1].strip()
+                    break
 
-        # Build result with desired field order: scope, location, hash, dependencies
-        result: dict[str, Any] = {"scope": scope, "location": location}
-
-        # Generate location-based hash if appropriate
-        if dependencies and not skip_hash_collection:
+        result: dict[str, Any] = {"scope": "project", "location": location}
+        if not skip_hash_collection:
             result["hash"] = self._generate_location_hash(executor, location)
+        result["dependencies"] = dependencies
+        return result
 
+    def _get_system_dependencies(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
+    ) -> dict[str, Any] | None:
+        """Get dependencies from system pip installation."""
+        # Check if we have a venv - we need to work around it to get system packages
+        venv_path = self._find_venv_path(executor, working_dir)
+
+        # Try different approaches to get system packages
+        system_commands = [
+            # Method 1: Deactivate any virtual env and use system python
+            "unset VIRTUAL_ENV && unset PYTHONPATH && /usr/bin/python3 -m pip list --format=freeze 2>/dev/null || /usr/bin/pip3 list --format=freeze 2>/dev/null || pip list --format=freeze",
+            # Method 2: Use system python directly
+            "/usr/bin/python3 -m pip list --format=freeze",
+            # Method 3: Use system pip directly
+            "/usr/bin/pip3 list --format=freeze",
+            # Method 4: Fallback to regular pip (might be system)
+            "pip list --format=freeze",
+        ]
+
+        stdout = ""
+        for cmd in system_commands:
+            stdout, _, exit_code = executor.execute_command(cmd, working_dir)
+            if exit_code == 0 and stdout.strip():
+                break
+        else:
+            return None
+
+        # Get system location
+        location_commands = [
+            "unset VIRTUAL_ENV && unset PYTHONPATH && /usr/bin/python3 -m pip show pip 2>/dev/null || /usr/bin/pip3 show pip 2>/dev/null || pip show pip",
+            "/usr/bin/python3 -m pip show pip",
+            "/usr/bin/pip3 show pip",
+            "pip show pip",
+        ]
+
+        location = "/usr/lib/python3/dist-packages"  # fallback
+        for cmd in location_commands:
+            location_stdout, _, location_exit_code = executor.execute_command(cmd, working_dir)
+            if location_exit_code == 0:
+                for line in location_stdout.split("\n"):
+                    if line.startswith("Location:"):
+                        potential_location = line.split(":", 1)[1].strip()
+                        # Only use if it looks like a system location
+                        if self._is_system_location(potential_location):
+                            location = potential_location
+                            break
+                break
+
+        # If we have a venv and the location doesn't look like system, we might have gotten venv packages
+        # In that case, we shouldn't return system dependencies
+        if venv_path and not self._is_system_location(location):
+            return None
+
+        dependencies = {}
+        for line in stdout.strip().split("\n"):
+            if line and "==" in line:
+                package_name, version = line.split("==", 1)
+                package_name = package_name.strip()
+                version = version.strip()
+                dependencies[package_name] = {"version": version}
+
+        if not dependencies:
+            return None
+
+        result: dict[str, Any] = {"scope": "system", "location": location}
+        if not skip_hash_collection:
+            result["hash"] = self._generate_location_hash(executor, location)
         result["dependencies"] = dependencies
         return result
 

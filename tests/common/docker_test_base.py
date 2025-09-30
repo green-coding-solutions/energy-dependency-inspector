@@ -116,12 +116,27 @@ class DockerTestBase:
         assert detector_name in result, f"Expected '{detector_name}' in result keys: {list(result.keys())}"
 
         detector_result = result[detector_name]
-        assert "dependencies" in detector_result, f"{detector_name} result should contain 'dependencies'"
         assert "scope" in detector_result, f"{detector_name} result should contain 'scope'"
 
-        dependencies = detector_result["dependencies"]
-        assert isinstance(dependencies, dict), "Dependencies should be a dictionary"
-        assert len(dependencies) > 0, "Should have detected some dependencies"
+        # Handle mixed scope structure for any detector that supports multi-location detection
+        if detector_result.get("scope") == "mixed":
+            assert "locations" in detector_result, f"{detector_name} with mixed scope should contain 'locations'"
+            locations = detector_result["locations"]
+            assert isinstance(locations, dict), "Locations should be a dictionary"
+            assert len(locations) > 0, "Should have detected some locations"
+
+            # Validate each location has required fields
+            for location_path, location_data in locations.items():
+                assert "dependencies" in location_data, f"Location {location_path} should contain 'dependencies'"
+                assert "scope" in location_data, f"Location {location_path} should contain 'scope'"
+                dependencies = location_data["dependencies"]
+                assert isinstance(dependencies, dict), f"Dependencies in {location_path} should be a dictionary"
+        else:
+            # Single structure
+            assert "dependencies" in detector_result, f"{detector_name} result should contain 'dependencies'"
+            dependencies = detector_result["dependencies"]
+            assert isinstance(dependencies, dict), "Dependencies should be a dictionary"
+            assert len(dependencies) > 0, "Should have detected some dependencies"
 
         scope = detector_result["scope"]
         assert isinstance(scope, str), f"Scope should be a string, got: {scope}"

@@ -52,15 +52,16 @@ For project-scoped dependencies, generates location-based hashes by scanning the
 
 ## Output Format
 
-**Project Scope** (with virtual environment):
+**Single Location Detection:**
 
-- Includes `scope: "project"`, installation location, and content hash
-- Contains only project-specific packages
+- **Project Scope** (venv only): `scope: "project"`, installation location, and content hash
+- **System Scope** (system only): `scope: "system"` with system-wide packages
 
-**System Scope** (no virtual environment):
+**Multi-Location Detection:**
 
-- Includes `scope: "system"`
-- Contains system-wide Python packages
+- **Mixed Scope** (venv + system): `scope: "mixed"` with nested `locations` structure
+- Each location preserves its own scope, dependencies, and location-specific hash
+- Enables tracking packages from multiple pip installations simultaneously
 
 ## Benefits
 

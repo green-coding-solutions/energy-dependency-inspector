@@ -85,13 +85,46 @@ Project-specific package managers (pip, npm) output:
 }
 ```
 
+### Mixed-Scope Packages (Multi-Location Detection)
+
+When a detector finds packages in multiple locations (currently only pip supports this):
+
+```json
+{
+  "pip": {
+    "scope": "mixed",
+    "locations": {
+      "/root/venv/lib/python3.12/site-packages": {
+        "scope": "project",
+        "hash": "abc123...",
+        "dependencies": {
+          "venv-package": {
+            "version": "1.0.0"
+          }
+        }
+      },
+      "/usr/local/lib/python3.12/dist-packages": {
+        "scope": "system",
+        "hash": "def456...",
+        "dependencies": {
+          "system-package": {
+            "version": "2.0.0"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ## Field Definitions
 
 ### Common Fields
 
-- **scope** - Either `"system"` or `"project"`
+- **scope** - Either `"system"`, `"project"`, or `"mixed"`
   - `system`: System-wide packages affecting the entire environment
   - `project`: Project-specific packages in a local scope
+  - `mixed`: Packages from multiple locations (pip only)
 
 - **dependencies** - Object containing all detected packages
   - Keys: Package names
@@ -246,7 +279,12 @@ system_packages = {k: v for k, v in deps.items()
 project_packages = {k: v for k, v in deps.items()
                    if not k.startswith("_") and v.get("scope") == "project"}
 
-# Count total packages
-total = sum(len(v.get("dependencies", {})) for v in deps.values()
-           if not k.startswith("_"))
+# Handle mixed-scope packages (pip multi-location)
+def count_dependencies(result):
+    if result.get("scope") == "mixed":
+        return sum(len(loc.get("dependencies", {})) for loc in result.get("locations", {}).values())
+    return len(result.get("dependencies", {}))
+
+# Count total packages (including mixed-scope)
+total = sum(count_dependencies(v) for k, v in deps.items() if not k.startswith("_"))
 ```
