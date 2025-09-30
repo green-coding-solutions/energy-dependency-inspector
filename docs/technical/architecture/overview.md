@@ -1,6 +1,6 @@
 # Architecture Overview
 
-The dependency-resolver follows a modular architecture designed for extensibility and maintainability.
+The energy-dependency-inspector follows a modular architecture designed for extensibility and maintainability.
 
 ## High-Level Architecture
 

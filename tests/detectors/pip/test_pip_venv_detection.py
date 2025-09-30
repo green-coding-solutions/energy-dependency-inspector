@@ -9,8 +9,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 import pytest
 
-from dependency_resolver.executors import DockerExecutor
-from dependency_resolver.detectors.pip_detector import PipDetector
+from energy_dependency_inspector.executors import DockerExecutor
+from energy_dependency_inspector.detectors.pip_detector import PipDetector
 from tests.common.docker_test_base import DockerTestBase
 
 try:

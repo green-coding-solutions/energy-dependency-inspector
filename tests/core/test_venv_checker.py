@@ -3,8 +3,8 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from dependency_resolver.core.venv_checker import check_venv
-from dependency_resolver.core import venv_checker
+from energy_dependency_inspector.core.venv_checker import check_venv
+from energy_dependency_inspector.core import venv_checker
 
 
 class TestVenvChecker:
@@ -26,12 +26,12 @@ class TestVenvChecker:
         mock_version.major = 3
         mock_version.minor = 9
 
-        with patch("dependency_resolver.core.venv_checker.sys.version_info", mock_version):
+        with patch("energy_dependency_inspector.core.venv_checker.sys.version_info", mock_version):
             with pytest.raises(SystemExit) as excinfo:
                 check_venv()
             assert excinfo.value.code == 1
 
-    @patch("dependency_resolver.core.venv_checker.sys.prefix", "/wrong/path")
+    @patch("energy_dependency_inspector.core.venv_checker.sys.prefix", "/wrong/path")
     def test_check_venv_fails_with_wrong_venv(self) -> None:
         """Test that check_venv exits when venv path is incorrect."""
         with pytest.raises(SystemExit) as excinfo:
@@ -48,8 +48,8 @@ class TestVenvChecker:
         current_dir = os.path.dirname(os.path.abspath(venv_checker.__file__))
         expected_venv_path = os.path.realpath(os.path.join(current_dir, "..", "..", "venv"))
 
-        with patch("dependency_resolver.core.venv_checker.sys.version_info", mock_version):
-            with patch("dependency_resolver.core.venv_checker.sys.prefix", expected_venv_path):
+        with patch("energy_dependency_inspector.core.venv_checker.sys.version_info", mock_version):
+            with patch("energy_dependency_inspector.core.venv_checker.sys.prefix", expected_venv_path):
                 # This should not raise SystemExit
                 try:
                     check_venv()

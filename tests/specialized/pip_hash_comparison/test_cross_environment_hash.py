@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from dependency_resolver.executors import DockerExecutor, HostExecutor
-from dependency_resolver.detectors.pip_detector import PipDetector
+from energy_dependency_inspector.executors import DockerExecutor, HostExecutor
+from energy_dependency_inspector.detectors.pip_detector import PipDetector
 
 try:
     import docker

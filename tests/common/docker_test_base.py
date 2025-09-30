@@ -67,7 +67,7 @@ class DockerTestBase:
                 if container.status == "running":
                     try:
                         # pylint: disable=import-outside-toplevel
-                        from dependency_resolver.executors import (
+                        from energy_dependency_inspector.executors import (
                             DockerExecutor,
                         )
 
@@ -101,7 +101,7 @@ class DockerTestBase:
             pass  # Ignore cleanup errors
 
     def print_verbose_results(self, title: str, result: Dict[str, Any]) -> None:
-        """Print verbose dependency resolver results."""
+        """Print verbose energy dependency inspector results."""
         print("\n" + "=" * 60)
         print(title)
         print("=" * 60)

@@ -1,4 +1,4 @@
-# dependency-resolver
+# energy-dependency-inspector
 
 A tool for creating snapshots of installed packages on specified target environments. The project provides both a command-line interface and a Python library for programmatic use.
 
@@ -7,8 +7,8 @@ Its main focus is dependency resolving of Docker containers, but it also support
 ## Installation
 
 ```bash
-git clone https://github.com/green-coding-solutions/dependency-resolver
-cd dependency-resolver
+git clone https://github.com/green-coding-solutions/energy-dependency-inspector
+cd energy-dependency-inspector
 pip install .
 ```
 
@@ -16,16 +16,16 @@ pip install .
 
 ```bash
 # Analyze host system
-python3 -m dependency_resolver
+python3 -m energy_dependency_inspector
 
 # Analyze Docker container
-python3 -m dependency_resolver docker nginx
+python3 -m energy_dependency_inspector docker nginx
 
 # Pretty print output
-python3 -m dependency_resolver --pretty-print
+python3 -m energy_dependency_inspector --pretty-print
 
 # Get help with all options
-python3 -m dependency_resolver -h
+python3 -m energy_dependency_inspector -h
 ```
 
 ## Supported Package Managers
@@ -49,13 +49,13 @@ For terminal usage with full control over options and environments.
 Use as a Python library in other projects:
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 
 # Analyze host system
-deps = dependency_resolver.resolve_host_dependencies()
+deps = energy_dependency_inspector.resolve_host_dependencies()
 
 # Analyze Docker container
-docker_deps = dependency_resolver.resolve_docker_dependencies("nginx")
+docker_deps = energy_dependency_inspector.resolve_docker_dependencies("nginx")
 ```
 
 ## Documentation

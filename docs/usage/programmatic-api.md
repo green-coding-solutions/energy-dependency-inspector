@@ -1,17 +1,17 @@
 # Programmatic API Guide
 
-The dependency-resolver can be used as a Python library in other projects. This guide covers all programmatic usage patterns.
+The energy-dependency-inspector can be used as a Python library in other projects. This guide covers all programmatic usage patterns.
 
 ## Quick Start
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 
 # Simple host system analysis
-deps_json = dependency_resolver.resolve_host_dependencies()
+deps_json = energy_dependency_inspector.resolve_host_dependencies()
 
 # Docker container analysis
-docker_deps = dependency_resolver.resolve_docker_dependencies("nginx")
+docker_deps = energy_dependency_inspector.resolve_docker_dependencies("nginx")
 ```
 
 ## Convenience Functions
@@ -19,13 +19,13 @@ docker_deps = dependency_resolver.resolve_docker_dependencies("nginx")
 ### Host System Analysis
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 
 # Get JSON string output
-deps_json = dependency_resolver.resolve_host_dependencies()
+deps_json = energy_dependency_inspector.resolve_host_dependencies()
 
 # Get Python dictionary for further processing
-deps_dict = dependency_resolver.resolve_dependencies_as_dict(
+deps_dict = energy_dependency_inspector.resolve_dependencies_as_dict(
     environment_type="host",
     skip_os_packages=True,
     skip_hash_collection=True  # Skip hash collection for improved performance
@@ -35,16 +35,16 @@ deps_dict = dependency_resolver.resolve_dependencies_as_dict(
 ### Docker Container Analysis
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 
 # Analyze Docker container - returns JSON string
-docker_deps = dependency_resolver.resolve_docker_dependencies(
+docker_deps = energy_dependency_inspector.resolve_docker_dependencies(
     container_identifier="nginx",
     working_dir="/app"
 )
 
 # Analyze Docker container - returns Python dictionary
-docker_dict = dependency_resolver.resolve_docker_dependencies_as_dict(
+docker_dict = energy_dependency_inspector.resolve_docker_dependencies_as_dict(
     container_identifier="nginx",
     working_dir="/app",
     skip_os_packages=False,
@@ -64,7 +64,7 @@ docker_dict = dependency_resolver.resolve_docker_dependencies_as_dict(
 For more control over the dependency resolution process, use the core classes directly:
 
 ```python
-from dependency_resolver import Orchestrator, HostExecutor, DockerExecutor, OutputFormatter
+from energy_dependency_inspector import Orchestrator, HostExecutor, DockerExecutor, OutputFormatter
 
 # Host system analysis with custom settings
 executor = HostExecutor()
@@ -84,7 +84,7 @@ json_output = formatter.format_json(dependencies, pretty_print=True)
 ### Docker Analysis with Core Classes
 
 ```python
-from dependency_resolver import Orchestrator, DockerExecutor, OutputFormatter
+from energy_dependency_inspector import Orchestrator, DockerExecutor, OutputFormatter
 
 # Docker container analysis
 container_id = "nginx"
@@ -135,7 +135,7 @@ orchestrator = Orchestrator(
 Control which package managers are analyzed by specifying the `selected_detectors` parameter:
 
 ```python
-from dependency_resolver import Orchestrator, HostExecutor
+from energy_dependency_inspector import Orchestrator, HostExecutor
 
 # Use only Python pip detector
 orchestrator = Orchestrator(selected_detectors="pip")
@@ -176,10 +176,10 @@ json_output = formatter.format_json(dependencies, pretty_print=False)
 ## Error Handling
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 
 try:
-    deps = dependency_resolver.resolve_host_dependencies()
+    deps = energy_dependency_inspector.resolve_host_dependencies()
     # Process dependencies
 except Exception as e:
     print(f"Error resolving dependencies: {e}")
@@ -190,7 +190,7 @@ except Exception as e:
 ### Build System Integration
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 import json
 import hashlib
 from pathlib import Path
@@ -205,7 +205,7 @@ class DependencyTracker:
     def get_dependency_fingerprint(self, working_dir=None):
         """Generate fingerprint of current dependencies for build caching."""
         try:
-            deps = dependency_resolver.resolve_dependencies_as_dict(
+            deps = energy_dependency_inspector.resolve_dependencies_as_dict(
                 environment_type="host",
                 working_dir=working_dir,
                 skip_os_packages=True,      # Skip OS packages, focus on project dependencies
@@ -261,7 +261,7 @@ if __name__ == "__main__":
 ### CI/CD Pipeline Integration
 
 ```python
-import dependency_resolver
+import energy_dependency_inspector
 import json
 import os
 
@@ -269,7 +269,7 @@ def generate_dependency_report():
     """Generate dependency report for CI/CD pipeline."""
 
     # Analyze current environment
-    deps = dependency_resolver.resolve_dependencies_as_dict("host")
+    deps = energy_dependency_inspector.resolve_dependencies_as_dict("host")
 
     # Save to file for artifact storage
     with open("dependency-report.json", "w") as f:

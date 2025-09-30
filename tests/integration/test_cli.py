@@ -3,7 +3,7 @@
 import pytest
 import sys
 from unittest.mock import patch
-from dependency_resolver.__main__ import parse_arguments, validate_arguments, create_executor
+from energy_dependency_inspector.__main__ import parse_arguments, validate_arguments, create_executor
 
 
 class TestCliArguments:
@@ -11,7 +11,7 @@ class TestCliArguments:
 
     def test_default_arguments(self) -> None:
         """Test default argument values."""
-        with patch.object(sys, "argv", ["dependency_resolver"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector"]):
             args = parse_arguments()
             assert args.environment_type == "host"
             assert args.environment_identifier is None
@@ -19,7 +19,7 @@ class TestCliArguments:
 
     def test_docker_arguments(self) -> None:
         """Test docker environment arguments."""
-        with patch.object(sys, "argv", ["dependency_resolver", "docker", "test_container"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector", "docker", "test_container"]):
             args = parse_arguments()
             assert args.environment_type == "docker"
             assert args.environment_identifier == "test_container"
@@ -41,18 +41,18 @@ class TestCliArguments:
 
     def test_select_detectors_argument(self) -> None:
         """Test --select-detectors argument parsing."""
-        with patch.object(sys, "argv", ["dependency_resolver", "--select-detectors", "pip,dpkg"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector", "--select-detectors", "pip,dpkg"]):
             args = parse_arguments()
             assert args.select_detectors == "pip,dpkg"
 
     def test_select_detectors_single(self) -> None:
         """Test --select-detectors with single detector."""
-        with patch.object(sys, "argv", ["dependency_resolver", "--select-detectors", "npm"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector", "--select-detectors", "npm"]):
             args = parse_arguments()
             assert args.select_detectors == "npm"
 
     def test_select_detectors_default_none(self) -> None:
         """Test --select-detectors defaults to None."""
-        with patch.object(sys, "argv", ["dependency_resolver"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector"]):
             args = parse_arguments()
             assert args.select_detectors is None

@@ -1,10 +1,10 @@
-"""Tests for the programmatic interface in dependency_resolver/__init__.py."""
+"""Tests for the programmatic interface in energy_dependency_inspector/__init__.py."""
 
 import pytest
 from typing import Any
 from unittest.mock import patch, MagicMock
 
-from dependency_resolver import (
+from energy_dependency_inspector import (
     resolve_host_dependencies,
     resolve_docker_dependencies,
     resolve_docker_dependencies_as_dict,
@@ -16,9 +16,9 @@ from dependency_resolver import (
 class TestResolveHostDependencies:
     """Tests for resolve_host_dependencies function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
-    @patch("dependency_resolver.OutputFormatter")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.HostExecutor")
+    @patch("energy_dependency_inspector.OutputFormatter")
     def test_resolve_host_dependencies_default_args(
         self, mock_formatter: Any, mock_host_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -48,9 +48,9 @@ class TestResolveHostDependencies:
 
         assert result == '{"pip": [{"name": "requests", "version": "2.28.0"}]}'
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
-    @patch("dependency_resolver.OutputFormatter")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.HostExecutor")
+    @patch("energy_dependency_inspector.OutputFormatter")
     def test_resolve_host_dependencies_with_all_args(
         self, mock_formatter: Any, mock_host_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -85,9 +85,9 @@ class TestResolveHostDependencies:
 class TestResolveDockerDependencies:
     """Tests for resolve_docker_dependencies function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    @patch("dependency_resolver.OutputFormatter")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.DockerExecutor")
+    @patch("energy_dependency_inspector.OutputFormatter")
     def test_resolve_docker_dependencies_default_args(
         self, mock_formatter: Any, mock_docker_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -119,9 +119,9 @@ class TestResolveDockerDependencies:
 
         assert result == '{"dpkg": [{"name": "curl", "version": "7.81.0-1ubuntu1.4"}]}'
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
-    @patch("dependency_resolver.OutputFormatter")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.DockerExecutor")
+    @patch("energy_dependency_inspector.OutputFormatter")
     def test_resolve_docker_dependencies_with_all_args(
         self, mock_formatter: Any, mock_docker_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -163,8 +163,8 @@ class TestResolveDockerDependencies:
 class TestResolveDependenciesAsDict:
     """Tests for resolve_dependencies_as_dict function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.HostExecutor")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.HostExecutor")
     def test_resolve_dependencies_as_dict_host(self, mock_host_executor: Any, mock_orchestrator: Any) -> None:
         """Test resolve_dependencies_as_dict with host environment."""
         # Setup mocks
@@ -186,8 +186,8 @@ class TestResolveDependenciesAsDict:
 
         assert result == mock_dependencies
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.DockerExecutor")
     def test_resolve_dependencies_as_dict_docker(self, mock_docker_executor: Any, mock_orchestrator: Any) -> None:
         """Test resolve_dependencies_as_dict with docker environment."""
         # Setup mocks
@@ -223,8 +223,8 @@ class TestResolveDependenciesAsDict:
 class TestResolveDockerDependenciesAsDict:
     """Tests for resolve_docker_dependencies_as_dict function."""
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.DockerExecutor")
     def test_resolve_docker_dependencies_as_dict_default_args(
         self, mock_docker_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -248,8 +248,8 @@ class TestResolveDockerDependenciesAsDict:
 
         assert result == mock_dependencies
 
-    @patch("dependency_resolver.Orchestrator")
-    @patch("dependency_resolver.DockerExecutor")
+    @patch("energy_dependency_inspector.Orchestrator")
+    @patch("energy_dependency_inspector.DockerExecutor")
     def test_resolve_docker_dependencies_as_dict_with_all_args(
         self, mock_docker_executor: Any, mock_orchestrator: Any
     ) -> None:
@@ -292,7 +292,7 @@ class TestResolveDockerDependenciesAsDict:
         with pytest.raises(ValueError, match="Container identifier is required"):
             resolve_docker_dependencies_as_dict(None)  # type: ignore
 
-    @patch("dependency_resolver.DockerExecutor")
+    @patch("energy_dependency_inspector.DockerExecutor")
     def test_resolve_docker_dependencies_as_dict_docker_executor_error(self, mock_docker_executor: Any) -> None:
         """Test resolve_docker_dependencies_as_dict when DockerExecutor raises error."""
         mock_docker_executor.side_effect = RuntimeError("Container 'nonexistent' not found")
@@ -304,7 +304,7 @@ class TestResolveDockerDependenciesAsDict:
 class TestMain:
     """Tests for main function."""
 
-    @patch("dependency_resolver.__main__.main")
+    @patch("energy_dependency_inspector.__main__.main")
     def test_main_calls_cli_main(self, mock_cli_main: Any) -> None:
         """Test that main function calls the CLI main function."""
         main()

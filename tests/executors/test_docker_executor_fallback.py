@@ -9,9 +9,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 
-from dependency_resolver.executors import DockerExecutor
-from dependency_resolver.core.orchestrator import Orchestrator
-from dependency_resolver.core.output_formatter import OutputFormatter
+from energy_dependency_inspector.executors import DockerExecutor
+from energy_dependency_inspector.core.orchestrator import Orchestrator
+from energy_dependency_inspector.core.output_formatter import OutputFormatter
 
 try:
     import docker
@@ -50,8 +50,8 @@ class TestDockerExecutorFallback:
         assert executor_class._parse_simple_command("--version python3") is None
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
-    def test_dependency_resolver_integration_with_distroless(self) -> None:
-        """Test full dependency resolver integration with distroless container."""
+    def test_energy_dependency_inspector_integration_with_distroless(self) -> None:
+        """Test full energy dependency inspector integration with distroless container."""
         client = docker.from_env()
 
         container_name = "test-resolver-distroless"
@@ -70,7 +70,7 @@ class TestDockerExecutorFallback:
             container.reload()
             assert container.status == "running"
 
-            # Test the dependency resolver with the distroless container
+            # Test the energy dependency inspector with the distroless container
             executor = DockerExecutor(container_name)
             orchestrator = Orchestrator(debug=True)
 
@@ -85,7 +85,7 @@ class TestDockerExecutorFallback:
             # but the resolver should still work and return an empty result
             # The important thing is that it doesn't crash due to missing sh
 
-            # Verify the result can be formatted as JSON (as python3 -m dependency_resolver does)
+            # Verify the result can be formatted as JSON (as python3 -m energy_dependency_inspector does)
             formatter = OutputFormatter(debug=True)
             formatted_result = formatter.format_json(result, pretty_print=True)
             assert isinstance(formatted_result, str)
@@ -106,8 +106,8 @@ class TestDockerExecutorFallback:
                 pass
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
-    def test_dependency_resolver_with_python_packages(self) -> None:
-        """Test dependency resolver with a container that has Python packages but no sh."""
+    def test_energy_dependency_inspector_with_python_packages(self) -> None:
+        """Test energy dependency inspector with a container that has Python packages but no sh."""
         client = docker.from_env()
 
         container_name = "test-resolver-python-packages"

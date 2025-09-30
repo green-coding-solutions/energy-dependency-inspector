@@ -1,10 +1,10 @@
 # Output Format Guide
 
-This guide explains the JSON output structure produced by the dependency-resolver.
+This guide explains the JSON output structure produced by the energy-dependency-inspector.
 
 ## JSON Structure Overview
 
-The dependency-resolver outputs a JSON object where each key represents a detector (package manager) and contains information about detected dependencies:
+The energy-dependency-inspector outputs a JSON object where each key represents a detector (package manager) and contains information about detected dependencies:
 
 ```json
 {
@@ -109,7 +109,7 @@ Project-specific package managers (pip, npm) output:
 
 ## Hash Strategy
 
-The dependency-resolver implements a tiered hash strategy:
+The energy-dependency-inspector implements a tiered hash strategy:
 
 ### Tier 1: Authentic Hashes
 
@@ -211,10 +211,10 @@ Here's a complete example showing multiple package managers:
 
 ```python
 import json
-import dependency_resolver
+import energy_dependency_inspector
 
 # Get dependencies as dictionary
-deps = dependency_resolver.resolve_dependencies_as_dict("host")
+deps = energy_dependency_inspector.resolve_dependencies_as_dict("host")
 
 # Process each detector
 for detector_name, result in deps.items():

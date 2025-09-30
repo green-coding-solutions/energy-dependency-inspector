@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and solutions when using dependency-resolver.
+Common issues and solutions when using energy-dependency-inspector.
 
 ## General Issues
 
@@ -10,7 +10,7 @@ Common issues and solutions when using dependency-resolver.
 
 **Solutions**:
 
-1. Enable debug mode: `python3 -m dependency_resolver --debug`
+1. Enable debug mode: `python3 -m energy_dependency_inspector --debug`
 2. Check if package managers are installed in the target environment
 3. Verify permissions to read package manager files
 
@@ -30,7 +30,7 @@ Common issues and solutions when using dependency-resolver.
 docker ps
 
 # Use container ID
-python3 -m dependency_resolver docker a1b2c3d4e5f6
+python3 -m energy_dependency_inspector docker a1b2c3d4e5f6
 ```
 
 ### Permission Errors
@@ -57,7 +57,7 @@ python3 -m dependency_resolver docker a1b2c3d4e5f6
 
 ```bash
 # For virtual environment analysis
-python3 -m dependency_resolver --working-dir /path/to/venv
+python3 -m energy_dependency_inspector --working-dir /path/to/venv
 ```
 
 ### Node.js/NPM Detection
@@ -85,7 +85,7 @@ python3 -m dependency_resolver --working-dir /path/to/venv
 Enable debug mode for detailed information:
 
 ```bash
-python3 -m dependency_resolver --debug
+python3 -m energy_dependency_inspector --debug
 ```
 
 Debug output shows:
@@ -148,7 +148,7 @@ npm --version
 
 1. Use `--pretty-print` for readable format
 2. Check for error messages mixed with output
-3. Redirect stderr: `python3 -m dependency_resolver 2>/dev/null`
+3. Redirect stderr: `python3 -m energy_dependency_inspector 2>/dev/null`
 
 ### Missing Expected Packages
 
@@ -200,17 +200,17 @@ If issues persist:
 
 ```bash
 # Basic debug
-python3 -m dependency_resolver --debug
+python3 -m energy_dependency_inspector --debug
 
 # Host analysis with debug
-python3 -m dependency_resolver host --debug
+python3 -m energy_dependency_inspector host --debug
 
 # Docker analysis with debug
-python3 -m dependency_resolver docker container_name --debug
+python3 -m energy_dependency_inspector docker container_name --debug
 
 # Skip system scope for faster testing
-python3 -m dependency_resolver --skip-os-packages --debug
+python3 -m energy_dependency_inspector --skip-os-packages --debug
 
 # Test specific working directory
-python3 -m dependency_resolver --working-dir /path --debug
+python3 -m energy_dependency_inspector --working-dir /path --debug
 ```

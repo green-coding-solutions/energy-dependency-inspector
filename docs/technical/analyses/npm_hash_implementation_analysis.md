@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-This analysis evaluates whether implementing individual package hash retrieval for the `npm_detector` is feasible and aligns with the dependency resolver's principles. **Recommendation: No, do not implement individual package hashing at this time** due to npm's version immutability making the implementation cost unjustified for the common use case.
+This analysis evaluates whether implementing individual package hash retrieval for the `npm_detector` is feasible and aligns with the energy dependency inspector's principles. **Recommendation: No, do not implement individual package hashing at this time** due to npm's version immutability making the implementation cost unjustified for the common use case.
 
 ## Current State
 

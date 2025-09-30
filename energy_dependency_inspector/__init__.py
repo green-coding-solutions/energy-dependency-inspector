@@ -1,4 +1,4 @@
-"""Dependency Resolver - A tool for analyzing dependencies across multiple package managers."""
+"""Energy Dependency Inspector - A tool for analyzing dependencies across multiple package managers."""
 
 from .core.interfaces import EnvironmentExecutor
 from .core.orchestrator import Orchestrator
@@ -142,7 +142,7 @@ def resolve_dependencies_as_dict(
 
 
 def main() -> None:
-    """CLI entry point for installed package (used by dependency-resolver command)."""
+    """CLI entry point for installed package (used by energy-dependency-inspector command)."""
     # pylint: disable=import-outside-toplevel
     from .__main__ import main as cli_main
 

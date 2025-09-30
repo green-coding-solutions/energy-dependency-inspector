@@ -8,9 +8,9 @@ from typing import Dict, Any
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import pytest
-from dependency_resolver.executors import DockerExecutor
-from dependency_resolver.core.orchestrator import Orchestrator
-from dependency_resolver.detectors.maven_detector import MavenDetector
+from energy_dependency_inspector.executors import DockerExecutor
+from energy_dependency_inspector.core.orchestrator import Orchestrator
+from energy_dependency_inspector.detectors.maven_detector import MavenDetector
 from tests.common.docker_test_base import DockerTestBase
 
 try:
@@ -47,7 +47,7 @@ class TestMavenDockerDetection(DockerTestBase):
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")
 
             if verbose_output:
-                self.print_verbose_results("DEPENDENCY RESOLVER OUTPUT:", result)
+                self.print_verbose_results("ENERGY DEPENDENCY INSPECTOR OUTPUT:", result)
 
             self._validate_maven_dependencies(result)
 
@@ -78,7 +78,7 @@ class TestMavenDockerDetection(DockerTestBase):
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")
 
             if verbose_output:
-                self.print_verbose_results("DEPENDENCY RESOLVER OUTPUT (Maven wrapper):", result)
+                self.print_verbose_results("ENERGY DEPENDENCY INSPECTOR OUTPUT (Maven wrapper):", result)
 
             self._validate_maven_dependencies(result)
 
@@ -109,7 +109,7 @@ class TestMavenDockerDetection(DockerTestBase):
             result = orchestrator.resolve_dependencies(executor, working_dir="/tmp/test-maven-project")
 
             if verbose_output:
-                self.print_verbose_results("DEPENDENCY RESOLVER OUTPUT (pom.xml parsing):", result)
+                self.print_verbose_results("ENERGY DEPENDENCY INSPECTOR OUTPUT (pom.xml parsing):", result)
 
             self._validate_maven_dependencies_pom_only(result)
 

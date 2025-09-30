@@ -8,7 +8,7 @@ The [Green Metrics Tool](https://github.com/green-coding-solutions/green-metrics
 
 ### Functional Requirements
 
-1. Dependency Detection: Build a standalone dependency resolver that can export JSON with all project dependencies
+1. Dependency Detection: Build a standalone energy dependency inspector that can export JSON with all project dependencies
 2. Version/Hash Output: Each dependency should include a preferably semantic versioning and, if available, a hash value
 3. Multi-Package Manager Support: Support various package managers and OS package systems
 4. Modular Architecture: Implement as modular add-ons for different systems and package managers
@@ -40,13 +40,13 @@ The [Green Metrics Tool](https://github.com/green-coding-solutions/green-metrics
 ### Command Interface
 
 ```sh
-python3 -m dependency_resolver <environment_type> <environment_identifier> <options>
+python3 -m energy_dependency_inspector <environment_type> <environment_identifier> <options>
 ```
 
 Basic usage:
 
-- **Host system**: `python3 -m dependency_resolver`
-- **Docker container**: `python3 -m dependency_resolver docker nginx`
+- **Host system**: `python3 -m energy_dependency_inspector`
+- **Docker container**: `python3 -m energy_dependency_inspector docker nginx`
 
 Supported environments: `host`, `docker` (future: `podman`)
 

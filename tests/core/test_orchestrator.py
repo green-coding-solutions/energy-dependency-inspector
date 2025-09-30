@@ -1,6 +1,6 @@
 import pytest
 from pytest import CaptureFixture
-from dependency_resolver.core.orchestrator import Orchestrator
+from energy_dependency_inspector.core.orchestrator import Orchestrator
 
 
 class TestOrchestrator:

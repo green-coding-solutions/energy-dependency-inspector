@@ -1,13 +1,13 @@
-# Contributing to dependency-resolver
+# Contributing to energy-dependency-inspector
 
-Thank you for your interest in contributing to the dependency-resolver project! This guide will help you get started with development and understand our contribution process.
+Thank you for your interest in contributing to the energy-dependency-inspector project! This guide will help you get started with development and understand our contribution process.
 
 ## Development Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/green-coding-solutions/dependency-resolver
-cd dependency-resolver
+git clone https://github.com/green-coding-solutions/energy-dependency-inspector
+cd energy-dependency-inspector
 
 # Create and activate virtual environment
 python3 -m venv venv
@@ -62,7 +62,7 @@ source venv/bin/activate
 pytest
 
 # Run with coverage
-pytest --cov=dependency_resolver
+pytest --cov=energy_dependency_inspector
 
 # Run specific test file
 pytest tests/detectors/pip/test_pip_docker_detection.py
@@ -77,22 +77,22 @@ While pre-commit hooks will run automatically, you can also run these tools manu
 source venv/bin/activate
 
 # Run pylint (as specified in project guidelines)
-pylint dependency_resolver/
+pylint energy_dependency_inspector/
 
 # Run type checking
-mypy dependency_resolver/
+mypy energy_dependency_inspector/
 
 # Format code
-black dependency_resolver/
+black energy_dependency_inspector/
 ```
 
 ### Project Structure
 
 ```plain
-dependency-resolver/
+energy-dependency-inspector/
 ├── pyproject.toml
 ├── requirements*.txt
-├── dependency_resolver/             # Main package
+├── energy_dependency_inspector/             # Main package
 │   ├── __main__.py                  # CLI entry point
 │   ├── core/                        # Orchestration and interfaces
 │   ├── detectors/                   # Package manager detectors
@@ -150,4 +150,4 @@ If you have questions or need help:
 
 ## Thank You
 
-Your contributions help make dependency-resolver better for everyone. We appreciate your time and effort!
+Your contributions help make energy-dependency-inspector better for everyone. We appreciate your time and effort!

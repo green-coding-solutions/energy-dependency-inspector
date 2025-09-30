@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The dependency resolver needs to support multiple package managers across different environments. Architecture options considered:
+The energy dependency inspector needs to support multiple package managers across different environments. Architecture options considered:
 
 1. Monolithic approach with hardcoded package manager logic
 2. Plugin-based system with dynamic loading

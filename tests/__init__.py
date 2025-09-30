@@ -1,1 +1,1 @@
-# Test package for dependency resolver
+# Test package for energy dependency inspector

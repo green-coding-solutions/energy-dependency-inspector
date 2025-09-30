@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Dependency Resolver - CLI entry point
+Energy Dependency Inspector - CLI entry point
 
-Usage: python -m dependency_resolver [environment_type] [environment_identifier] [options]
+Usage: python -m energy_dependency_inspector [environment_type] [environment_identifier] [options]
 """
 
 import sys
@@ -23,7 +23,7 @@ from .core.output_formatter import OutputFormatter
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        prog="python -m dependency_resolver",
+        prog="python -m energy_dependency_inspector",
         description="Resolve dependencies from various package managers",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""

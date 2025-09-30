@@ -1,25 +1,25 @@
 # Adding New Package Manager Detectors
 
-This guide provides a comprehensive plan for adding new package manager detectors to the dependency resolver system.
+This guide provides a comprehensive plan for adding new package manager detectors to the energy dependency inspector system.
 
 ## Overview
 
-The dependency resolver uses a modular detector architecture where each package manager has its own detector class that implements the `PackageManagerDetector` interface. This design allows for easy extensibility while maintaining consistent behavior across all detectors.
+The energy dependency inspector uses a modular detector architecture where each package manager has its own detector class that implements the `PackageManagerDetector` interface. This design allows for easy extensibility while maintaining consistent behavior across all detectors.
 
 ## Prerequisites
 
 Before adding a new detector, ensure you understand:
 
 1. **Architecture Decision Records (ADRs)**: Review `/docs/technical/architecture/adr/` for design principles
-2. **Existing Detectors**: Study `/dependency_resolver/detectors/` implementations
-3. **Interface Contracts**: Understand `PackageManagerDetector` in `/dependency_resolver/core/interfaces.py`
+2. **Existing Detectors**: Study `/energy_dependency_inspector/detectors/` implementations
+3. **Interface Contracts**: Understand `PackageManagerDetector` in `/energy_dependency_inspector/core/interfaces.py`
 4. **Testing Patterns**: Review `/tests/detectors/` structure
 
 ## Step 1: Implement the Detector Class
 
 ### 1.1 Create the Detector File
 
-Create `/dependency_resolver/detectors/{package_manager}_detector.py` implementing the `PackageManagerDetector` interface with these required methods:
+Create `/energy_dependency_inspector/detectors/{package_manager}_detector.py` implementing the `PackageManagerDetector` interface with these required methods:
 
 - `__init__(self, debug: bool = False)`: Initialize detector with debug flag
 - `is_usable()`: Check if package manager is available in the environment
@@ -62,7 +62,7 @@ Create `/dependency_resolver/detectors/{package_manager}_detector.py` implementi
 
 ### 2.1 Update the Orchestrator
 
-Add your detector to the detectors list in `/dependency_resolver/core/orchestrator.py` following the priority order:
+Add your detector to the detectors list in `/energy_dependency_inspector/core/orchestrator.py` following the priority order:
 
 **Priority Ordering**:
 
@@ -74,7 +74,7 @@ Reference existing detectors like `DpkgDetector`, `ApkDetector`, `PipDetector`, 
 
 ### 2.2 Update Package Imports
 
-Add to `/dependency_resolver/detectors/__init__.py` if needed.
+Add to `/energy_dependency_inspector/detectors/__init__.py` if needed.
 
 ## Step 3: Create Documentation
 
@@ -185,7 +185,7 @@ Reference `PipDetector` and `NpmDetector` implementations:
 4. **Validate JSON Output**: Ensure output follows expected schema
 5. **Test Both Scopes**: If supporting both project and system scope
 
-Use `python3 -m dependency_resolver --debug` to see detailed execution flow.
+Use `python3 -m energy_dependency_inspector --debug` to see detailed execution flow.
 
 ## Quality Checklist
 
@@ -207,15 +207,15 @@ Before submitting your detector:
 
 **Key Reference Files:**
 
-- `/dependency_resolver/detectors/` - Existing detector implementations
-- `/dependency_resolver/core/interfaces.py` - PackageManagerDetector interface
-- `/dependency_resolver/core/orchestrator.py` - Detector registration
+- `/energy_dependency_inspector/detectors/` - Existing detector implementations
+- `/energy_dependency_inspector/core/interfaces.py` - PackageManagerDetector interface
+- `/energy_dependency_inspector/core/orchestrator.py` - Detector registration
 - `/docs/technical/architecture/adr/` - Architecture decision records
 - `/tests/detectors/` - Test patterns and examples
 - `/tests/common/docker_test_base.py` - Docker testing base class
 
 **Debug Commands:**
 
-- `python3 -m dependency_resolver --debug` - Full debug output
+- `python3 -m energy_dependency_inspector --debug` - Full debug output
 - `source venv/bin/activate` - Activate development environment
 - `pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)` - Run linting
