@@ -1,8 +1,8 @@
-# energy-dependency-inspector
+# Energy Dependency Inspector
 
-A tool for creating snapshots of installed packages on specified target environments. The project provides both a command-line interface and a Python library for programmatic use.
+A tool for capturing dependency snapshots of running systems by querying their package managers directly. Unlike filesystem-scanning approaches, it inspects the actual installed state of packages as reported by the system's package management tools. Originally designed to reveal relevant changes when conducting energy measurements, it can also be used as a general-purpose dependency resolver. By tracking installed packages and their versions, you can identify whether changes in performance, energy consumption, or behavior are due to code modifications or dependency updates.
 
-Its main focus is dependency resolving of Docker containers, but it also supports dependency resolving on the host system. The output is a structured JSON that includes information about all the installed packages from supported sources with their version and unique hash values.
+The tool provides both a command-line interface and a Python library for programmatic use. It supports dependency inspection of Docker containers and host systems, outputting structured JSON with package information, versions, and unique hash values.
 
 ## Installation
 
