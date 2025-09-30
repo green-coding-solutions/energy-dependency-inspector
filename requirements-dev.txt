@@ -9,6 +9,7 @@ pylint>=2.15.0
 
 # Type checking
 mypy>=1.0.0
+types-docker  # Type stubs for docker library
 
 # Code formatting
 black>=22.0.0
