@@ -1,10 +1,10 @@
 # Adding New Package Manager Detectors
 
-This guide provides a comprehensive plan for adding new package manager detectors to the energy dependency inspector system.
+This guide provides a comprehensive plan for adding new package manager detectors to the energy-dependency-inspector system.
 
 ## Overview
 
-The energy dependency inspector uses a modular detector architecture where each package manager has its own detector class that implements the `PackageManagerDetector` interface. This design allows for easy extensibility while maintaining consistent behavior across all detectors.
+The energy-dependency-inspector uses a modular detector architecture where each package manager has its own detector class that implements the `PackageManagerDetector` interface. This design allows for easy extensibility while maintaining consistent behavior across all detectors.
 
 ## Prerequisites
 

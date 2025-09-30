@@ -101,7 +101,7 @@ class DockerTestBase:
             pass  # Ignore cleanup errors
 
     def print_verbose_results(self, title: str, result: Dict[str, Any]) -> None:
-        """Print verbose energy dependency inspector results."""
+        """Print verbose energy-dependency-inspector results."""
         print("\n" + "=" * 60)
         print(title)
         print("=" * 60)

@@ -6,7 +6,7 @@ Proposed
 
 ## Context
 
-The energy dependency inspector needs to define its target platform scope. Platform support options considered:
+The energy-dependency-inspector needs to define its target platform scope. Platform support options considered:
 
 1. Cross-platform support including Windows, macOS, and Linux
 2. Unix-based systems only (Linux, macOS, BSD variants)

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The energy dependency inspector needs to operate in various environments including CI/CD pipelines and containerized applications. Implementation approaches considered:
+The energy-dependency-inspector needs to operate in various environments including CI/CD pipelines and containerized applications. Implementation approaches considered:
 
 1. Allow modifications and installations to gather complete dependency information
 2. Implement read-only operations with limitations on available information
@@ -18,7 +18,7 @@ We will implement a strict read-only operations constraint across all dependency
 
 ## Rationale
 
-Read-only operations ensure the energy dependency inspector can be safely used in any environment without risk of system modification or side effects.
+Read-only operations ensure the energy-dependency-inspector can be safely used in any environment without risk of system modification or side effects.
 
 **Constraint Details**:
 

@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "energy-dependency-inspector"
 version = "0.2.0"
-description = "A standalone energy dependency inspector that exports JSON with all project dependencies"
+description = "An inspector of dependencies in the context of energy measurements that exports JSON with relevant information"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Green Coding Solutions"}
 ]
-keywords = ["dependencies", "docker", "containers", "package-manager", "security"]
+keywords = ["dependencies", "docker", "containers", "package-manager", "energy", "inspection"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

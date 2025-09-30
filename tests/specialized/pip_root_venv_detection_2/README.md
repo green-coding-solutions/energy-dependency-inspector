@@ -26,7 +26,7 @@ Our tool finds nothing.
 
 ## Test
 
-The test fails. The energy dependency inspector can't resolve the dependencies, because pip can't be executed:
+The test fails. The energy-dependency-inspector can't resolve the dependencies, because pip can't be executed:
 
 ```sh
 /usr/local/bin/pip: cannot execute: required file not found

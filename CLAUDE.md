@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 # Run specific detectors for testing
 python3 -m energy_dependency_inspector docker <container_name>
-python3 -m energy_dependency_inspector host --skip-os-packages --skip-hash-generation
+python3 -m energy_dependency_inspector host --skip-os-packages --skip-hash-collection
 
 # Execute linting and formatting
 pre-commit run --files $(git diff --name-only --diff-filter=ACMR HEAD)

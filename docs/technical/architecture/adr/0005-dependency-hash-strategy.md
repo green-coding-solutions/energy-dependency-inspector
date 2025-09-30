@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The energy dependency inspector needs to track changes in software dependencies across different environments and time periods. Several approaches exist for detecting when dependencies have changed:
+The energy-dependency-inspector needs to track changes in software dependencies across different environments and time periods. Several approaches exist for detecting when dependencies have changed:
 
 1. **No change detection**: Only track package names and versions
 2. **Timestamp-based detection**: Use modification times to detect changes

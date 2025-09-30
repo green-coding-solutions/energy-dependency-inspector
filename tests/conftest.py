@@ -9,5 +9,5 @@ def pytest_addoption(parser: Any) -> None:
         "--verbose-resolver",
         action="store_true",
         default=False,
-        help="Enable verbose output for energy dependency inspector",
+        help="Enable verbose output for energy-dependency-inspector",
     )

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-The energy dependency inspector needs to analyze project dependencies. Two approaches were considered:
+The energy-dependency-inspector needs to analyze project dependencies. Two approaches were considered:
 
 1. **Source File Parsing**: Analyze package manager files (requirements.txt, package.json, etc.)
 2. **Runtime Snapshot**: Analyze running environments to capture actually installed packages

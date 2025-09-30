@@ -51,7 +51,7 @@ class TestDockerExecutorFallback:
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
     def test_energy_dependency_inspector_integration_with_distroless(self) -> None:
-        """Test full energy dependency inspector integration with distroless container."""
+        """Test full energy-dependency-inspector integration with distroless container."""
         client = docker.from_env()
 
         container_name = "test-resolver-distroless"
@@ -70,7 +70,7 @@ class TestDockerExecutorFallback:
             container.reload()
             assert container.status == "running"
 
-            # Test the energy dependency inspector with the distroless container
+            # Test the energy-dependency-inspector with the distroless container
             executor = DockerExecutor(container_name)
             orchestrator = Orchestrator(debug=True)
 
@@ -107,7 +107,7 @@ class TestDockerExecutorFallback:
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
     def test_energy_dependency_inspector_with_python_packages(self) -> None:
-        """Test energy dependency inspector with a container that has Python packages but no sh."""
+        """Test energy-dependency-inspector with a container that has Python packages but no sh."""
         client = docker.from_env()
 
         container_name = "test-resolver-python-packages"
