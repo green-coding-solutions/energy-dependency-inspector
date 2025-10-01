@@ -4,17 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "energy-dependency-inspector"
-version = "0.2.0"
+version = "0.2.1"
 description = "Captures dependency snapshots of software systems for tracking changes across measurements. Originally designed for energy measurement contexts, also usable as a general-purpose dependency resolver."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "Green Coding Solutions"}
+    {name = "David Kopp"},
+    {name = "Arne Tarara"}
 ]
 keywords = ["dependencies", "docker", "containers", "package-manager", "energy", "inspection", "snapshot", "resolver"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "Topic :: Software Development :: Libraries :: Python Modules",
