@@ -104,8 +104,8 @@ We will implement **conditional output structure** for multi-location detection:
 ## Implementation Notes
 
 - **pip detector**: First implementation targeting venv + system detection
+- **npm detector**: Implemented for local + global package detection
 - **Test Infrastructure**: Updated to handle both output formats generically
 - **Documentation**: Updated to explain conditional structure behavior
-- **Future Detectors**: npm could implement similar pattern for global vs. local node_modules
 
 This approach solves the multi-location problem while minimizing breaking changes and maintaining clear traceability of package origins.

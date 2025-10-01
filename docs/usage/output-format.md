@@ -87,7 +87,7 @@ Project-specific package managers (pip, npm) output:
 
 ### Mixed-Scope Packages (Multi-Location Detection)
 
-When a detector finds packages in multiple locations (currently only pip supports this):
+When a detector finds packages in multiple locations (e.g. pip and npm support this):
 
 ```json
 {

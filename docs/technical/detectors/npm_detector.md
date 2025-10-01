@@ -2,35 +2,37 @@
 
 ## Purpose & Scope
 
-The NPM detector identifies Node.js packages managed by `npm` in project environments. It provides structured package information with intelligent package manager detection to avoid conflicts with other Node.js package managers (yarn, pnpm, bun).
+The NPM detector identifies Node.js packages managed by `npm` in both project and system environments. It supports multi-location detection to capture project dependencies and globally installed packages simultaneously.
 
 ## Key Features
 
+### Multi-Location Detection
+
+Detects npm packages in multiple locations:
+
+- **Local dependencies**: Project-level packages via `npm list --json --depth=0`
+- **Global packages**: System-level packages via `npm list -g --json --depth=0`
+- **Mixed output**: Returns both when present in same environment
+
 ### Smart Package Manager Detection
 
-The detector avoids conflicts with other Node.js package managers by checking for lock files:
+For local projects, avoids conflicts with other Node.js package managers:
 
 **Exclusion checks:**
 
-- `yarn.lock` exists → Skip (defer to yarn)
-- `pnpm-lock.yaml` exists → Skip (defer to pnpm)
-- `bun.lockb` exists → Skip (defer to bun)
+- `yarn.lock` exists → Skip local detection (defer to yarn)
+- `pnpm-lock.yaml` exists → Skip local detection (defer to pnpm)
+- `bun.lockb` exists → Skip local detection (defer to bun)
 
 **Inclusion checks:**
 
-- `package.json` or `package-lock.json` exists
+- `package.json`, `node_modules`, or `package-lock.json` exists
 - No conflicting lock files present
 
-### Project Context Detection
+## Commands Used
 
-Determines scope based on project indicators:
-
-- **Project scope**: When `package.json` or `node_modules` exists
-- **System scope**: When no project indicators found
-
-## Command Used
-
-- **Package listing**: `npm list --json --depth=0` for structured JSON output of direct dependencies only
+- **Local packages**: `npm list --json --depth=0`
+- **Global packages**: `npm list -g --json --depth=0`
 
 ## Hash Generation
 
@@ -45,7 +47,7 @@ Individual package-level hashes are **not implemented** for npm dependencies. Th
 
 ### Directory Content Hashing
 
-For project-scoped dependencies, generates location-based hashes by scanning the project directory while excluding:
+Generates location-based hashes for both project and system locations while excluding:
 
 - npm cache directories (`node_modules/.cache`)
 - Log files (`*.log`)
@@ -54,32 +56,54 @@ For project-scoped dependencies, generates location-based hashes by scanning the
 
 ## Output Format
 
-**Project Scope** (with location hash):
+**Single Location** (project or system):
 
-- Includes `scope: "project"`, project location, and content hash
-- Contains only direct dependencies from the project
+```json
+{
+  "scope": "project" | "system",
+  "location": "/path/to/location",
+  "hash": "abc123...",
+  "dependencies": {...}
+}
+```
 
-**System Scope** (no location/hash):
+**Mixed Locations** (both project and global):
 
-- Includes `scope: "system"`
-- Contains system-wide npm packages
+```json
+{
+  "scope": "mixed",
+  "locations": {
+    "/path/to/project": {
+      "scope": "project",
+      "hash": "abc123...",
+      "dependencies": {...}
+    },
+    "/usr/lib/node_modules": {
+      "scope": "system",
+      "hash": "def456...",
+      "dependencies": {...}
+    }
+  }
+}
+```
 
 ## Benefits
 
+- **Complete visibility**: Captures both project and global npm packages
 - **Conflict avoidance**: Prevents npm from running in yarn/pnpm/bun projects
-- **Project isolation**: Distinguishes project dependencies from system packages
+- **Multi-location support**: Follows pip_detector pattern for consistency
 - **Structured data**: JSON output provides reliable programmatic parsing
-- **Direct dependencies focus**: Captures only project's direct dependencies
+- **Direct dependencies focus**: Captures only direct dependencies (depth=0)
 
 ## Limitations
 
-- **npm-specific**: Limited to npm package manager only
 - **Direct dependencies only**: Excludes transitive dependencies
 - **npm dependency**: Requires npm to be installed and functional
+- **Global detection**: Only detects packages via `npm list -g` (not manual installations)
 
 ## Use Cases
 
-- Node.js project dependency analysis
+- Node.js project dependency analysis in containers with global tools
 - Package manager conflict avoidance in multi-tool environments
-- Direct dependency tracking and version monitoring
+- Direct dependency tracking across project and system scopes
 - Build reproducibility through location hashing
