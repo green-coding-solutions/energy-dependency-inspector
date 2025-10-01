@@ -38,9 +38,9 @@ class TestDockerInfoDetection(DockerTestBase):
 
             # Test Docker Info detection (container info only)
             executor = DockerExecutor(container_id)
-            orchestrator = Orchestrator(debug=False)
+            orchestrator = Orchestrator(debug=False, selected_detectors="docker-info")
 
-            result = orchestrator.resolve_dependencies(executor, only_container_info=True)
+            result = orchestrator.resolve_dependencies(executor)
 
             if verbose_output:
                 self.print_verbose_results("DOCKER INFO DETECTION OUTPUT:", result)
@@ -104,8 +104,8 @@ class TestDockerInfoDetectorIntegration:
     """Integration tests for Docker Info detector with orchestrator."""
 
     @pytest.mark.skipif(docker is None, reason="Docker not available")
-    def test_orchestrator_only_container_info_mode(self) -> None:
-        """Test orchestrator with only_container_info=True."""
+    def test_orchestrator_docker_info_only_mode(self) -> None:
+        """Test orchestrator with selected_detectors='docker-info'."""
         container_id = None
 
         try:
@@ -114,10 +114,10 @@ class TestDockerInfoDetectorIntegration:
             container_id = base.start_container("alpine:latest", sleep_duration="30")
 
             executor = DockerExecutor(container_id)
-            orchestrator = Orchestrator(debug=False)
+            orchestrator = Orchestrator(debug=False, selected_detectors="docker-info")
 
-            # Test only_container_info mode
-            result = orchestrator.resolve_dependencies(executor, only_container_info=True)
+            # Test docker-info detector only mode
+            result = orchestrator.resolve_dependencies(executor)
 
             # Should only contain source
             assert isinstance(result, dict)

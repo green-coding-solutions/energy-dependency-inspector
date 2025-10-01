@@ -69,12 +69,6 @@ Examples:
     )
 
     parser.add_argument(
-        "--only-container-info",
-        action="store_true",
-        help="For docker environment, only analyze container metadata (skip dependency detection)",
-    )
-
-    parser.add_argument(
         "--pretty-print",
         action="store_true",
         help="Format JSON output with indentation",
@@ -95,9 +89,7 @@ Examples:
     return parser.parse_args()
 
 
-def validate_arguments(
-    environment_type: str, environment_identifier: str | None, only_container_info: bool = False
-) -> None:
+def validate_arguments(environment_type: str, environment_identifier: str | None) -> None:
     """Validate command line arguments."""
     if environment_type == "docker" and not environment_identifier:
         print("Error: Docker environment requires a container identifier", file=sys.stderr)
@@ -105,10 +97,6 @@ def validate_arguments(
 
     if environment_type == "host" and environment_identifier:
         print("Warning: Environment identifier is ignored for host environment", file=sys.stderr)
-
-    if only_container_info and environment_type != "docker":
-        print("Error: --only-container-info flag is only valid for docker environment", file=sys.stderr)
-        sys.exit(1)
 
 
 def create_executor(
@@ -131,7 +119,7 @@ def main() -> None:
     """Main entry point."""
     args = parse_arguments()
 
-    validate_arguments(args.environment_type, args.environment_identifier, args.only_container_info)
+    validate_arguments(args.environment_type, args.environment_identifier)
 
     try:
         executor = create_executor(args.environment_type, args.environment_identifier, debug=args.debug)
@@ -142,7 +130,7 @@ def main() -> None:
             skip_hash_collection=args.skip_hash_collection,
             selected_detectors=args.select_detectors,
         )
-        dependencies = orchestrator.resolve_dependencies(executor, args.working_dir, args.only_container_info)
+        dependencies = orchestrator.resolve_dependencies(executor, args.working_dir)
         formatter = OutputFormatter(debug=args.debug)
         result = formatter.format_json(dependencies, pretty_print=args.pretty_print)
         print(result)

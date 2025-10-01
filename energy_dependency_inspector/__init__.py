@@ -41,7 +41,6 @@ def resolve_docker_dependencies(
     debug: bool = False,
     skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
-    only_container_info: bool = False,
     pretty_print: bool = False,
 ) -> str:
     """
@@ -53,7 +52,6 @@ def resolve_docker_dependencies(
         debug: Enable debug output
         skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
-        only_container_info: Only analyze container metadata (skip dependency detection)
         pretty_print: Format JSON output with indentation
 
     Returns:
@@ -61,7 +59,7 @@ def resolve_docker_dependencies(
     """
     executor = DockerExecutor(container_identifier, debug=debug)
     orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
-    dependencies = orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
+    dependencies = orchestrator.resolve_dependencies(executor, working_dir)
     formatter = OutputFormatter(debug=debug)
     return formatter.format_json(dependencies, pretty_print=pretty_print)
 
@@ -72,7 +70,6 @@ def resolve_docker_dependencies_as_dict(
     debug: bool = False,
     skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
-    only_container_info: bool = False,
 ) -> dict[str, Any]:
     """
     Specialized function to resolve dependencies in Docker containers and return as a Python dictionary.
@@ -86,7 +83,6 @@ def resolve_docker_dependencies_as_dict(
         debug: Enable debug output
         skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
-        only_container_info: Only analyze container metadata (skip dependency detection)
 
     Returns:
         Dictionary containing all discovered dependencies
@@ -100,7 +96,7 @@ def resolve_docker_dependencies_as_dict(
 
     executor = DockerExecutor(container_identifier, debug=debug)
     orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
-    return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
+    return orchestrator.resolve_dependencies(executor, working_dir)
 
 
 def resolve_dependencies_as_dict(
@@ -110,7 +106,6 @@ def resolve_dependencies_as_dict(
     debug: bool = False,
     skip_os_packages: bool = False,
     venv_path: Optional[str] = None,
-    only_container_info: bool = False,
 ) -> dict[str, Any]:
     """
     Generic function to resolve dependencies and return as a Python dictionary.
@@ -122,7 +117,6 @@ def resolve_dependencies_as_dict(
         debug: Enable debug output
         skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector
-        only_container_info: Only analyze container metadata (for docker environments)
 
     Returns:
         Dictionary containing all discovered dependencies
@@ -138,7 +132,7 @@ def resolve_dependencies_as_dict(
         raise ValueError(f"Unsupported environment type: {environment_type}")
 
     orchestrator = Orchestrator(debug=debug, skip_os_packages=skip_os_packages, venv_path=venv_path)
-    return orchestrator.resolve_dependencies(executor, working_dir, only_container_info)
+    return orchestrator.resolve_dependencies(executor, working_dir)
 
 
 def main() -> None:

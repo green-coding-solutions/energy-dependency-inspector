@@ -53,9 +53,7 @@ class Orchestrator:
         else:
             self.detectors = all_detectors
 
-    def resolve_dependencies(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, only_container_info: bool = False
-    ) -> dict[str, Any]:
+    def resolve_dependencies(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> dict[str, Any]:
         """Resolve all dependencies from available package managers."""
         # Validate working directory if provided
         if working_dir is not None and not executor.path_exists(working_dir):
@@ -63,13 +61,7 @@ class Orchestrator:
 
         result: dict[str, Any] = {}
 
-        if only_container_info:
-            # Only run docker-info detector when only container info is requested
-            detectors_to_run = [d for d in self.detectors if d.NAME == "docker-info"]
-        else:
-            detectors_to_run = self.detectors
-
-        for detector in detectors_to_run:
+        for detector in self.detectors:
             detector_name = detector.NAME
 
             if self.debug:

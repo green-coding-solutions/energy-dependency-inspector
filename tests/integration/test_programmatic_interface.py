@@ -113,7 +113,7 @@ class TestResolveDockerDependencies:
         # Verify calls
         mock_docker_executor.assert_called_once_with("test-container", debug=False)
         mock_orchestrator.assert_called_once_with(debug=False, skip_os_packages=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None)
         mock_formatter.assert_called_once_with(debug=False)
         mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=False)
 
@@ -148,14 +148,13 @@ class TestResolveDockerDependencies:
             debug=True,
             skip_os_packages=True,
             venv_path="/opt/venv",
-            only_container_info=True,
             pretty_print=True,
         )
 
         # Verify calls
         mock_docker_executor.assert_called_once_with("my-container", debug=True)
         mock_orchestrator.assert_called_once_with(debug=True, skip_os_packages=True, venv_path="/opt/venv")
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app", True)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app")
         mock_formatter.assert_called_once_with(debug=True)
         mock_formatter_instance.format_json.assert_called_once_with(mock_dependencies, pretty_print=True)
 
@@ -182,7 +181,7 @@ class TestResolveDependenciesAsDict:
         # Verify calls
         mock_host_executor.assert_called_once()
         mock_orchestrator.assert_called_once_with(debug=False, skip_os_packages=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None)
 
         assert result == mock_dependencies
 
@@ -205,7 +204,7 @@ class TestResolveDependenciesAsDict:
         # Verify calls
         mock_docker_executor.assert_called_once_with("alpine-container", debug=False)
         mock_orchestrator.assert_called_once_with(debug=False, skip_os_packages=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None)
 
         assert result == mock_dependencies
 
@@ -244,7 +243,7 @@ class TestResolveDockerDependenciesAsDict:
         # Verify calls
         mock_docker_executor.assert_called_once_with("test-container", debug=False)
         mock_orchestrator.assert_called_once_with(debug=False, skip_os_packages=False, venv_path=None)
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None, False)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, None)
 
         assert result == mock_dependencies
 
@@ -272,13 +271,12 @@ class TestResolveDockerDependenciesAsDict:
             debug=True,
             skip_os_packages=True,
             venv_path="/opt/venv",
-            only_container_info=True,
         )
 
         # Verify calls
         mock_docker_executor.assert_called_once_with("my-container", debug=True)
         mock_orchestrator.assert_called_once_with(debug=True, skip_os_packages=True, venv_path="/opt/venv")
-        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app", True)
+        mock_orchestrator_instance.resolve_dependencies.assert_called_once_with(mock_executor_instance, "/app")
 
         assert result == mock_dependencies
 

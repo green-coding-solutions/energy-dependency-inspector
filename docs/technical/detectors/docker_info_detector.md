@@ -130,10 +130,10 @@ Works exclusively with `DockerExecutor` to:
 
 ### Container-Only Analysis
 
-When using `--only-container-info` flag:
+To analyze only container metadata:
 
 ```bash
-python3 -m energy_dependency_inspector docker my-container --only-container-info
+python3 -m energy_dependency_inspector docker my-container --select-detectors "docker-info"
 ```
 
 Output contains only container metadata, skipping all package dependency detection.

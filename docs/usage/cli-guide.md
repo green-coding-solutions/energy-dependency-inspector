@@ -22,7 +22,7 @@ python3 -m energy_dependency_inspector docker a1b2c3d4e5f6
 
 ```bash
 # Get only container metadata (skip dependency detection)
-python3 -m energy_dependency_inspector docker nginx --only-container-info
+python3 -m energy_dependency_inspector docker nginx --select-detectors "docker-info"
 ```
 
 ## Output Options
@@ -101,7 +101,7 @@ For comprehensive Docker container analysis:
 python3 -m energy_dependency_inspector docker my-container --debug
 
 # Container metadata only (faster)
-python3 -m energy_dependency_inspector docker my-container --only-container-info
+python3 -m energy_dependency_inspector docker my-container --select-detectors "docker-info"
 ```
 
 ### Debugging and Development

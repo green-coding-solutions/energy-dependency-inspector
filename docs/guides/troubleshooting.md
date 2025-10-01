@@ -172,7 +172,7 @@ npm --version
 1. Use `--skip-os-packages` to skip system package managers
 2. Use `--skip-hash-collection` to skip hash generation for packages and locations
 3. Use `--select-detectors` to analyze only specific package managers (e.g., `--select-detectors "pip,npm"`)
-4. Use `--only-container-info` for Docker metadata only
+4. For Docker container metadata only, use `--select-detectors "docker-info"`
 5. Specify working directory to limit scope
 6. Check if system has many installed packages
 
