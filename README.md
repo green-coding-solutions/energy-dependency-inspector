@@ -1,10 +1,20 @@
 # Energy Dependency Inspector
 
+[![PyPI](https://img.shields.io/pypi/v/energy-dependency-inspector)](https://pypi.org/project/energy-dependency-inspector/)
+
 A tool for capturing dependency snapshots of running systems by querying their package managers directly. Unlike filesystem-scanning approaches, it inspects the actual installed state of packages as reported by the system's package management tools. Originally designed to reveal relevant changes when conducting energy measurements, it can also be used as a general-purpose dependency resolver. By tracking installed packages and their versions, you can identify whether changes in performance, energy consumption, or behavior are due to code modifications or dependency updates.
 
 The tool provides both a command-line interface and a Python library for programmatic use. It supports dependency inspection of Docker containers and host systems, outputting structured JSON with package information, versions, and unique hash values.
 
 ## Installation
+
+**From PyPI:**
+
+```bash
+pip install energy-dependency-inspector
+```
+
+**From source:**
 
 ```bash
 git clone https://github.com/green-coding-solutions/energy-dependency-inspector
