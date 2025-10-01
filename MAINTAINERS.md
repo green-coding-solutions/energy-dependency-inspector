@@ -16,6 +16,9 @@ To publish a new version to PyPI, follow these steps:
    # Install/upgrade build tools
    python3 -m pip install --upgrade build
 
+   # Clear old build artifacts
+   rm -rf dist/
+
    # Build the distribution packages
    python3 -m build
    ```
