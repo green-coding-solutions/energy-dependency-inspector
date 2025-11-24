@@ -44,6 +44,7 @@ include = ["energy_dependency_inspector*"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies.dev = {file = ["requirements-dev.txt"]}
+optional-dependencies.performance-analysis = {file = ["requirements-performance-analysis.txt"]}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
