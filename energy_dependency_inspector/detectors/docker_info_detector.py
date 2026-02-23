@@ -1,3 +1,4 @@
+import re
 from typing import Optional, Any
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
 from ..executors.docker_executor import DockerExecutor
@@ -39,6 +40,30 @@ class DockerInfoDetector(PackageManagerDetector):
         # Include error if present
         if "error" in container_info:
             result["error"] = container_info["error"]
+
+        stdout, stderr, exit_code = executor.execute_command("cat /etc/os-release")
+
+        if exit_code == 0 and (match := re.search(r'PRETTY_NAME=["\']?(.*)["\']?', stdout)):
+            # Return simplified info structure as metadata
+            # The orchestrator will handle this specially for source section
+            result["os"] = match[1]
+        else:
+            if 'error' in result:
+                result["error"] = f"{result['error']}\nCould not check for OS in /etc/os-release. Error: {stderr}"
+            else:
+                result["error"] = f"Could not check for OS in /etc/os-release. Error: {stderr}"
+
+        stdout, stderr, exit_code = executor.execute_command("cat /proc/version")
+
+        if exit_code == 0:
+            # Return simplified info structure as metadata
+            # The orchestrator will handle this specially for source section
+            result["kernel_version"] = stdout
+        else:
+            if 'error' in result:
+                result["error"] = f"{result['error']}\nCould not check for Kernel Version in /proc/version. Error: {stderr}"
+            else:
+                result["error"] = f"Could not check for Kernel Version in /proc/version. Error: {stderr}"
 
         return result
 
