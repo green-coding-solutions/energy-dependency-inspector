@@ -43,7 +43,7 @@ class DockerInfoDetector(PackageManagerDetector):
 
         stdout, stderr, exit_code = executor.execute_command("cat /etc/os-release")
 
-        if exit_code == 0 and (match := re.search(r'PRETTY_NAME=["\']?(.*)["\']?', stdout)):
+        if exit_code == 0 and (match := re.search(r'PRETTY_NAME="?([^"]+)"?', stdout)):
             # Return simplified info structure as metadata
             # The orchestrator will handle this specially for source section
             result["os"] = match[1]
