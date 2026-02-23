@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "energy-dependency-inspector"
-version = "0.2.2"
+version = "0.3.0"
 description = "Captures dependency snapshots of software systems for tracking changes across measurements. Originally designed for energy measurement contexts, also usable as a general-purpose dependency resolver."
 readme = "README.md"
 requires-python = ">=3.10"
