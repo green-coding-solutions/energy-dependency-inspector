@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "energy-dependency-inspector"
-version = "0.2.1"
+version = "0.2.2"
 description = "Captures dependency snapshots of software systems for tracking changes across measurements. Originally designed for energy measurement contexts, also usable as a general-purpose dependency resolver."
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "David Kopp"},
     {name = "Arne Tarara"}
@@ -26,7 +26,6 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
 ]
 dynamic = ["dependencies", "optional-dependencies"]
 
