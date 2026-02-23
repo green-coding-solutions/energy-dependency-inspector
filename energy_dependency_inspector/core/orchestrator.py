@@ -5,6 +5,7 @@ from ..detectors.npm_detector import NpmDetector
 from ..detectors.dpkg_detector import DpkgDetector
 from ..detectors.apk_detector import ApkDetector
 from ..detectors.docker_info_detector import DockerInfoDetector
+from ..detectors.host_info_detector import HostInfoDetector
 from ..detectors.maven_detector import MavenDetector
 
 
@@ -25,6 +26,7 @@ class Orchestrator:
 
         # Create all detector instances
         all_detectors: list[PackageManagerDetector] = [
+            HostInfoDetector(),
             DockerInfoDetector(),
             DpkgDetector(),
             ApkDetector(),
@@ -88,6 +90,9 @@ class Orchestrator:
                         result["source"]["type"] = "container"
                         if self.debug:
                             print(f"Found container info for {detector_name}")
+                    elif detector_name == 'host-info':
+                        result["source"] = dependencies
+                        result["source"]["type"] = "host"
                     else:
                         # Standard handling for other detectors
                         # Check if result has dependencies (single location) or locations (mixed scope structure)
