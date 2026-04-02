@@ -44,6 +44,8 @@ python3 -m energy_dependency_inspector -h
 - **apk** - System packages of Alpine
 - **pip** - Python packages
 - **npm** - Node.js packages
+- **composer** - PHP packages
+- **pecl** - PHP extensions
 - **maven** - Java packages
 
 Also captures **Docker container metadata** when analyzing containers.

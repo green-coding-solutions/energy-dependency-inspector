@@ -72,7 +72,7 @@ orchestrator = Orchestrator(
     debug=True,
     skip_os_packages=True,
     skip_hash_collection=True,
-    selected_detectors="pip,npm"  # Only analyze Python and Node.js dependencies
+    selected_detectors="pip,npm,composer,pecl"  # Only analyze language-specific dependencies
 )
 dependencies = orchestrator.resolve_dependencies(executor)
 
@@ -126,7 +126,7 @@ orchestrator = Orchestrator(
     skip_os_packages=False,       # Skip OS package managers (dpkg, apk)
     venv_path="/path/to/venv",     # Specify Python virtual environment path
     skip_hash_collection=False,    # Skip hash collection for improved performance
-    selected_detectors="pip,npm"   # Use only specific detectors
+    selected_detectors="pip,npm,composer,pecl"   # Use only specific detectors
 )
 ```
 
@@ -141,13 +141,13 @@ from energy_dependency_inspector import Orchestrator, HostExecutor
 orchestrator = Orchestrator(selected_detectors="pip")
 
 # Use multiple specific detectors
-orchestrator = Orchestrator(selected_detectors="pip,npm,maven")
+orchestrator = Orchestrator(selected_detectors="pip,npm,composer,pecl,maven")
 
 # Use all detectors (default behavior)
 orchestrator = Orchestrator(selected_detectors=None)
 ```
 
-**Available detectors:** `pip`, `npm`, `dpkg`, `apk`, `maven`, `docker-info`
+**Available detectors:** `pip`, `npm`, `composer`, `pecl`, `dpkg`, `apk`, `maven`, `docker-info`
 
 ### Executor Options
 

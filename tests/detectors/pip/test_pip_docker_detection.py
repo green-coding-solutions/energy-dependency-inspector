@@ -68,7 +68,12 @@ class TestPipDockerDetection(DockerTestBase):
         self.validate_basic_structure(result, "pip")
 
         pip_result = result["pip"]
-        dependencies = pip_result["dependencies"]
+        if pip_result["scope"] == "mixed":
+            dependencies = {}
+            for location_data in pip_result["locations"].values():
+                dependencies.update(location_data["dependencies"])
+        else:
+            dependencies = pip_result["dependencies"]
 
         # Check for our installed test packages
         expected_packages = ["requests", "numpy", "click"]
@@ -86,7 +91,7 @@ class TestPipDockerDetection(DockerTestBase):
 
         # Check scope (should be system since we installed packages globally in container)
         scope = pip_result["scope"]
-        assert scope in ["system", "project"], f"Scope should be 'system' or 'project', got: {scope}"
+        assert scope in ["system", "project", "mixed"], f"Unexpected scope: {scope}"
 
         print(f"✓ Successfully detected pip dependencies: {', '.join(found_packages)}")
         print(f"✓ Total dependencies found: {len(dependencies)}")

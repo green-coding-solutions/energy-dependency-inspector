@@ -18,7 +18,7 @@ class MavenDetector(PackageManagerDetector):
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if this is a Maven project by looking for pom.xml."""
-        search_dir = working_dir or "."
+        search_dir = working_dir or "/"
         return executor.path_exists(f"{search_dir}/pom.xml")
 
     def get_dependencies(
@@ -31,7 +31,7 @@ class MavenDetector(PackageManagerDetector):
             - packages: List of package dicts with name, version, type
             - metadata: Dict with location and hash for project scope
         """
-        search_dir = working_dir or "."
+        search_dir = working_dir or "/"
         location = self._resolve_absolute_path(executor, search_dir)
         dependencies: dict[str, dict[str, str]] = {}
 
@@ -63,7 +63,7 @@ class MavenDetector(PackageManagerDetector):
             return self._maven_available_cache
 
         # Check for Maven wrapper first (project-specific)
-        search_dir = working_dir or "."
+        search_dir = working_dir or "/"
         if executor.path_exists(f"{search_dir}/mvnw"):
             _, _, exit_code = executor.execute_command("./mvnw --version", working_dir)
             if exit_code == 0:
@@ -219,6 +219,8 @@ class MavenDetector(PackageManagerDetector):
 
     def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
         """Resolve absolute path within the executor's context."""
+        if path == "/":
+            return "/"
         if path == ".":
             stdout, stderr, exit_code = executor.execute_command("pwd")
             if exit_code == 0 and stdout.strip():

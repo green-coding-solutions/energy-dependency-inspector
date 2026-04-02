@@ -1,0 +1,29 @@
+FROM node:22-bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+RUN apt-get update && apt-get install -y \
+    php-cli \
+    php-mbstring \
+    php-xml \
+    php-curl \
+    composer \
+    unzip \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /opt/node-test /opt/php-test
+
+RUN printf '{\n  "name": "node-test",\n  "private": true,\n  "dependencies": {\n    "lodash": "^4.17.21",\n    "axios": "^1.7.7"\n  }\n}\n' > /opt/node-test/package.json
+
+RUN cd /opt/node-test && npm install
+
+RUN printf '{\n  "name": "php-test/project",\n  "type": "project",\n  "require": {\n    "monolog/monolog": "^3.7",\n    "guzzlehttp/guzzle": "^7.9"\n  }\n}\n' > /opt/php-test/composer.json
+
+RUN cd /opt/php-test && composer install --no-interaction --prefer-dist
+
+WORKDIR /opt/php-test
+
+CMD ["sleep", "300"]

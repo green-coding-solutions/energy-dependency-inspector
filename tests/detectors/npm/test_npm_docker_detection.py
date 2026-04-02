@@ -56,6 +56,9 @@ class TestNpmDockerDetection(DockerTestBase):
 
         npm_result = result["npm"]
         scope = npm_result["scope"]
+        assert "node_version" in npm_result, "npm result should include node_version"
+        assert isinstance(npm_result["node_version"], str), "node_version should be a string"
+        assert len(npm_result["node_version"]) > 0, "node_version should not be empty"
 
         # Handle both simple and mixed structures
         if scope == "mixed":
@@ -142,6 +145,9 @@ class TestNpmDockerDetection(DockerTestBase):
         self.validate_basic_structure(result, "npm")
 
         npm_result = result["npm"]
+        assert "node_version" in npm_result, "npm result should include node_version"
+        assert isinstance(npm_result["node_version"], str), "node_version should be a string"
+        assert len(npm_result["node_version"]) > 0, "node_version should not be empty"
         dependencies = npm_result["dependencies"]
 
         dependency_names = list(dependencies.keys())

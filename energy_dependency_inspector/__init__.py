@@ -19,7 +19,7 @@ def resolve_host_dependencies(
     Convenience function to resolve dependencies on the host system.
 
     Args:
-        working_dir: Working directory to analyze (defaults to current directory)
+        working_dir: Working directory to analyze (defaults to /)
         debug: Enable debug output
         skip_os_packages: Skip OS package managers (dpkg, apk)
         venv_path: Explicit virtual environment path for pip detector

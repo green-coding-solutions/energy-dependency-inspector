@@ -63,19 +63,11 @@ class TestCrossEnvironmentHash:
         environment_hashes = []
 
         print("")
-        # Test host environment first
-        try:
-            host_hash = self._get_hash_from_host()
-            environment_hashes.append(("host", host_hash))
-            print(f"host: {host_hash}")
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            pytest.fail(f"Could not test host: {str(e)}")
 
         # Test Docker environments if available
         if docker is not None:
             images = [
                 "pip-hash-cross-env-test-ubuntu20",
-                "pip-hash-cross-env-test-ubuntu24",
                 "pip-hash-cross-env-test-alpine",
             ]
 

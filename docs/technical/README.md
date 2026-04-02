@@ -33,9 +33,11 @@ technical/
 │   └── npm_hash_implementation_analysis.md
 └── detectors/                  # Detector-specific documentation
     ├── apk_detector.md
+    ├── composer_detector.md
     ├── docker_info_detector.md
     ├── dpkg_detector.md
     ├── npm_detector.md
+    ├── pecl_detector.md
     └── pip_detector.md
 ```
 

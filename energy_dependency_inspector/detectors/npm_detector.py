@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 from typing import Optional, Any
 
 from ..core.interfaces import EnvironmentExecutor, PackageManagerDetector
@@ -28,91 +29,123 @@ class NpmDetector(PackageManagerDetector):
         Returns single location structure or nested structure for mixed locations.
         See docs/technical/detectors/npm_detector.md
         """
-        # Collect dependencies from both local and global locations
-        local_result = self._get_local_dependencies(executor, working_dir, skip_hash_collection)
+        node_version = self._get_node_version(executor, working_dir)
+
+        local_results = self._get_local_dependencies(executor, working_dir, skip_hash_collection)
         global_result = self._get_global_dependencies(executor, working_dir, skip_hash_collection)
 
-        # Determine output structure based on what was found
-        if local_result and global_result:
-            # Mixed case - use nested structure
+        if len(local_results) == 1 and not global_result:
+            if node_version:
+                local_results[0]["node_version"] = node_version
+            return local_results[0]
+
+        if not local_results and global_result:
+            if node_version:
+                global_result["node_version"] = node_version
+            return global_result
+
+        if local_results or global_result:
             locations = {}
 
-            # Add local location
-            local_location_data = {"scope": "project", "dependencies": local_result["dependencies"]}
-            if "hash" in local_result:
-                local_location_data["hash"] = local_result["hash"]
-            locations[local_result["location"]] = local_location_data
+            for local_result in local_results:
+                local_location_data = {"scope": "project", "dependencies": local_result["dependencies"]}
+                if "hash" in local_result:
+                    local_location_data["hash"] = local_result["hash"]
+                locations[local_result["location"]] = local_location_data
 
-            # Add global location
-            global_location_data = {"scope": "system", "dependencies": global_result["dependencies"]}
-            if "hash" in global_result:
-                global_location_data["hash"] = global_result["hash"]
-            locations[global_result["location"]] = global_location_data
+            if global_result:
+                global_location_data = {"scope": "system", "dependencies": global_result["dependencies"]}
+                if "hash" in global_result:
+                    global_location_data["hash"] = global_result["hash"]
+                locations[global_result["location"]] = global_location_data
 
-            return {"scope": "mixed", "locations": locations}
-        elif local_result:
-            # Only local - use single location structure
-            return local_result
-        elif global_result:
-            # Only global - use single location structure
-            return global_result
+            result: dict[str, Any] = {"scope": "mixed", "locations": locations}
+            if node_version:
+                result["node_version"] = node_version
+            return result
+
+        if working_dir:
+            location = self._resolve_absolute_path(executor, working_dir)
+            result = {"scope": "project", "location": location, "dependencies": {}}
         else:
-            # No packages found - return empty result
-            if working_dir:
-                location = self._resolve_absolute_path(executor, working_dir)
-                return {"scope": "project", "location": location, "dependencies": {}}
-            else:
-                return {"scope": "system", "location": "/usr/lib/node_modules", "dependencies": {}}
+            result = {"scope": "system", "location": "/usr/lib/node_modules", "dependencies": {}}
+
+        if node_version:
+            result["node_version"] = node_version
+        return result
 
     def _get_local_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
-    ) -> dict[str, Any] | None:
-        """Get dependencies from local npm project if it exists."""
-        search_dir = working_dir or "."
+    ) -> list[dict[str, Any]]:
+        """Get dependencies from all discovered npm projects."""
+        results: list[dict[str, Any]] = []
 
-        # Check if this is a local npm project (not yarn/pnpm/bun)
-        has_package_json = executor.path_exists(f"{search_dir}/package.json")
-        has_node_modules = executor.path_exists(f"{search_dir}/node_modules")
-        has_package_lock = executor.path_exists(f"{search_dir}/package-lock.json")
+        for node_modules_path in self._find_local_node_modules(executor, working_dir):
+            project_dir = os.path.dirname(node_modules_path.rstrip("/"))
 
-        # Exclude if using other package managers
-        if has_package_json:
-            exclusions = ["yarn.lock", "pnpm-lock.yaml", "bun.lockb"]
-            for exclusion in exclusions:
-                if executor.path_exists(f"{search_dir}/{exclusion}"):
-                    return None
+            if self._has_conflicting_lockfiles(executor, project_dir):
+                continue
 
-        # Only proceed if we have signs of a local npm project
-        if not (has_package_json or has_node_modules or has_package_lock):
-            return None
+            stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", project_dir)
+            if exit_code != 0:
+                continue
 
-        stdout, _, exit_code = executor.execute_command("npm list --json --depth=0", working_dir)
+            dependencies = {}
+            try:
+                npm_data = json.loads(stdout)
+                npm_dependencies = npm_data.get("dependencies", {})
+
+                for package_name, package_info in npm_dependencies.items():
+                    version = package_info.get("version", "unknown")
+                    dependencies[package_name] = {"version": version}
+            except (json.JSONDecodeError, AttributeError):
+                continue
+
+            if not dependencies:
+                continue
+
+            result: dict[str, Any] = {"scope": "project", "location": node_modules_path}
+            if not skip_hash_collection:
+                result["hash"] = self._generate_location_hash(executor, node_modules_path)
+            result["dependencies"] = dependencies
+            results.append(result)
+
+        return results
+
+    def _find_local_node_modules(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> list[str]:
+        """Find all project node_modules directories under the scan root."""
+        search_root = self._resolve_absolute_path(executor, working_dir or "/")
+        stdout, stderr, exit_code = executor.execute_command(
+            f"find '{search_root}' -type d -name 'node_modules' -print 2>/dev/null | LC_COLLATE=C sort -u"
+        )
         if exit_code != 0:
-            return None
+            if self.debug:
+                print(f"ERROR: npm project discovery failed with exit code {exit_code}")
+                print(f"ERROR: stderr: {stderr}")
+            return []
 
-        dependencies = {}
-        try:
-            npm_data = json.loads(stdout)
-            npm_dependencies = npm_data.get("dependencies", {})
+        results: list[str] = []
+        for line in stdout.splitlines():
+            node_modules_path = line.strip()
+            if not node_modules_path:
+                continue
+            if self._is_system_location(node_modules_path):
+                continue
+            project_dir = os.path.dirname(node_modules_path.rstrip("/"))
+            has_package_json = executor.path_exists(f"{project_dir}/package.json")
+            has_package_lock = executor.path_exists(f"{project_dir}/package-lock.json")
+            if has_package_json or has_package_lock:
+                results.append(node_modules_path)
+        return results
 
-            for package_name, package_info in npm_dependencies.items():
-                version = package_info.get("version", "unknown")
-                dependencies[package_name] = {"version": version}
-
-        except (json.JSONDecodeError, AttributeError):
-            pass
-
-        if not dependencies:
-            return None
-
-        # Get local project location
-        location = self._get_local_npm_location(executor, working_dir)
-
-        result: dict[str, Any] = {"scope": "project", "location": location}
-        if not skip_hash_collection:
-            result["hash"] = self._generate_location_hash(executor, location)
-        result["dependencies"] = dependencies
-        return result
+    def _has_conflicting_lockfiles(self, executor: EnvironmentExecutor, project_dir: str) -> bool:
+        """Detect lock files for alternative JavaScript package managers."""
+        for exclusion in ("yarn.lock", "pnpm-lock.yaml", "bun.lockb"):
+            if executor.path_exists(f"{project_dir}/{exclusion}"):
+                return True
+        return False
 
     def _get_global_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
@@ -150,21 +183,6 @@ class NpmDetector(PackageManagerDetector):
         """Check if a location represents a system-wide npm installation."""
         return location.startswith(("/usr/lib/node_modules", "/usr/local/lib/node_modules"))
 
-    def _get_local_npm_location(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
-        """Get the actual location path of the local npm project."""
-        search_dir = working_dir or "."
-
-        package_json_path = f"{search_dir}/package.json"
-        if executor.path_exists(package_json_path):
-            return self._resolve_absolute_path(executor, search_dir)
-
-        node_modules_path = f"{search_dir}/node_modules"
-        if executor.path_exists(node_modules_path):
-            return self._resolve_absolute_path(executor, search_dir)
-
-        # Fallback to current directory
-        return self._resolve_absolute_path(executor, search_dir)
-
     def _get_global_npm_location(self, executor: EnvironmentExecutor) -> str:
         """Get the actual location path of the global npm installation."""
         # Get npm prefix (e.g., /usr)
@@ -176,8 +194,17 @@ class NpmDetector(PackageManagerDetector):
         # Fallback: return default global location
         return "/usr/lib/node_modules"
 
+    def _get_node_version(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
+        """Get the Node.js runtime version for the npm environment."""
+        stdout, _, exit_code = executor.execute_command("node --version", working_dir)
+        if exit_code == 0 and stdout.strip():
+            return stdout.strip()
+        return ""
+
     def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
         """Resolve absolute path within the executor's context."""
+        if path == "/":
+            return "/"
         if path == ".":
             # Get the current working directory from the executor
             stdout, stderr, exit_code = executor.execute_command("pwd")

@@ -6,21 +6,21 @@ The PIP detector identifies Python packages managed by `pip` with intelligent vi
 
 ## Key Features
 
-### Smart Virtual Environment Detection
+### Virtual Environment Discovery
 
-The detector uses a prioritized detection strategy:
+The detector discovers all pip-usable virtual environments instead of selecting only one:
 
-1. **Explicit specification**: Manually provided virtual environment path
-2. **Environment-aware detection**: `VIRTUAL_ENV` variable in Docker containers only
-3. **Local project search**: Standard venv naming conventions (`./venv`, `./.venv`, `./env`, etc.)
-4. **External environment search**: Common locations like `~/.virtualenvs/`, `~/.pyenv/versions/`
-5. **System fallback**: System pip when no virtual environment detected
+1. **Explicit specification**: Manually provided virtual environment path is included first when valid
+2. **Recursive scan**: Searches for all `pyvenv.cfg` files under `working_dir`
+3. **Root fallback**: If no `working_dir` is provided, searches from `/`
+4. **Pip validation**: Keeps only environments that also contain `bin/pip`
+5. **System fallback**: System pip packages are added separately when available
 
 ### Environment Context Awareness
 
-- **Docker containers**: Uses `VIRTUAL_ENV` environment variable
-- **Host systems**: Ignores `VIRTUAL_ENV` to avoid shell interference
-- **Project directories**: Uses `pyvenv.cfg` files as definitive venv indicators
+- **Project scan root**: Uses `working_dir` when provided
+- **Default scan root**: Uses `/` when `working_dir` is not provided
+- **Virtual environment indicator**: Uses `pyvenv.cfg` plus `bin/pip` as definitive markers
 
 ## Commands Used
 
@@ -30,16 +30,11 @@ The detector uses a prioritized detection strategy:
 
 ## Search Paths
 
-### Local Project Paths
+### Scan Scope
 
-- Current directory and common venv folder names (`./venv`, `./.venv`, `./env`, `./virtualenv`)
-
-### External Environment Paths
-
-- `~/.virtualenvs/{project_name}`
-- `~/.local/share/virtualenvs/{project_name}`
-- `~/.cache/pypoetry/virtualenvs/{project_name}`
-- `~/.pyenv/versions/{project_name}`
+- Recursively scans the supplied `working_dir`
+- Falls back to recursively scanning `/`
+- Excludes nested `site-packages` and `dist-packages` paths from venv discovery
 
 ## Hash Generation
 
@@ -54,18 +49,18 @@ For project-scoped dependencies, generates location-based hashes by scanning the
 
 **Single Location Detection:**
 
-- **Project Scope** (venv only): `scope: "project"`, installation location, and content hash
+- **Project Scope** (single venv only): `scope: "project"`, installation location, and content hash
 - **System Scope** (system only): `scope: "system"` with system-wide packages
 
 **Multi-Location Detection:**
 
-- **Mixed Scope** (venv + system): `scope: "mixed"` with nested `locations` structure
+- **Mixed Scope** (multiple venvs and/or system): `scope: "mixed"` with nested `locations` structure
 - Each location preserves its own scope, dependencies, and location-specific hash
 - Enables tracking packages from multiple pip installations simultaneously
 
 ## Benefits
 
-- **Environment-specific detection**: Captures packages from actual project environment
+- **Environment-specific detection**: Captures packages from all discovered virtual environments
 - **System isolation**: Distinguishes project dependencies from system packages
 - **Automatic discovery**: Works without manual environment specification
 - **Cross-platform support**: Handles both containerized and host environments
