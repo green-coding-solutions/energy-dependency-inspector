@@ -178,7 +178,7 @@ class TestPipVenvDetection(DockerTestBase):
             if verbose_output:
                 self.print_verbose_results("VIRTUALENVS DETECTION:", result)
 
-            self._validate_venv_detection(result, expected_scope="system")
+            self._validate_venv_detection(result, expected_scope="project")
 
             # Verify it found the specific virtualenvs venv path
             assert self._has_project_location_starting_with(
