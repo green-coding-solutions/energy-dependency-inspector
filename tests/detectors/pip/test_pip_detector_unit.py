@@ -23,6 +23,7 @@ def test_pip_multiple_venvs_and_system_result_in_mixed_output() -> None:
     detector = PipDetector()
     executor = FakeExecutor(
         command_results={
+            "python --version": ("Python 3.12.3\n", "", 0),
             "find '/' -path '*/site-packages/*' -prune -o -path '*/dist-packages/*' -prune -o -name 'pyvenv.cfg' -type f -print 2>/dev/null | LC_COLLATE=C sort -u": (
                 "/opt/app1/pyvenv.cfg\n/opt/app2/pyvenv.cfg\n",
                 "",
@@ -69,6 +70,47 @@ def test_pip_multiple_venvs_and_system_result_in_mixed_output() -> None:
     result = detector.get_dependencies(executor)
 
     assert result["scope"] == "mixed"
+    assert result["python_version"] == "Python 3.12.3"
     assert "/opt/app1/lib/python3.11/site-packages" in result["locations"]
     assert "/opt/app2/lib/python3.11/site-packages" in result["locations"]
     assert "/usr/lib/python3/dist-packages" in result["locations"]
+
+
+def test_pip_single_location_includes_python_version() -> None:
+    detector = PipDetector()
+    executor = FakeExecutor(
+        command_results={
+            "python --version": ("Python 3.11.9\n", "", 0),
+            "cd '/app' && pwd": ("/app\n", "", 0),
+            "find '/app' -path '*/site-packages/*' -prune -o -path '*/dist-packages/*' -prune -o -name 'pyvenv.cfg' -type f -print 2>/dev/null | LC_COLLATE=C sort -u": (
+                "/app/venv/pyvenv.cfg\n",
+                "",
+                0,
+            ),
+            "/app/venv/bin/pip list --format=freeze": ("flask==3.0.2\n", "", 0),
+            "/app/venv/bin/pip show pip": ("Location: /app/venv/lib/python3.11/site-packages\n", "", 0),
+            "cd '/app/venv/lib/python3.11/site-packages' && find . -name '__pycache__' -prune -o -name '__editable__*' -prune -o -name 'pip*' -prune -o -name 'setuptools*' -prune -o -name 'pkg_resources' -prune -o -name '*distutils*' -prune -o -path '*/pip/_vendor' -prune -o -not -name '*.pyc' -not -name '*.pyo' -not -name 'INSTALLER' -not -name 'RECORD' \\( -type f -o -type l \\) -printf '%s %p %l\\n' | LC_COLLATE=C sort -n -k1,1 -k2,2": (
+                "10 ./flask/__init__.py \n",
+                "",
+                0,
+            ),
+            "unset VIRTUAL_ENV && unset PYTHONPATH && /usr/bin/python3 -m pip list --format=freeze 2>/dev/null || /usr/bin/pip3 list --format=freeze 2>/dev/null || pip list --format=freeze": (
+                "",
+                "",
+                1,
+            ),
+            "/usr/bin/python3 -m pip list --format=freeze": ("", "", 1),
+            "/usr/bin/pip3 list --format=freeze": ("", "", 1),
+            "pip list --format=freeze": ("", "", 1),
+        },
+        paths={
+            "/app/venv/pyvenv.cfg",
+            "/app/venv/bin/pip",
+        },
+    )
+
+    result = detector.get_dependencies(executor, working_dir="/app")
+
+    assert result["scope"] == "project"
+    assert result["python_version"] == "Python 3.11.9"
+    assert result["location"] == "/app/venv/lib/python3.11/site-packages"

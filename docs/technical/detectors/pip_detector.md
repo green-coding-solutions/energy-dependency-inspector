@@ -26,6 +26,7 @@ The detector discovers all pip-usable virtual environments instead of selecting 
 
 - **Virtual environment detection**: `find` command to locate `pyvenv.cfg` files
 - **Package listing**: `pip list --format=freeze` for clean `package==version` output
+- **Python runtime version**: `python --version` (fallback `python3 --version`)
 - **Location discovery**: `pip show pip` to determine installation location
 
 ## Search Paths
@@ -56,11 +57,13 @@ For project-scoped dependencies, generates location-based hashes by scanning the
 
 - **Mixed Scope** (multiple venvs and/or system): `scope: "mixed"` with nested `locations` structure
 - Each location preserves its own scope, dependencies, and location-specific hash
+- The detector root includes `python_version` when available
 - Enables tracking packages from multiple pip installations simultaneously
 
 ## Benefits
 
 - **Environment-specific detection**: Captures packages from all discovered virtual environments
+- **Runtime context**: Reports the active Python runtime version alongside dependency data
 - **System isolation**: Distinguishes project dependencies from system packages
 - **Automatic discovery**: Works without manual environment specification
 - **Cross-platform support**: Handles both containerized and host environments

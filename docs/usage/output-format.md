@@ -136,6 +136,7 @@ When a detector finds packages in multiple locations (e.g. pip, npm, and compose
 
 - **location** - Absolute path where project dependencies are installed
 - **hash** - Hash of the dependency location/environment
+- **python_version** - Python runtime version reported by the pip detector, when available
 - **node_version** - Node.js runtime version reported by the npm detector, when available
 - **php_version** - PHP runtime version reported by the Composer detector, when available
 

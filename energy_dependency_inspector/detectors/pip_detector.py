@@ -28,6 +28,7 @@ class PipDetector(PackageManagerDetector):
         Returns single location structure or nested structure for mixed locations.
         See docs/technical/detectors/pip_detector.md
         """
+        python_version = self._get_python_version(executor, working_dir)
         project_results = self._get_venv_dependencies(executor, working_dir, skip_hash_collection)
         system_result = self._get_system_dependencies(executor, working_dir, skip_hash_collection)
         all_results = project_results + ([system_result] if system_result else [])
@@ -44,15 +45,27 @@ class PipDetector(PackageManagerDetector):
                     location_data["hash"] = location_result["hash"]
                 locations[location_result["location"]] = location_data
 
-            return {"scope": "mixed", "locations": locations}
+            result: dict[str, Any] = {"scope": "mixed", "locations": locations}
+            if python_version:
+                result["python_version"] = python_version
+            return result
         if len(project_results) == 1:
+            if python_version:
+                project_results[0]["python_version"] = python_version
             return project_results[0]
         if system_result:
+            if python_version:
+                system_result["python_version"] = python_version
             return system_result
         if working_dir:
             location = self._resolve_absolute_path(executor, working_dir)
-            return {"scope": "project", "location": location, "dependencies": {}}
-        return {"scope": "system", "location": "/usr/lib/python3/dist-packages", "dependencies": {}}
+            result = {"scope": "project", "location": location, "dependencies": {}}
+        else:
+            result = {"scope": "system", "location": "/usr/lib/python3/dist-packages", "dependencies": {}}
+
+        if python_version:
+            result["python_version"] = python_version
+        return result
 
     def _get_venv_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
@@ -252,6 +265,15 @@ class PipDetector(PackageManagerDetector):
                 print(f"ERROR: command stdout: {stdout}")
                 print(f"ERROR: location: {location}")
             return ""
+
+    def _get_python_version(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
+        """Get the active Python runtime version for the pip environment."""
+        for command in ("python --version", "python3 --version"):
+            stdout, stderr, exit_code = executor.execute_command(command, working_dir)
+            version_output = stdout.strip() or stderr.strip()
+            if exit_code == 0 and version_output:
+                return version_output.splitlines()[0].strip()
+        return ""
 
     def is_os_package_manager(self) -> bool:
         """PIP is a language package manager, not an OS package manager."""
