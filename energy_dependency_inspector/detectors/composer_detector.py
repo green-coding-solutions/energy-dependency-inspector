@@ -150,6 +150,10 @@ class ComposerDetector(PackageManagerDetector):
         """Parse JSON output from Composer show commands."""
         try:
             composer_data = json.loads(stdout)
+            if not composer_data:
+                # when you have a valid composer file but install no packages in it composer will return []
+                # which means we can skip early
+                return {}
         except json.JSONDecodeError:
             if self.debug:
                 print("ERROR: Failed to parse composer show JSON output")
