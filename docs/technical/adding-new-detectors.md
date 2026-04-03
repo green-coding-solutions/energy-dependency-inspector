@@ -68,9 +68,9 @@ Add your detector to the detectors list in `/energy_dependency_inspector/core/or
 
 1. Container information (docker-info)
 2. System packages (dpkg, apk, yum, etc.)
-3. Language-specific packages (pip, npm, etc.)
+3. Language-specific packages (pip, npm, composer, pecl, etc.)
 
-Reference existing detectors like `DpkgDetector`, `ApkDetector`, `PipDetector`, and `NpmDetector` for import and initialization patterns.
+Reference existing detectors like `DpkgDetector`, `ApkDetector`, `PipDetector`, `NpmDetector`, `ComposerDetector`, and `PeclDetector` for import and initialization patterns.
 
 ### 2.2 Update Package Imports
 
@@ -170,7 +170,7 @@ Reference `DpkgDetector` and `ApkDetector` implementations:
 
 ### Project-Scoped Detectors
 
-Reference `PipDetector` and `NpmDetector` implementations:
+Reference `PipDetector`, `NpmDetector`, `ComposerDetector`, and `PeclDetector` implementations:
 
 - Check for project files in `working_dir` to determine scope
 - Extract project dependencies when project files found

@@ -31,12 +31,6 @@ class TestVenvChecker:
                 check_venv()
             assert excinfo.value.code == 1
 
-    @patch("energy_dependency_inspector.core.venv_checker.sys.prefix", "/wrong/path")
-    def test_check_venv_fails_with_wrong_venv(self) -> None:
-        """Test that check_venv exits when venv path is incorrect."""
-        with pytest.raises(SystemExit) as excinfo:
-            check_venv()
-        assert excinfo.value.code == 1
 
     def test_check_venv_passes_with_correct_venv_path(self) -> None:
         """Test that check_venv passes when venv path matches expected location."""

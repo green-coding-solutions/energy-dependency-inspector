@@ -10,13 +10,13 @@ The NPM detector identifies Node.js packages managed by `npm` in both project an
 
 Detects npm packages in multiple locations:
 
-- **Local dependencies**: Project-level packages via `npm list --json --depth=0`
+- **Local dependencies**: All discovered npm project `node_modules` directories via `npm list --json --depth=0`
 - **Global packages**: System-level packages via `npm list -g --json --depth=0`
 - **Mixed output**: Returns both when present in same environment
 
 ### Smart Package Manager Detection
 
-For local projects, avoids conflicts with other Node.js package managers:
+For local projects, recursively scans for `node_modules` directories under the scan root and avoids conflicts with other Node.js package managers:
 
 **Exclusion checks:**
 
@@ -26,11 +26,14 @@ For local projects, avoids conflicts with other Node.js package managers:
 
 **Inclusion checks:**
 
-- `package.json`, `node_modules`, or `package-lock.json` exists
+- `node_modules` directory exists
+- Parent project contains `package.json` or `package-lock.json`
 - No conflicting lock files present
 
 ## Commands Used
 
+- **Node runtime version**: `node --version`
+- **Project discovery**: `find <scan-root> -type d -name node_modules`
 - **Local packages**: `npm list --json --depth=0`
 - **Global packages**: `npm list -g --json --depth=0`
 
@@ -61,7 +64,8 @@ Generates location-based hashes for both project and system locations while excl
 ```json
 {
   "scope": "project" | "system",
-  "location": "/path/to/location",
+  "node_version": "v22.11.0",
+  "location": "/path/to/node_modules",
   "hash": "abc123...",
   "dependencies": {...}
 }
@@ -72,6 +76,7 @@ Generates location-based hashes for both project and system locations while excl
 ```json
 {
   "scope": "mixed",
+  "node_version": "v22.11.0",
   "locations": {
     "/path/to/project": {
       "scope": "project",
@@ -90,6 +95,8 @@ Generates location-based hashes for both project and system locations while excl
 ## Benefits
 
 - **Complete visibility**: Captures both project and global npm packages
+- **Recursive discovery**: Finds every npm-managed `node_modules` directory under the scan root
+- **Runtime context**: Reports the active Node.js runtime version alongside dependency data
 - **Conflict avoidance**: Prevents npm from running in yarn/pnpm/bun projects
 - **Multi-location support**: Follows pip_detector pattern for consistency
 - **Structured data**: JSON output provides reliable programmatic parsing
@@ -100,6 +107,7 @@ Generates location-based hashes for both project and system locations while excl
 - **Direct dependencies only**: Excludes transitive dependencies
 - **npm dependency**: Requires npm to be installed and functional
 - **Global detection**: Only detects packages via `npm list -g` (not manual installations)
+- **Project detection**: Requires a `node_modules` directory plus npm project metadata
 
 ## Use Cases
 

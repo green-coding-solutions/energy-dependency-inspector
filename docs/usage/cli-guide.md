@@ -48,7 +48,7 @@ python3 -m energy_dependency_inspector --skip-os-packages
 python3 -m energy_dependency_inspector --skip-hash-collection
 
 # Select specific detectors to run
-python3 -m energy_dependency_inspector --select-detectors "pip,dpkg"
+python3 -m energy_dependency_inspector --select-detectors "pip,composer,pecl,dpkg"
 ```
 
 ## Detector Selection
@@ -56,19 +56,21 @@ python3 -m energy_dependency_inspector --select-detectors "pip,dpkg"
 Control which package managers are analyzed with the `--select-detectors` flag:
 
 ```bash
-# Use only pip and dpkg detectors
-python3 -m energy_dependency_inspector --select-detectors "pip,dpkg"
+# Use only pip, composer, pecl, and dpkg detectors
+python3 -m energy_dependency_inspector --select-detectors "pip,composer,pecl,dpkg"
 
 # Use only npm detector for Node.js projects
 python3 -m energy_dependency_inspector --select-detectors "npm"
 
 # Use multiple detectors with debug output
-python3 -m energy_dependency_inspector --select-detectors "pip,npm,maven" --debug
+python3 -m energy_dependency_inspector --select-detectors "pip,npm,composer,pecl,maven" --debug
 ```
 
 **Available detectors:**
 
 - `pip` - Python packages (pip/PyPI)
+- `composer` - PHP packages (Composer)
+- `pecl` - PHP extensions (PECL)
 - `npm` - Node.js packages (npm/yarn)
 - `dpkg` - Debian/Ubuntu system packages
 - `apk` - Alpine Linux system packages
@@ -87,6 +89,12 @@ python3 -m energy_dependency_inspector --working-dir /path/to/python/project
 
 # Analyze Node.js project
 python3 -m energy_dependency_inspector --working-dir /path/to/nodejs/project
+
+# Analyze PHP Composer project
+python3 -m energy_dependency_inspector --working-dir /path/to/php/project --select-detectors "composer"
+
+# Analyze PHP extensions only
+python3 -m energy_dependency_inspector --select-detectors "pecl"
 
 # Analyze only Python dependencies in a project
 python3 -m energy_dependency_inspector --working-dir /path/to/python/project --select-detectors "pip"

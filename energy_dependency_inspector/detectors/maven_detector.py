@@ -13,13 +13,10 @@ class MavenDetector(PackageManagerDetector):
 
     def __init__(self, debug: bool = False):
         self.debug = debug
-        self._maven_available_cache: bool | None = None
-        self._maven_command_cache: str | None = None
 
     def is_usable(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
-        """Check if this is a Maven project by looking for pom.xml."""
-        search_dir = working_dir or "."
-        return executor.path_exists(f"{search_dir}/pom.xml")
+        """Check if at least one Maven project exists under the scan root."""
+        return len(self._find_project_directories(executor, working_dir)) > 0
 
     def get_dependencies(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None, skip_hash_collection: bool = False
@@ -31,26 +28,39 @@ class MavenDetector(PackageManagerDetector):
             - packages: List of package dicts with name, version, type
             - metadata: Dict with location and hash for project scope
         """
-        search_dir = working_dir or "."
-        location = self._resolve_absolute_path(executor, search_dir)
-        dependencies: dict[str, dict[str, str]] = {}
+        project_dirs = self._find_project_directories(executor, working_dir)
+        results: list[dict[str, Any]] = []
 
-        # Always project scope for Maven projects
-        result: dict[str, Any] = {"scope": "project", "location": location}
+        for project_dir in project_dirs:
+            dependencies: dict[str, dict[str, str]]
 
-        # Try Maven command first if available
-        if self._maven_available(executor, working_dir):
-            dependencies = self._get_dependencies_via_maven(executor, working_dir)
-        else:
-            # Fallback to pom.xml parsing
-            dependencies = self._get_dependencies_via_pom_parsing(executor, search_dir)
+            if self._maven_available(executor, project_dir):
+                dependencies = self._get_dependencies_via_maven(executor, project_dir)
+            else:
+                dependencies = self._get_dependencies_via_pom_parsing(executor, project_dir)
 
-        # Generate location-based hash if appropriate
-        if dependencies and not skip_hash_collection:
-            result["hash"] = self._generate_location_hash(executor, location)
+            if not dependencies:
+                continue
 
-        result["dependencies"] = dependencies
-        return result
+            result: dict[str, Any] = {"scope": "project", "location": project_dir, "dependencies": dependencies}
+            if not skip_hash_collection:
+                result["hash"] = self._generate_location_hash(executor, project_dir)
+            results.append(result)
+
+        if len(results) > 1:
+            locations = {}
+            for project_result in results:
+                location_data = {"scope": "project", "dependencies": project_result["dependencies"]}
+                if "hash" in project_result:
+                    location_data["hash"] = project_result["hash"]
+                locations[project_result["location"]] = location_data
+            return {"scope": "mixed", "locations": locations}
+
+        if len(results) == 1:
+            return results[0]
+
+        search_root = self._resolve_absolute_path(executor, working_dir or "/")
+        return {"scope": "project", "location": search_root, "dependencies": {}}
 
     def is_os_package_manager(self) -> bool:
         """Maven is a language package manager, not an OS package manager."""
@@ -58,36 +68,25 @@ class MavenDetector(PackageManagerDetector):
 
     def _maven_available(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> bool:
         """Check if Maven is available in the environment."""
-        # Return cached result if available
-        if self._maven_available_cache is not None:
-            return self._maven_available_cache
-
         # Check for Maven wrapper first (project-specific)
-        search_dir = working_dir or "."
+        search_dir = working_dir or "/"
         if executor.path_exists(f"{search_dir}/mvnw"):
             _, _, exit_code = executor.execute_command("./mvnw --version", working_dir)
             if exit_code == 0:
-                self._maven_available_cache = True
-                self._maven_command_cache = "./mvnw"
                 return True
 
         # Fall back to system Maven
         _, _, exit_code = executor.execute_command("mvn --version", working_dir)
-        result = exit_code == 0
-        self._maven_available_cache = result
-        if result:
-            self._maven_command_cache = "mvn"
-        return result
+        return exit_code == 0
 
     def _get_maven_command(self, executor: EnvironmentExecutor, working_dir: Optional[str] = None) -> str:
         """Determine which Maven command to use (wrapper first, then system)."""
-        # Return cached result if available (set by _maven_available)
-        if self._maven_command_cache is not None:
-            return self._maven_command_cache
-
-        # If not cached, ensure Maven availability is checked first to populate cache
-        self._maven_available(executor, working_dir)
-        return self._maven_command_cache or "mvn"
+        search_dir = working_dir or "/"
+        if executor.path_exists(f"{search_dir}/mvnw"):
+            _, _, exit_code = executor.execute_command("./mvnw --version", working_dir)
+            if exit_code == 0:
+                return "./mvnw"
+        return "mvn"
 
     def _get_dependencies_via_maven(
         self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
@@ -182,7 +181,6 @@ class MavenDetector(PackageManagerDetector):
                         # Skip test-scoped dependencies by default
                         if scope != "test":
                             package_name = f"{group_id}:{artifact_id}"
-                            # Resolve property placeholders in version if possible
                             resolved_version = self._resolve_version_properties(version or "unknown", root, namespace)
                             dependencies[package_name] = {"version": resolved_version}
 
@@ -192,6 +190,26 @@ class MavenDetector(PackageManagerDetector):
             if self.debug:
                 print(f"ERROR: Failed to parse pom.xml: {e}")
             return {}
+
+    def _find_project_directories(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> list[str]:
+        """Find all directories containing a pom.xml file under the scan root."""
+        search_root = self._resolve_absolute_path(executor, working_dir or "/")
+        stdout, stderr, exit_code = executor.execute_command(
+            f"find '{search_root}' "
+            "-path '*/target/*' -prune -o "
+            "-path '*/.m2/*' -prune -o "
+            "-name 'pom.xml' -type f -print 2>/dev/null | sed 's|/pom.xml$||' | LC_COLLATE=C sort -u"
+        )
+
+        if exit_code != 0:
+            if self.debug:
+                print(f"ERROR: Maven project discovery failed with exit code {exit_code}")
+                print(f"ERROR: stderr: {stderr}")
+            return []
+
+        return [line.strip() for line in stdout.splitlines() if line.strip()]
 
     def _resolve_version_properties(self, version: str, root: ET.Element, namespace: str) -> str:
         """Attempt to resolve Maven property placeholders in version strings."""
@@ -219,6 +237,8 @@ class MavenDetector(PackageManagerDetector):
 
     def _resolve_absolute_path(self, executor: EnvironmentExecutor, path: str) -> str:
         """Resolve absolute path within the executor's context."""
+        if path == "/":
+            return "/"
         if path == ".":
             stdout, stderr, exit_code = executor.execute_command("pwd")
             if exit_code == 0 and stdout.strip():

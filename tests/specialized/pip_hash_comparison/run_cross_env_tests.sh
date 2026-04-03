@@ -39,7 +39,7 @@ echo "Building pip-hash-cross-env-test-alpine..."
 docker build -t pip-hash-cross-env-test-alpine -f "$SCRIPT_DIR/Dockerfile.test-alpine" "$SCRIPT_DIR"
 
 echo -e "\\n🔄 Starting cross-environment comparison tests..."
-cd "$SCRIPT_DIR/../.."
+cd "$SCRIPT_DIR/../../.."
 source venv/bin/activate
 
 python -m pytest "$SCRIPT_DIR/test_cross_environment_hash.py::TestCrossEnvironmentHash::test_cross_environment_hash_comparison" -v -s

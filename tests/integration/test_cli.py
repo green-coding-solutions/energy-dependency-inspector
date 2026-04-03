@@ -41,9 +41,9 @@ class TestCliArguments:
 
     def test_select_detectors_argument(self) -> None:
         """Test --select-detectors argument parsing."""
-        with patch.object(sys, "argv", ["energy_dependency_inspector", "--select-detectors", "pip,dpkg"]):
+        with patch.object(sys, "argv", ["energy_dependency_inspector", "--select-detectors", "pip,composer,pecl,dpkg"]):
             args = parse_arguments()
-            assert args.select_detectors == "pip,dpkg"
+            assert args.select_detectors == "pip,composer,pecl,dpkg"
 
     def test_select_detectors_single(self) -> None:
         """Test --select-detectors with single detector."""

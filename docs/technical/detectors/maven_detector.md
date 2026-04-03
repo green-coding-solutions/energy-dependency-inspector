@@ -17,16 +17,22 @@ The Maven detector identifies and extracts dependency information from Maven-bas
 
 The detector considers itself usable when:
 
-1. **Primary condition**: A `pom.xml` file exists in the working directory
+1. **Primary condition**: At least one `pom.xml` exists under the scan root
 2. **No additional requirements**: Maven CLI installation is NOT required for basic functionality
+
+### Project Discovery
+
+- Recursively scans under `working_dir`
+- Falls back to scanning from `/` when `working_dir` is not provided
+- Excludes `target/` and `.m2/` subtrees during discovery
 
 ### Dependency Extraction Strategy
 
-The Maven detector uses a hybrid approach with graceful degradation:
+The Maven detector uses a hybrid approach with graceful degradation for each discovered Maven project:
 
 #### 1. Maven CLI Method (Preferred)
 
-- **Maven Wrapper Priority**: Checks for `./mvnw` first, then falls back to system `mvn`
+- **Maven Wrapper Priority**: Checks for `./mvnw` in each project first, then falls back to system `mvn`
 - **Commands**:
   - `./mvnw dependency:list -B -q -DoutputFile=/dev/stdout -DexcludeTransitive=true` (when wrapper exists)
   - `mvn dependency:list -B -q -DoutputFile=/dev/stdout -DexcludeTransitive=true` (fallback to system Maven)
@@ -82,8 +88,8 @@ The detector generates a SHA-256 hash based on Maven project files:
 ### General Limitations
 
 1. **Transitive Dependencies**: Only direct dependencies are captured (by design)
-2. **Multi-module Projects**: Processes only the specific `pom.xml` in working directory
-3. **Complex Builds**: Does not handle complex build scenarios or plugins
+2. **Complex Builds**: Does not handle complex build scenarios or plugins
+3. **Multi-module Aggregators**: Treats each discovered `pom.xml` directory as its own project location
 
 ## Example Output
 
@@ -100,6 +106,34 @@ The detector generates a SHA-256 hash based on Maven project files:
     },
     "com.fasterxml.jackson.core:jackson-core": {
       "version": "2.15.2"
+    }
+  }
+}
+```
+
+### With Multiple Maven Projects
+
+```json
+{
+  "scope": "mixed",
+  "locations": {
+    "/workspace/api": {
+      "scope": "project",
+      "hash": "abc123def456...",
+      "dependencies": {
+        "com.fasterxml.jackson.core:jackson-core": {
+          "version": "2.15.2"
+        }
+      }
+    },
+    "/workspace/web": {
+      "scope": "project",
+      "hash": "def789abc012...",
+      "dependencies": {
+        "org.apache.commons:commons-lang3": {
+          "version": "3.12.0"
+        }
+      }
     }
   }
 }

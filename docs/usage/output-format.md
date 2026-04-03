@@ -11,6 +11,8 @@ The energy-dependency-inspector outputs a JSON object where each key represents 
   "source": { ... },
   "dpkg": { ... },
   "pip": { ... },
+  "composer": { ... },
+  "pecl": { ... },
   "npm": { ... }
 }
 ```
@@ -65,7 +67,7 @@ System-wide package managers (dpkg, apk) output:
 
 ### Project-Scoped Packages
 
-Project-specific package managers (pip, npm) output:
+Project-specific package managers (pip, npm, composer) output:
 
 ```json
 {
@@ -87,7 +89,7 @@ Project-specific package managers (pip, npm) output:
 
 ### Mixed-Scope Packages (Multi-Location Detection)
 
-When a detector finds packages in multiple locations (e.g. pip and npm support this):
+When a detector finds packages in multiple locations (e.g. pip, npm, and composer support this):
 
 ```json
 {
@@ -124,7 +126,7 @@ When a detector finds packages in multiple locations (e.g. pip and npm support t
 - **scope** - Either `"system"`, `"project"`, or `"mixed"`
   - `system`: System-wide packages affecting the entire environment
   - `project`: Project-specific packages in a local scope
-  - `mixed`: Packages from multiple locations (pip only)
+  - `mixed`: Packages from multiple locations
 
 - **dependencies** - Object containing all detected packages
   - Keys: Package names
@@ -134,6 +136,8 @@ When a detector finds packages in multiple locations (e.g. pip and npm support t
 
 - **location** - Absolute path where project dependencies are installed
 - **hash** - Hash of the dependency location/environment
+- **node_version** - Node.js runtime version reported by the npm detector, when available
+- **php_version** - PHP runtime version reported by the Composer detector, when available
 
 ### Package Fields
 
@@ -222,8 +226,32 @@ Here's a complete example showing multiple package managers:
       }
     }
   },
+  "composer": {
+    "scope": "project",
+    "php_version": "PHP 8.3.7 (cli)",
+    "location": "/app/vendor",
+    "hash": "sha256:composer123...",
+    "dependencies": {
+      "monolog/monolog": {
+        "version": "3.5.0"
+      },
+      "guzzlehttp/guzzle": {
+        "version": "7.9.2"
+      }
+    }
+  },
+  "pecl": {
+    "scope": "system",
+    "php_version": "PHP 8.3.7 (cli)",
+    "dependencies": {
+      "apcu": {
+        "version": "5.1.24"
+      }
+    }
+  },
   "npm": {
     "scope": "project",
+    "node_version": "v22.11.0",
     "location": "/app/node_modules",
     "hash": "sha256:npm456...",
     "dependencies": {

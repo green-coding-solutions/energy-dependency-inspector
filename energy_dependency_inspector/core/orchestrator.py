@@ -7,6 +7,8 @@ from ..detectors.apk_detector import ApkDetector
 from ..detectors.docker_info_detector import DockerInfoDetector
 from ..detectors.host_info_detector import HostInfoDetector
 from ..detectors.maven_detector import MavenDetector
+from ..detectors.composer_detector import ComposerDetector
+from ..detectors.pecl_detector import PeclDetector
 
 
 class Orchestrator:
@@ -31,6 +33,8 @@ class Orchestrator:
             DpkgDetector(),
             ApkDetector(),
             MavenDetector(debug=debug),
+            ComposerDetector(debug=debug),
+            PeclDetector(debug=debug),
             PipDetector(venv_path=venv_path, debug=debug),
             NpmDetector(debug=debug),
         ]

@@ -37,7 +37,7 @@ Examples:
   %(prog)s --debug                                # Enable debug output
   %(prog)s --skip-os-packages                     # Skip OS package managers (dpkg, apk)
   %(prog)s --skip-hash-collection                 # Skip hash collection for improved performance
-  %(prog)s --select-detectors "pip,dpkg"          # Use only pip and dpkg detectors
+  %(prog)s --select-detectors "pip,composer,pecl,dpkg" # Use only pip, composer, pecl, and dpkg detectors
         """,
     )
 
@@ -65,7 +65,7 @@ Examples:
     parser.add_argument(
         "--skip-os-packages",
         action="store_true",
-        help="Skip OS package managers (dpkg, apk) - language package managers like pip/npm will still run",
+        help="Skip OS package managers (dpkg, apk) - language package managers like pip/npm/composer/pecl will still run",
     )
 
     parser.add_argument(
@@ -83,7 +83,7 @@ Examples:
     parser.add_argument(
         "--select-detectors",
         type=str,
-        help="Comma-separated list of detectors to use (e.g., 'pip,dpkg'). Available: pip, npm, dpkg, apk, maven, docker-info",
+        help="Comma-separated list of detectors to use (e.g., 'pip,composer,pecl,dpkg'). Available: pip, npm, composer, pecl, dpkg, apk, maven, docker-info",
     )
 
     return parser.parse_args()
