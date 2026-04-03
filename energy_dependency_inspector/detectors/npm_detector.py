@@ -118,7 +118,7 @@ class NpmDetector(PackageManagerDetector):
         """Find all project node_modules directories under the scan root."""
         search_root = self._resolve_absolute_path(executor, working_dir or "/")
         stdout, stderr, exit_code = executor.execute_command(
-            f"find '{search_root}' -type d -name 'node_modules' -print 2>/dev/null | LC_COLLATE=C sort -u"
+            f"find '{search_root}' -type d -name 'node_modules' -prune -print 2>/dev/null | LC_COLLATE=C sort -u"
         )
         if exit_code != 0:
             if self.debug:
