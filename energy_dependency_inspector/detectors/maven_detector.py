@@ -152,26 +152,6 @@ class MavenDetector(PackageManagerDetector):
                 print(f"ERROR: Failed to read pom.xml: {stderr}")
             return {}
 
-    def _find_project_directories(
-        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
-    ) -> list[str]:
-        """Find all directories containing a pom.xml file under the scan root."""
-        search_root = self._resolve_absolute_path(executor, working_dir or "/")
-        stdout, stderr, exit_code = executor.execute_command(
-            f"find '{search_root}' "
-            "-path '*/target/*' -prune -o "
-            "-path '*/.m2/*' -prune -o "
-            "-name 'pom.xml' -type f -print 2>/dev/null | sed 's|/pom.xml$||' | LC_COLLATE=C sort -u"
-        )
-
-        if exit_code != 0:
-            if self.debug:
-                print(f"ERROR: Maven project discovery failed with exit code {exit_code}")
-                print(f"ERROR: stderr: {stderr}")
-            return []
-
-        return [line.strip() for line in stdout.splitlines() if line.strip()]
-
         try:
             # Parse XML content
             root = ET.fromstring(stdout)
@@ -201,7 +181,6 @@ class MavenDetector(PackageManagerDetector):
                         # Skip test-scoped dependencies by default
                         if scope != "test":
                             package_name = f"{group_id}:{artifact_id}"
-                            # Resolve property placeholders in version if possible
                             resolved_version = self._resolve_version_properties(version or "unknown", root, namespace)
                             dependencies[package_name] = {"version": resolved_version}
 
@@ -211,6 +190,26 @@ class MavenDetector(PackageManagerDetector):
             if self.debug:
                 print(f"ERROR: Failed to parse pom.xml: {e}")
             return {}
+
+    def _find_project_directories(
+        self, executor: EnvironmentExecutor, working_dir: Optional[str] = None
+    ) -> list[str]:
+        """Find all directories containing a pom.xml file under the scan root."""
+        search_root = self._resolve_absolute_path(executor, working_dir or "/")
+        stdout, stderr, exit_code = executor.execute_command(
+            f"find '{search_root}' "
+            "-path '*/target/*' -prune -o "
+            "-path '*/.m2/*' -prune -o "
+            "-name 'pom.xml' -type f -print 2>/dev/null | sed 's|/pom.xml$||' | LC_COLLATE=C sort -u"
+        )
+
+        if exit_code != 0:
+            if self.debug:
+                print(f"ERROR: Maven project discovery failed with exit code {exit_code}")
+                print(f"ERROR: stderr: {stderr}")
+            return []
+
+        return [line.strip() for line in stdout.splitlines() if line.strip()]
 
     def _resolve_version_properties(self, version: str, root: ET.Element, namespace: str) -> str:
         """Attempt to resolve Maven property placeholders in version strings."""
