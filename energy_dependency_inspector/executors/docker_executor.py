@@ -159,7 +159,7 @@ class DockerExecutor(EnvironmentExecutor):
             image = self.container.image
             if image is None:
                 return {"name": self.container.name, "image": "unknown", "image_hash": "unknown"}
-            image_name = image.tags[0] if image.tags else "unknown"
+            image_name = image.tags[-1] if image.tags else "unknown"
             image_id = image.id
 
             return {"name": self.container.name, "image": image_name, "image_hash": image_id}
