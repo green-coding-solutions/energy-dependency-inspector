@@ -5,7 +5,7 @@ pytest>=7.0.0
 pytest-cov>=4.0.0
 
 # Code quality
-pylint>=2.15.0
+pylint>=4.0.5
 
 # Type checking
 mypy>=1.0.0
