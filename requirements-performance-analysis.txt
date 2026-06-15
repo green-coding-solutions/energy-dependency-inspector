@@ -1,0 +1,2 @@
+psutil>=5.8.0
+types-psutil # Type stubs for psutil
