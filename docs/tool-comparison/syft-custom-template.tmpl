@@ -1,0 +1,55 @@
+{
+{{- $packagesByType := dict }}
+{{- range .artifacts }}
+  {{- if not (hasKey $packagesByType .type) }}
+    {{- $_ := set $packagesByType .type (list) }}
+  {{- end }}
+  {{- $packages := index $packagesByType .type }}
+  {{- $_ := set $packagesByType .type (append $packages .) }}
+{{- end }}
+
+{{- $first := true }}
+{{- range $typeName, $packages := $packagesByType }}
+  {{- if not $first }},{{ end }}
+  "{{ $typeName }}": {
+    {{- if eq $typeName "dpkg" }}
+    "scope": "system",
+    {{- else }}
+    "scope": "project",
+    {{- end }}
+    {{- $firstLocation := "" }}
+    {{- range $packages }}
+      {{- if and (not $firstLocation) .locations }}
+        {{- range .locations }}
+          {{- if .path }}
+            {{- $firstLocation = .path }}
+            {{- break }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $firstLocation }}
+    "location": "{{ $firstLocation }}",
+    {{- end }}
+    "dependencies": {
+      {{- $pkgFirst := true }}
+      {{- $seenNames := dict }}
+      {{- range $packages }}
+        {{- if not (hasKey $seenNames .name) }}
+          {{- $_ := set $seenNames .name true }}
+          {{- if not $pkgFirst }},{{ end }}
+          "{{ .name }}": {
+            "version": "{{ .version }}"
+            {{- if .metadata }}
+              {{- if .metadata.architecture }}, "architecture": "{{ .metadata.architecture }}"{{ end }}
+              {{- if .metadata.digest }}, "hash": "{{ .metadata.digest }}"{{ end }}
+            {{- end }}
+          }
+          {{- $pkgFirst = false }}
+        {{- end }}
+      {{- end }}
+    }
+  }
+  {{- $first = false }}
+{{- end }}
+}
