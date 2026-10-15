@@ -12,7 +12,7 @@ mypy>=2.4.0
 types-docker  # Type stubs for docker library
 
 # Code formatting
-black>=26.5.1
+black>=26.10.1
 
 # Pre-commit hooks
 pre-commit>=4.6.2
