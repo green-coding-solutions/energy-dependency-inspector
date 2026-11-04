@@ -8,7 +8,7 @@ pytest-cov>=7.1.0
 pylint>=4.1.3
 
 # Type checking
-mypy>=2.4.0
+mypy>=2.4.1
 types-docker  # Type stubs for docker library
 
 # Code formatting
